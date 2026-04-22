@@ -800,12 +800,23 @@ window.doLogout = () => {
 };
 
 // ── WORKER SCREEN ─────────────────────────────────────────────
+const S_WORKER = { tab: 'shift' };
+
 function renderWorker() {
   const u = S.user;
   const myShifts = SHIFTS.filter(s=>s.worker===u.id);
   const active = myShifts.find(s=>s.status==='working')||null;
   S.shift = active;
   const totalToday = myShifts.filter(s=>s.status==='completed').reduce((a,s)=>a+s.earnings,0) + (active ? (Date.now()-active.start)/3600000*u.hourly_rate : 0);
+
+  // build tab content based on role
+  const tabs = [{ id:'shift', label:'⏱ Shift' }];
+  if(u.role==='cashier'||u.role==='cook') tabs.push({ id:'tables', label:'🪑 Tables & Orders' });
+  if(u.role==='delivery') tabs.push({ id:'deliveries', label:'🛵 My Deliveries' });
+  tabs.push({ id:'inventory', label:'📦 Inventory' });
+
+  const myDeliveryCount = u.role==='delivery' ? DELIVERIES.filter(d=>d.rider===u.name&&d.status<3).length : 0;
+  const pendingOrders = TABLE_ORDERS.filter(o=>o.status==='pending').length;
 
   $('root').innerHTML = `
   <div class="topbar">
@@ -822,14 +833,27 @@ function renderWorker() {
   </div>
 
   <div class="body">
-    <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;flex-wrap:wrap">
-      <div class="page-title">My <span>Shift</span></div>
-      <div class="gps-bar gps-ok" style="margin:0">
-        <span class="dot on"></span>
-        CKN&amp;CNKN — Main Branch · ~42m away
-      </div>
+    <div class="nav-tabs" style="margin-bottom:20px">
+      ${tabs.map(t=>`<button class="nav-tab ${S_WORKER.tab===t.id?'active':''}" onclick="wTab('${t.id}')">${t.label}${t.id==='tables'&&pendingOrders?` <span style="background:#e74c3c;color:#fff;border-radius:10px;padding:1px 7px;font-size:10px;margin-left:4px">${pendingOrders}</span>`:t.id==='deliveries'&&myDeliveryCount?` <span style="background:var(--crisp);color:#fff;border-radius:10px;padding:1px 7px;font-size:10px;margin-left:4px">${myDeliveryCount}</span>`:''}</button>`).join('')}
     </div>
+    <div id="wpanel">
+      ${S_WORKER.tab==='shift'       ? buildWorkerShift(u,active,totalToday,myShifts)
+      : S_WORKER.tab==='tables'      ? buildWorkerTables(u)
+      : S_WORKER.tab==='deliveries'  ? buildWorkerDeliveries(u)
+      : S_WORKER.tab==='inventory'   ? buildWorkerInventory(u)
+      : ''}
+    </div>
+  </div>`;
 
+  initClock();
+  if(S_WORKER.tab==='shift') startTimer();
+}
+
+window.wTab = tab => { S_WORKER.tab=tab; renderWorker(); };
+
+// ── WORKER: SHIFT TAB ─────────────────────
+function buildWorkerShift(u, active, totalToday, myShifts) {
+  return `
     <div class="shift-card ${active?'working':''}" id="scard">
       <div class="shift-status">${active?'● SHIFT IN PROGRESS':'⚡ READY TO START'}</div>
       <div class="timer-display" id="tbig">00:00:00</div>
@@ -850,7 +874,6 @@ function renderWorker() {
         </button>
       </div>
     </div>
-
     <div class="table-wrap">
       <div style="padding:12px 18px;border-bottom:1px solid rgba(245,210,0,.12);font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:3px;color:var(--yolk)">📋 MY SHIFTS TODAY</div>
       <table><thead><tr>
@@ -866,11 +889,276 @@ function renderWorker() {
             <td>${statusBadge(s.status)}</td>
           </tr>`).join('')}
       </tbody></table>
+    </div>`;
+}
+
+// ── WORKER: TABLES & ORDERS TAB ───────────
+function buildWorkerTables(u) {
+  const statusColor={pending:'var(--crisp)',preparing:'var(--yolk)',ready:'var(--green)'};
+  const statusLabel={pending:'⏳ Pending',preparing:'👨‍🍳 Preparing',ready:'✅ Ready'};
+  return `
+  <div class="panel" style="margin-bottom:16px">
+    <div class="panel-title">🪑 TABLE MAP</div>
+    <div class="qr-table-grid">
+      ${TABLES.map(t=>{
+        const orders=TABLE_ORDERS.filter(o=>o.table===t&&o.status!=='served');
+        return `<div class="qr-table-card ${orders.length?'has-order':''}" onclick="window.wOpenTableOrder(${t})">
+          <div style="font-size:22px">🪑</div>
+          <div class="tnum">T${t}</div>
+          <div class="torders">${orders.length?orders.length+' order(s)':'Free'}</div>
+          ${orders.length?`<div style="width:8px;height:8px;border-radius:50%;background:var(--crisp);margin:4px auto 0;animation:blink 1.5s infinite"></div>`:''}
+        </div>`;
+      }).join('')}
+    </div>
+    <button class="btn-sm btn-yolk" style="margin-top:10px" onclick="window.wNewOrder()">+ New Table Order</button>
+  </div>
+  <div class="panel">
+    <div class="panel-title">🍽️ ACTIVE ORDERS — UPDATE STATUS</div>
+    <div class="order-queue">
+      ${TABLE_ORDERS.filter(o=>o.status!=='served').length===0
+        ?`<div class="empty"><div class="big-icon">🍗</div>No active orders right now.</div>`
+        :TABLE_ORDERS.filter(o=>o.status!=='served').map(o=>`
+        <div class="order-item ${o.status}">
+          <div style="min-width:120px">
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:1px;color:var(--yolk)">TABLE ${o.table}</div>
+            <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted)">${o.customerPhone?'📱 '+o.customerPhone:''}</div>
+            <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted)">${Math.round((Date.now()-o.time)/60000)}m ago</div>
+          </div>
+          <div style="flex:1;padding:0 12px">
+            ${o.items.map(i=>`<div style="font-family:'Fredoka',sans-serif;font-size:13px;color:var(--cream)">${i.qty}× ${i.name} <span style="color:var(--muted)">€${i.price*i.qty}</span></div>`).join('')}
+          </div>
+          <div style="text-align:right;min-width:100px">
+            <div style="font-family:'DM Mono',monospace;font-size:14px;color:var(--yolk);font-weight:700">€${o.total}</div>
+            <div style="font-family:'DM Mono',monospace;font-size:9px;color:${statusColor[o.status]};margin:4px 0">${statusLabel[o.status]}</div>
+            ${o.status!=='served'?`<button class="btn-sm btn-yolk" style="font-size:10px;padding:4px 10px;margin-top:4px" onclick="window.wAdvOrder('${o.id}')">→ ${o.status==='pending'?'Preparing':o.status==='preparing'?'Ready':'Served'}</button>`:''}
+          </div>
+        </div>`).join('')}
+    </div>
+  </div>
+  ${buildNewOrderModal()}`;
+}
+
+function buildNewOrderModal() {
+  return `
+  <div class="modal-bg" id="newOrderModal">
+    <div class="modal-card" style="max-width:480px">
+      <div class="modal-title">🍽️ New Table Order</div>
+      <div class="fg">
+        <div>
+          <label class="lbl-mono">Table Number</label>
+          <select id="nom-table" style="font-size:13px;padding:9px 12px">
+            ${TABLES.map(t=>`<option value="${t}">Table ${t}</option>`).join('')}
+          </select>
+        </div>
+        <div>
+          <label class="lbl-mono">Customer Phone (for Loyalty)</label>
+          <input id="nom-phone" type="tel" placeholder="e.g. 0501234567" style="font-size:13px" oninput="nomRender()"/>
+          <div id="nom-loyalty-info" style="margin-top:6px;font-family:'DM Mono',monospace;font-size:10px;color:var(--green)"></div>
+        </div>
+        <div>
+          <label class="lbl-mono">Add Items</label>
+          <div style="display:flex;gap:8px;margin-bottom:8px">
+            <select id="nom-item" style="flex:1;font-size:12px;padding:7px 10px">
+              ${MENU.map(m=>`<option value="${m.price}" data-name="${m.name}">${m.icon} ${m.name} — €${m.price}</option>`).join('')}
+            </select>
+            <button class="btn-sm btn-yolk" style="font-size:11px" onclick="window.nomAddItem()">+ Add</button>
+          </div>
+          <div id="nom-items-list" style="min-height:40px;background:rgba(255,255,255,.02);border:1px solid rgba(245,210,0,.1);border-radius:4px;padding:8px;font-family:'DM Mono',monospace;font-size:11px;color:var(--muted)">No items yet</div>
+          <div id="nom-total" style="text-align:right;font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--yolk);margin-top:6px"></div>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:16px">
+        <button class="btn btn-dark btn-sm" style="flex:1;padding:10px" onclick="window.closeNewOrder()">Cancel</button>
+        <button class="btn btn-yolk" style="flex:1;padding:10px;font-size:14px" onclick="window.nomSubmit()">Place Order</button>
+      </div>
     </div>
   </div>`;
-
-  initClock(); startTimer();
 }
+
+const _newOrderItems = [];
+window.wNewOrder = () => {
+  _newOrderItems.length=0;
+  const m=$('newOrderModal'); if(m){m.classList.add('show'); nomRender();}
+};
+window.closeNewOrder = () => { const m=$('newOrderModal'); if(m) m.classList.remove('show'); };
+window.nomAddItem = () => {
+  const sel=$('nom-item'); if(!sel) return;
+  const name=sel.options[sel.selectedIndex].dataset.name;
+  const price=parseFloat(sel.value);
+  const ex=_newOrderItems.find(i=>i.name===name);
+  if(ex) ex.qty++;
+  else _newOrderItems.push({name,price,qty:1});
+  nomRender();
+};
+function nomRender() {
+  const list=$('nom-items-list'), tot=$('nom-total');
+  if(list) list.innerHTML=_newOrderItems.length
+    ?_newOrderItems.map(i=>`<div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="color:var(--cream)">${i.qty}× ${i.name}</span><span style="color:var(--yolk)">€${i.qty*i.price}</span></div>`).join('')
+    :'<span style="color:var(--muted)">No items yet</span>';
+  const total=_newOrderItems.reduce((a,i)=>a+i.qty*i.price,0);
+  if(tot) tot.textContent=total?`Total: €${total}`:'';
+
+  // phone loyalty lookup
+  const ph=($('nom-phone')?.value||'').replace(/\D/g,'').replace(/^0+/,'');
+  const loyInfo=$('nom-loyalty-info');
+  if(loyInfo){
+    const c=ph?LOYALTY_CUSTOMERS.find(x=>x.phone.replace(/\D/g,'').replace(/^0+/,'')=== ph):null;
+    loyInfo.textContent=c?`🎁 ${c.name} — ${c.stamps}/10 stamps · ${c.orders} orders`:'';
+  }
+}
+window.nomSubmit = () => {
+  if(!_newOrderItems.length){toast('Add at least one item','error');return;}
+  const table=parseInt($('nom-table')?.value||1);
+  const phone=($('nom-phone')?.value||'').replace(/\D/g,'');
+  const total=_newOrderItems.reduce((a,i)=>a+i.qty*i.price,0);
+  const newOrd = {
+    id:'to'+Date.now(), table, items:[..._newOrderItems],
+    total, status:'pending', time:Date.now(),
+    customerPhone:phone||null
+  };
+  TABLE_ORDERS.push(newOrd);
+  // auto-stamp loyalty if phone matches
+  if(phone){
+    const normPh=phone.replace(/^0+/,'');
+    const c=LOYALTY_CUSTOMERS.find(x=>x.phone.replace(/\D/g,'').replace(/^0+/,'')=== normPh);
+    if(c){ if(c.stamps<10){c.stamps++;} c.orders++; toast(`🍗 Order placed for Table ${table}! Loyalty stamp added for ${c.name}`,'success'); }
+    else { toast(`🍗 Order placed for Table ${table}!`,'success'); }
+  } else { toast(`🍗 Order placed for Table ${table}!`,'success'); }
+  _newOrderItems.length=0;
+  closeNewOrder();
+  S_WORKER.tab='tables'; renderWorker();
+};
+window.wAdvOrder = id => {
+  const o=TABLE_ORDERS.find(x=>x.id===id); if(!o) return;
+  const next={pending:'preparing',preparing:'ready',ready:'served'};
+  o.status=next[o.status]||'served';
+  toast(`Table ${o.table} → ${o.status}`,'success'); renderWorker();
+};
+window.wOpenTableOrder = t => {
+  const orders=TABLE_ORDERS.filter(o=>o.table===t&&o.status!=='served');
+  if(!orders.length){toast(`Table ${t} is free`,'info');return;}
+  toast(`Table ${t}: ${orders.length} order(s) active`,'info');
+};
+
+// ── WORKER: DELIVERY TAB (delivery role only) ──────────────────
+function buildWorkerDeliveries(u) {
+  const myDels = DELIVERIES.filter(d=>d.rider===u.name||d.rider==='Unassigned');
+  const mine    = DELIVERIES.filter(d=>d.rider===u.name&&d.status<3);
+  const unassigned = DELIVERIES.filter(d=>d.rider==='Unassigned');
+  return `
+  ${unassigned.length?`<div style="background:rgba(255,107,53,.07);border:1px solid rgba(255,107,53,.3);border-radius:6px;padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;gap:10px">
+    <span style="font-size:20px">🔔</span>
+    <div><div style="font-family:'Fredoka',sans-serif;font-size:14px;color:var(--crisp);font-weight:600">${unassigned.length} new delivery request(s)!</div>
+    <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted)">Tap Accept to take the order</div></div>
+  </div>`:''}
+  ${unassigned.length?`
+  <div class="panel" style="margin-bottom:16px">
+    <div class="panel-title">🔔 NEW REQUESTS</div>
+    <div class="delivery-grid">
+      ${unassigned.map(d=>`
+        <div class="del-card" style="border-color:rgba(255,107,53,.35)">
+          <div class="del-id">#${d.id.toUpperCase()} · ${Math.round((Date.now()-d.created)/60000)}m ago</div>
+          <div class="del-addr" style="margin:6px 0">${esc(d.addr)}</div>
+          <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);margin-bottom:10px">${esc(d.items)}</div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--yolk);margin-bottom:10px">€${d.total}</div>
+          <button class="btn-sm btn-green" style="width:100%;padding:9px" onclick="window.wAcceptDelivery('${d.id}')">✅ Accept Delivery</button>
+        </div>`).join('')}
+    </div>
+  </div>`:''}
+  <div class="panel">
+    <div class="panel-title">🛵 MY ACTIVE DELIVERIES</div>
+    ${mine.length===0?`<div class="empty"><div class="big-icon">🛵</div>No active deliveries. Check for new requests above.</div>`:
+    `<div class="delivery-grid">
+      ${mine.map(d=>`
+        <div class="del-card">
+          <div class="del-id">#${d.id.toUpperCase()} · ${Math.round((Date.now()-d.created)/60000)}m ago</div>
+          <div class="del-addr" style="margin:6px 0">${esc(d.addr)}</div>
+          <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);margin-bottom:8px">${esc(d.items)}</div>
+          <div class="del-status-bar">
+            ${DEL_STEPS.map((_,i)=>`<div class="del-step ${i<d.status?'done':i===d.status?'active':''}"></div>`).join('')}
+          </div>
+          <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--yolk);margin:6px 0">${DEL_STEPS[d.status]||'Done'}</div>
+          <button class="btn-sm btn-yolk" style="width:100%;padding:9px;margin-top:6px" onclick="window.wAdvMyDelivery('${d.id}')">→ ${DEL_STEPS[d.status+1]||'Mark Delivered'}</button>
+        </div>`).join('')}
+    </div>`}
+  </div>
+  <div class="panel">
+    <div class="panel-title">✅ COMPLETED TODAY</div>
+    ${DELIVERIES.filter(d=>d.rider===u.name&&d.status===3).length===0
+      ?`<div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);text-align:center;padding:16px">No completed deliveries yet today.</div>`
+      :`<div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--green);text-align:center;padding:12px">✅ ${DELIVERIES.filter(d=>d.rider===u.name&&d.status===3).length} completed — great work!</div>`}
+  </div>`;
+}
+window.wAcceptDelivery = id => {
+  const d=DELIVERIES.find(x=>x.id===id); if(!d) return;
+  d.rider=S.user.name; d.status=1;
+  toast(`Delivery #${id.toUpperCase()} accepted! Head to kitchen.`,'success');
+  renderWorker();
+};
+window.wAdvMyDelivery = id => {
+  const d=DELIVERIES.find(x=>x.id===id); if(!d) return;
+  if(d.status<3) d.status++;
+  const labels=['','Heading to kitchen','Picked up — on the way','Delivered! ✅'];
+  toast(labels[d.status]||'Done!','success');
+  renderWorker();
+};
+
+// ── WORKER: INVENTORY TAB ─────────────────
+function buildWorkerInventory(u) {
+  const low=INVENTORY.filter(i=>i.qty<=i.min);
+  return `
+  ${low.length?`<div style="background:rgba(231,76,60,.07);border:1px solid rgba(231,76,60,.25);border-radius:6px;padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;gap:10px">
+    <span style="font-size:20px">⚠️</span>
+    <div><div style="font-family:'Fredoka',sans-serif;font-size:14px;color:#e74c3c;font-weight:600">${low.length} item(s) running low</div>
+    <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted)">${low.map(i=>i.name).join(', ')}</div></div>
+  </div>`:''}
+  <div class="inv-grid" style="margin-bottom:20px">
+    ${INVENTORY.map(i=>`
+      <div class="inv-card ${i.qty<=i.min?'low':'ok'}">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+          <div style="font-size:28px">${i.icon}</div>
+          ${i.qty<=i.min?`<span class="badge br" style="font-size:8px">LOW STOCK</span>`:`<span class="badge bg" style="font-size:8px">OK</span>`}
+        </div>
+        <div class="inv-name">${i.name}</div>
+        <div class="inv-qty" style="color:${i.qty<=i.min?'#e74c3c':'var(--green)'}">${i.qty}<span style="font-size:14px;color:var(--muted);margin-left:4px">${i.unit}</span></div>
+        <div style="margin:8px 0"><div class="prog-wrap"><div class="prog-bar" style="width:${Math.min(100,Math.round(i.qty/Math.max(i.min*2,1)*100))}%;background:${i.qty<=i.min?'linear-gradient(90deg,#e74c3c,#c0392b)':'linear-gradient(90deg,var(--green),#27ae60)'}"></div></div></div>
+        <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);margin-bottom:8px">Min: ${i.min} ${i.unit}</div>
+        <div class="inv-adj">
+          <input type="number" id="winv_${i.id}" value="0" min="0" style="width:64px;padding:5px 8px;font-size:12px" placeholder="Qty"/>
+          <button class="btn-sm btn-green" style="font-size:11px;padding:5px 10px" onclick="window.wInvAdd('${i.id}')">+ Add</button>
+          <button class="btn-sm btn-red" style="font-size:11px;padding:5px 10px" onclick="window.wInvWaste('${i.id}')">🗑 Waste</button>
+        </div>
+      </div>`).join('')}
+  </div>
+  <div class="panel">
+    <div class="panel-title">🗑 WASTE LOG TODAY</div>
+    ${WASTE_LOG.length===0?`<div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);text-align:center;padding:16px">No waste logged today.</div>`:`
+    <div class="waste-log">
+      ${WASTE_LOG.map(w=>`
+        <div class="waste-row">
+          <span style="color:var(--cream)">${w.item}</span>
+          <span style="color:#e74c3c">-${w.qty} ${w.unit}</span>
+          <span style="color:var(--muted)">${w.reason}</span>
+          <span style="color:var(--muted)">${Math.round((Date.now()-w.time)/60000)}m ago</span>
+        </div>`).join('')}
+    </div>`}
+  </div>`;
+}
+window.wInvAdd = id => {
+  const i=INVENTORY.find(x=>x.id===id); if(!i) return;
+  const v=parseInt($('winv_'+id)?.value)||0;
+  if(v<=0){toast('Enter a quantity > 0','error');return;}
+  i.qty+=v; toast(`Added ${v} ${i.unit} of ${i.name}`,'success'); renderWorker();
+};
+window.wInvWaste = id => {
+  const i=INVENTORY.find(x=>x.id===id); if(!i) return;
+  const v=parseInt($('winv_'+id)?.value)||0;
+  if(v<=0){toast('Enter waste quantity > 0','error');return;}
+  if(v>i.qty){toast('Cannot waste more than in stock','error');return;}
+  i.qty-=v;
+  WASTE_LOG.unshift({item:i.name,qty:v,unit:i.unit,reason:'Worker log',time:Date.now()});
+  toast(`Logged ${v} ${i.unit} waste for ${i.name}`,'warning'); renderWorker();
+};
 
 window.wStart = () => {
   const u = S.user;
@@ -1141,18 +1429,20 @@ function buildStaff() {
 // FEATURE 1 — QR TABLE ORDERING
 // ══════════════════════════════════════════
 const TABLE_ORDERS = [
-  { id:'to1', table:3, items:[{name:'Spicy Wings (10 pcs)',qty:2,price:45},{name:'Pepsi Can',qty:2,price:8}], total:106, status:'pending',  time: Date.now()-8*60000 },
-  { id:'to2', table:7, items:[{name:'Zinger Burger',qty:1,price:32},{name:'Cheese Fries',qty:1,price:18}],   total:50,  status:'preparing',time: Date.now()-4*60000 },
-  { id:'to3', table:1, items:[{name:'Family Feast Combo',qty:1,price:145}],                                  total:145, status:'ready',    time: Date.now()-1*60000 },
-  { id:'to4', table:5, items:[{name:'Chicken Wrap',qty:3,price:28},{name:'Lemonade (L)',qty:3,price:16}],   total:132, status:'pending',  time: Date.now()-2*60000 },
+  { id:'to1', table:3, items:[{name:'Spicy Wings (10 pcs)',qty:2,price:45},{name:'Pepsi Can',qty:2,price:8}], total:106, status:'pending',  time: Date.now()-8*60000, customerPhone:'0512345678' },
+  { id:'to2', table:7, items:[{name:'Zinger Burger',qty:1,price:32},{name:'Cheese Fries',qty:1,price:18}],   total:50,  status:'preparing',time: Date.now()-4*60000, customerPhone:null },
+  { id:'to3', table:1, items:[{name:'Family Feast Combo',qty:1,price:145}],                                  total:145, status:'ready',    time: Date.now()-1*60000, customerPhone:'0534567890' },
+  { id:'to4', table:5, items:[{name:'Chicken Wrap',qty:3,price:28},{name:'Lemonade (L)',qty:3,price:16}],   total:132, status:'pending',  time: Date.now()-2*60000, customerPhone:null },
 ];
 const TABLES = Array.from({length:12},(_,i)=>i+1);
 
 function buildOrders() {
   const statusColor={pending:'var(--crisp)',preparing:'var(--yolk)',ready:'var(--green)'};
-  const statusNext={pending:'preparing',preparing:'ready',ready:'served'};
   const statusLabel={pending:'⏳ Pending',preparing:'👨‍🍳 Preparing',ready:'✅ Ready'};
   return `
+  <div style="background:rgba(52,152,219,.07);border:1px solid rgba(52,152,219,.2);border-radius:6px;padding:10px 16px;margin-bottom:16px;font-family:'DM Mono',monospace;font-size:10px;color:var(--blue)">
+    👁 Manager view — cashiers & cooks manage table orders from their portal. You see the full live picture here.
+  </div>
   <div class="panel" style="margin-bottom:16px">
     <div class="panel-title">📲 TABLE MAP</div>
     <div class="qr-table-grid">
@@ -1168,15 +1458,15 @@ function buildOrders() {
     </div>
   </div>
   <div class="panel">
-    <div class="panel-title" style="display:flex;justify-content:space-between;align-items:center">
-      <span>🍽️ ACTIVE ORDERS</span>
-      <button class="btn-sm btn-yolk" onclick="window.addDemoOrder()" style="font-size:11px">+ New Order</button>
-    </div>
+    <div class="panel-title">🍽️ ALL ACTIVE ORDERS</div>
     <div class="order-queue">
-      ${TABLE_ORDERS.filter(o=>o.status!=='served').map(o=>`
-        <div class="order-item ${o.status}" id="torder_${o.id}">
-          <div style="min-width:120px">
+      ${TABLE_ORDERS.filter(o=>o.status!=='served').length===0
+        ?`<div class="empty"><div class="big-icon">🍗</div>No active orders right now.</div>`
+        :TABLE_ORDERS.filter(o=>o.status!=='served').map(o=>`
+        <div class="order-item ${o.status}">
+          <div style="min-width:130px">
             <div style="font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:1px;color:var(--yolk)">TABLE ${o.table}</div>
+            ${o.customerPhone?`<div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--blue)">📱 ${o.customerPhone}</div>`:''}
             <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted)">${Math.round((Date.now()-o.time)/60000)}m ago</div>
           </div>
           <div style="flex:1;padding:0 12px">
@@ -1185,7 +1475,6 @@ function buildOrders() {
           <div style="text-align:right;min-width:100px">
             <div style="font-family:'DM Mono',monospace;font-size:14px;color:var(--yolk);font-weight:700">€${o.total}</div>
             <div style="font-family:'DM Mono',monospace;font-size:9px;color:${statusColor[o.status]};margin:4px 0">${statusLabel[o.status]}</div>
-            ${o.status!=='served'?`<button class="btn-sm btn-dark" style="font-size:10px;padding:4px 10px;margin-top:4px" onclick="window.advOrder('${o.id}')">→ ${statusNext[o.status]==='served'?'Mark Served':statusNext[o.status].charAt(0).toUpperCase()+statusNext[o.status].slice(1)}</button>`:''}
           </div>
         </div>`).join('')}
     </div>
@@ -1236,6 +1525,9 @@ const WASTE_LOG = [
 function buildInventory() {
   const low = INVENTORY.filter(i=>i.qty<=i.min);
   return `
+  <div style="background:rgba(52,152,219,.07);border:1px solid rgba(52,152,219,.2);border-radius:6px;padding:10px 16px;margin-bottom:16px;font-family:'DM Mono',monospace;font-size:10px;color:var(--blue)">
+    👁 Workers update inventory from their portal. You can also edit here as manager.
+  </div>
   ${low.length?`<div style="background:rgba(231,76,60,.07);border:1px solid rgba(231,76,60,.25);border-radius:6px;padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;gap:10px">
     <span style="font-size:20px">⚠️</span>
     <div><div style="font-family:'Fredoka',sans-serif;font-size:14px;color:#e74c3c;font-weight:600">${low.length} item(s) running low</div>
@@ -1262,7 +1554,7 @@ function buildInventory() {
   <div class="panel">
     <div class="panel-title">🗑 WASTE LOG TODAY</div>
     <div class="waste-log">
-      ${WASTE_LOG.map(w=>`
+      ${WASTE_LOG.length===0?`<div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);text-align:center;padding:16px">No waste logged today.</div>`:WASTE_LOG.map(w=>`
         <div class="waste-row">
           <span style="color:var(--cream)">${w.item}</span>
           <span style="color:#e74c3c">-${w.qty} ${w.unit}</span>
@@ -1274,7 +1566,6 @@ function buildInventory() {
       Total waste cost today: <strong style="color:var(--yolk)">≈ €${(WASTE_LOG.reduce((a,w)=>{const i=INVENTORY.find(x=>x.name===w.item);return a+(i?w.qty*(i.unit==='kg'?8:i.unit==='L'?5:0.5):0);},0)).toFixed(2)}</strong>
     </div>
   </div>`;
-}
 window.invAdd = id => {
   const i=INVENTORY.find(x=>x.id===id); if(!i) return;
   const v=parseInt($('inv_'+id)?.value)||0;
@@ -1427,15 +1718,22 @@ const DEL_STEPS=['Order Placed','Rider Assigned','Picked Up','Delivered'];
 
 function buildDelivery() {
   const done=DELIVERIES.filter(d=>d.status===3).length;
-  const active=DELIVERIES.filter(d=>d.status<3).length;
+  const active=DELIVERIES.filter(d=>d.status<3&&d.status>0).length;
+  const waiting=DELIVERIES.filter(d=>d.status===0).length;
   return `
+  <div style="background:rgba(52,152,219,.07);border:1px solid rgba(52,152,219,.2);border-radius:6px;padding:10px 16px;margin-bottom:16px;font-family:'DM Mono',monospace;font-size:10px;color:var(--blue)">
+    👁 Manager view — read only. Delivery workers accept and manage orders from their own portal.
+  </div>
   <div class="stat-grid" style="margin-bottom:20px">
-    ${[['🛵 Active Deliveries',active,'var(--crisp)'],['✅ Delivered Today',done,'var(--green)'],['💶 Delivery Revenue','€'+DELIVERIES.reduce((a,d)=>a+d.total,0),'var(--yolk)'],['⏱ Avg Time','28 min','var(--blue)']].map(([l,v,c])=>`<div class="stat-card"><div class="sc-label">${l}</div><div class="sc-value" style="color:${c}">${v}</div></div>`).join('')}
+    ${[['⏳ Waiting Rider',waiting,'var(--crisp)'],['🛵 In Transit',active,'var(--yolk)'],['✅ Delivered Today',done,'var(--green)'],['💶 Delivery Revenue','€'+DELIVERIES.reduce((a,d)=>a+d.total,0),'var(--blue)']].map(([l,v,c])=>`<div class="stat-card"><div class="sc-label">${l}</div><div class="sc-value" style="color:${c}">${v}</div></div>`).join('')}
   </div>
   <div class="panel">
-    <div class="panel-title" style="display:flex;justify-content:space-between;align-items:center"><span>🛵 DELIVERY ORDERS</span><button class="btn-sm btn-yolk" style="font-size:11px" onclick="window.addDelivery()">+ New Delivery</button></div>
+    <div class="panel-title" style="display:flex;justify-content:space-between;align-items:center">
+      <span>🛵 ALL DELIVERY ORDERS</span>
+      <button class="btn-sm btn-yolk" style="font-size:11px" onclick="window.addDelivery()">+ Add Delivery Request</button>
+    </div>
     <div class="delivery-grid">
-      ${DELIVERIES.map(d=>`
+      ${DELIVERIES.length===0?`<div class="empty"><div class="big-icon">🛵</div>No delivery orders yet.</div>`:DELIVERIES.map(d=>`
         <div class="del-card">
           <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
             <div>
@@ -1449,12 +1747,9 @@ function buildDelivery() {
             ${DEL_STEPS.map((_,i)=>`<div class="del-step ${i<d.status?'done':i===d.status?'active':''}"></div>`).join('')}
           </div>
           <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px">
-            <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted)">${DEL_STEPS[d.status]||'Done'}</div>
-            <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--green)">${esc(d.rider)}</div>
+            <div style="font-family:'DM Mono',monospace;font-size:10px;color:${d.status===0?'#e74c3c':d.status===3?'var(--green)':'var(--yolk)'}">${d.status===0?'⏳ Waiting for rider':DEL_STEPS[d.status]||'Delivered'}</div>
+            <div style="font-family:'DM Mono',monospace;font-size:10px;color:${d.rider==='Unassigned'?'#e74c3c':'var(--green)'}">${esc(d.rider)}</div>
           </div>
-          ${d.status<3?`<div style="display:flex;gap:6px;margin-top:10px">
-            ${d.status===0?`<select id="rider_${d.id}" style="font-size:11px;padding:5px 8px;flex:1"><option value="">Assign Rider...</option>${DEL_RIDERS.map(r=>`<option>${r}</option>`).join('')}</select><button class="btn-sm btn-green" style="font-size:10px;padding:5px 10px" onclick="window.assignRider('${d.id}')">Assign</button>`:`<button class="btn-sm btn-yolk" style="font-size:11px;flex:1" onclick="window.advDelivery('${d.id}')">→ ${DEL_STEPS[d.status+1]||'Done'}</button>`}
-          </div>`:'<div style="font-family:\'DM Mono\',monospace;font-size:10px;color:var(--green);text-align:center;margin-top:8px">✅ DELIVERED</div>'}
         </div>`).join('')}
     </div>
   </div>`;
