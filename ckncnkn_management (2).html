@@ -1,0 +1,1801 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>CKN&CNKN — Restaurant Management System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Fredoka:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --yolk:    #F5D200;
+  --red:     #D42B2B;
+  --crisp:   #FF6B35;
+  --dark:    #1A0A00;
+  --brown:   #3D1C02;
+  --cream:   #FFF8E7;
+  --white:   #FFFFFF;
+  --muted:   #8A6A50;
+  --green:   #2ECC71;
+  --blue:    #3498DB;
+  --panel:   #FFF3D0;
+  --border:  #E8C97A;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+
+body{
+  background:var(--dark);
+  color:var(--cream);
+  font-family:'Fredoka',sans-serif;
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+/* ── Noise texture overlay ── */
+body::before{
+  content:'';
+  position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:0;opacity:.6;
+}
+
+/* ════════════════════ TOPBAR ════════════════════ */
+.topbar{
+  background:var(--brown);
+  border-bottom:3px solid var(--yolk);
+  padding:0 28px;
+  display:flex;align-items:center;justify-content:space-between;
+  min-height:64px;
+  position:sticky;top:0;z-index:100;
+  box-shadow:0 4px 24px rgba(0,0,0,.5);
+  flex-wrap:wrap;gap:8px;
+}
+
+.brand{
+  display:flex;align-items:center;gap:12px;
+}
+.brand-logo{
+  width:48px;height:48px;border-radius:50%;
+  border:3px solid var(--yolk);
+  object-fit:cover;
+  box-shadow:0 0 12px rgba(245,210,0,.4);
+}
+.brand-name{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:28px;letter-spacing:3px;
+  color:var(--yolk);
+  line-height:1;
+}
+.brand-sub{
+  font-family:'DM Mono',monospace;
+  font-size:9px;letter-spacing:3px;
+  color:var(--crisp);text-transform:uppercase;
+  margin-top:2px;
+}
+
+.top-right{
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+}
+.clock-display{
+  font-family:'DM Mono',monospace;
+  font-size:18px;color:var(--yolk);letter-spacing:2px;
+  background:rgba(245,210,0,.08);
+  padding:6px 14px;border-radius:4px;
+  border:1px solid rgba(245,210,0,.2);
+}
+.role-pill{
+  padding:4px 12px;border-radius:20px;
+  font-size:11px;font-weight:600;letter-spacing:2px;
+  text-transform:uppercase;
+  font-family:'DM Mono',monospace;
+}
+.pill-mgr{background:var(--yolk);color:var(--dark);}
+.pill-wkr{background:rgba(46,204,113,.15);color:var(--green);border:1px solid rgba(46,204,113,.3);}
+
+.btn-sm{
+  padding:6px 14px;border-radius:4px;border:none;
+  font-family:'Fredoka',sans-serif;font-size:13px;font-weight:600;
+  cursor:pointer;letter-spacing:.5px;transition:all .2s;
+}
+.btn-logout{background:transparent;border:1px solid rgba(212,43,43,.4);color:#e74c3c;}
+.btn-logout:hover{background:rgba(212,43,43,.15);}
+.btn-dark{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:var(--cream);}
+.btn-dark:hover{border-color:var(--yolk);color:var(--yolk);}
+
+/* ════════════════════ LAYOUT ════════════════════ */
+.body{
+  padding:24px 28px;
+  max-width:1300px;margin:0 auto;
+  position:relative;z-index:1;
+}
+
+.page-title{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(32px,6vw,52px);
+  letter-spacing:4px;color:var(--yolk);
+  text-transform:uppercase;
+  display:flex;align-items:center;gap:14px;
+  margin-bottom:6px;
+}
+.page-title span{color:var(--crisp);}
+
+/* ════════════════════ STAT CARDS ════════════════════ */
+.stat-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+  gap:12px;margin-bottom:24px;
+}
+.stat-card{
+  background:var(--brown);
+  border:1px solid rgba(245,210,0,.2);
+  border-radius:8px;padding:18px 16px;
+  position:relative;overflow:hidden;
+  transition:transform .2s,border-color .2s;
+}
+.stat-card::after{
+  content:'';position:absolute;
+  top:-20px;right:-20px;
+  width:80px;height:80px;
+  background:radial-gradient(circle,rgba(245,210,0,.07) 0%,transparent 70%);
+  pointer-events:none;
+}
+.stat-card:hover{transform:translateY(-2px);border-color:rgba(245,210,0,.4);}
+.stat-card .sc-label{
+  font-family:'DM Mono',monospace;
+  font-size:9px;letter-spacing:2px;color:var(--muted);
+  text-transform:uppercase;margin-bottom:6px;
+}
+.stat-card .sc-value{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:34px;letter-spacing:2px;
+  line-height:1;
+}
+
+/* ════════════════════ TABS ════════════════════ */
+.nav-tabs{
+  display:flex;gap:0;
+  border-bottom:2px solid rgba(245,210,0,.2);
+  margin-bottom:24px;overflow-x:auto;
+}
+.nav-tab{
+  padding:12px 18px;background:none;border:none;
+  border-bottom:3px solid transparent;margin-bottom:-2px;
+  color:var(--muted);
+  font-family:'Fredoka',sans-serif;font-size:13px;font-weight:600;
+  letter-spacing:1px;cursor:pointer;white-space:nowrap;
+  text-transform:uppercase;transition:all .2s;
+}
+.nav-tab:hover{color:var(--cream);}
+.nav-tab.active{border-bottom-color:var(--yolk);color:var(--yolk);}
+
+/* ════════════════════ PANEL CARD ════════════════════ */
+.panel{
+  background:var(--brown);
+  border:1px solid rgba(245,210,0,.15);
+  border-radius:8px;padding:24px;
+  margin-bottom:20px;
+}
+.panel-title{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:18px;letter-spacing:3px;
+  color:var(--yolk);text-transform:uppercase;
+  margin-bottom:16px;padding-bottom:10px;
+  border-bottom:1px solid rgba(245,210,0,.15);
+}
+
+/* ════════════════════ WORKER LIVE CARDS ════════════════════ */
+.worker-list{display:flex;flex-direction:column;gap:10px;}
+.wcard{
+  background:rgba(255,255,255,.03);
+  border:1px solid rgba(245,210,0,.12);
+  border-left:4px solid rgba(255,255,255,.1);
+  border-radius:6px;padding:14px 18px;
+  display:flex;align-items:center;gap:16px;
+  flex-wrap:wrap;transition:border-color .2s;
+}
+.wcard.working{border-left-color:var(--green);}
+.wcard.done{border-left-color:var(--blue);}
+.wcard.absent{border-left-color:#e74c3c;}
+.wname{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:20px;letter-spacing:1px;
+  color:var(--cream);
+}
+.wphone{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);}
+.wrole{font-family:'DM Mono',monospace;font-size:10px;color:var(--crisp);}
+.wstat-grid{display:flex;gap:16px;flex-wrap:wrap;}
+.wstat{display:flex;flex-direction:column;}
+.wstat .lbl{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;}
+.wstat .val{font-family:'DM Mono',monospace;font-size:14px;font-weight:500;margin-top:2px;}
+.badge{
+  padding:3px 10px;border-radius:12px;
+  font-family:'DM Mono',monospace;
+  font-size:9px;font-weight:600;letter-spacing:1px;
+  display:inline-block;
+}
+.bg{background:rgba(46,204,113,.12);color:var(--green);border:1px solid rgba(46,204,113,.25);}
+.br{background:rgba(231,76,60,.12);color:#e74c3c;border:1px solid rgba(231,76,60,.25);}
+.bb{background:rgba(52,152,219,.12);color:var(--blue);border:1px solid rgba(52,152,219,.25);}
+.by{background:rgba(245,210,0,.12);color:var(--yolk);border:1px solid rgba(245,210,0,.25);}
+
+/* ════════════════════ TABLES ════════════════════ */
+.table-wrap{
+  background:rgba(255,255,255,.02);
+  border:1px solid rgba(245,210,0,.12);
+  border-radius:6px;overflow:hidden;overflow-x:auto;
+  margin-bottom:20px;
+}
+table{width:100%;border-collapse:collapse;font-size:13px;min-width:500px;}
+th{
+  padding:10px 14px;text-align:left;
+  font-family:'DM Mono',monospace;
+  font-size:9px;letter-spacing:2px;
+  color:var(--muted);text-transform:uppercase;
+  border-bottom:1px solid rgba(245,210,0,.15);
+  background:rgba(245,210,0,.04);
+}
+td{
+  padding:12px 14px;
+  border-bottom:1px solid rgba(255,255,255,.04);
+  color:var(--cream);font-size:13px;
+}
+tr:hover td{background:rgba(245,210,0,.03);}
+
+/* ════════════════════ INPUT / FORM ════════════════════ */
+.fg{display:flex;flex-direction:column;gap:14px;}
+.lbl-mono{
+  display:block;font-family:'DM Mono',monospace;
+  font-size:9px;letter-spacing:3px;color:var(--muted);
+  text-transform:uppercase;margin-bottom:6px;
+}
+input,select{
+  width:100%;padding:11px 14px;
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(245,210,0,.2);
+  border-radius:4px;color:var(--cream);
+  font-family:'Fredoka',sans-serif;font-size:14px;
+  outline:none;transition:border-color .2s;
+}
+input:focus,select:focus{
+  border-color:var(--yolk);
+  box-shadow:0 0 0 3px rgba(245,210,0,.08);
+}
+
+/* ════════════════════ BUTTONS ════════════════════ */
+.btn{
+  width:100%;padding:12px;border:none;border-radius:4px;
+  font-family:'Bebas Neue',sans-serif;
+  font-size:16px;letter-spacing:2px;cursor:pointer;
+  text-transform:uppercase;transition:all .2s;
+}
+.btn-yolk{
+  background:linear-gradient(135deg,var(--yolk),#E8B800);
+  color:var(--dark);
+  box-shadow:0 4px 20px rgba(245,210,0,.25);
+}
+.btn-yolk:hover{box-shadow:0 6px 28px rgba(245,210,0,.4);transform:translateY(-1px);}
+.btn-red{background:var(--red);color:var(--white);}
+.btn-red:hover{background:#b52222;}
+.btn-green{background:linear-gradient(135deg,#27AE60,var(--green));color:var(--dark);}
+
+/* ════════════════════ WORKER SCREEN ════════════════════ */
+.shift-card{
+  background:var(--brown);
+  border:2px solid rgba(245,210,0,.2);
+  border-radius:12px;padding:32px;
+  text-align:center;
+  max-width:480px;margin:0 auto 24px;
+  position:relative;overflow:hidden;
+}
+.shift-card::before{
+  content:'';
+  position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,transparent,var(--yolk),var(--crisp),transparent);
+}
+.shift-card.working{
+  border-color:rgba(46,204,113,.4);
+  box-shadow:0 0 40px rgba(46,204,113,.08);
+}
+.timer-display{
+  font-family:'DM Mono',monospace;
+  font-size:clamp(48px,12vw,80px);
+  letter-spacing:4px;
+  color:var(--yolk);
+  text-shadow:0 0 40px rgba(245,210,0,.3);
+  margin:16px 0;
+}
+.shift-card.working .timer-display{
+  color:var(--green);
+  text-shadow:0 0 40px rgba(46,204,113,.3);
+}
+.shift-status{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:14px;letter-spacing:4px;
+  color:var(--muted);text-transform:uppercase;
+}
+.shift-card.working .shift-status{color:var(--green);}
+
+.act-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:24px;}
+.act-btn{
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+  padding:22px 10px;border-radius:6px;border:2px solid;
+  background:transparent;
+  font-family:'Bebas Neue',sans-serif;
+  font-size:14px;letter-spacing:3px;
+  cursor:pointer;text-transform:uppercase;transition:all .25s;
+}
+.act-btn:disabled{opacity:.2;cursor:not-allowed;}
+.act-btn:not(:disabled):hover{transform:translateY(-2px);filter:brightness(1.2);}
+.act-btn .ico{font-size:30px;}
+
+/* ════════════════════ GPS BAR ════════════════════ */
+.gps-bar{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 16px;border-radius:4px;
+  font-family:'DM Mono',monospace;font-size:11px;
+  margin-bottom:16px;letter-spacing:1px;
+  flex-wrap:wrap;
+}
+.gps-ok{background:rgba(46,204,113,.07);border:1px solid rgba(46,204,113,.2);color:var(--green);}
+.gps-far{background:rgba(231,76,60,.07);border:1px solid rgba(231,76,60,.2);color:#e74c3c;}
+
+/* ════════════════════ GRID 2 ════════════════════ */
+.sg{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;}
+
+/* ════════════════════ MENU ITEMS ════════════════════ */
+.menu-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;}
+.menu-item{
+  background:rgba(255,255,255,.03);
+  border:1px solid rgba(245,210,0,.12);
+  border-radius:8px;padding:16px;
+  transition:all .2s;cursor:pointer;
+  position:relative;overflow:hidden;
+}
+.menu-item:hover{border-color:var(--yolk);transform:translateY(-2px);}
+.menu-item .mi-icon{font-size:40px;margin-bottom:10px;}
+.menu-item .mi-name{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:18px;letter-spacing:1px;color:var(--cream);margin-bottom:4px;
+}
+.menu-item .mi-price{
+  font-family:'DM Mono',monospace;font-size:14px;font-weight:500;color:var(--yolk);
+}
+.menu-item .mi-cat{
+  font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;
+}
+
+/* ════════════════════ AUTH ════════════════════ */
+.auth-screen{
+  display:flex;align-items:center;justify-content:center;
+  min-height:100vh;padding:24px;
+  position:relative;z-index:1;
+}
+.auth-card{
+  width:100%;max-width:420px;
+  background:var(--brown);
+  border:1px solid rgba(245,210,0,.25);
+  border-radius:12px;padding:36px;
+  position:relative;overflow:hidden;
+}
+.auth-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--yolk),var(--crisp),var(--yolk));
+}
+.auth-logo{
+  display:flex;flex-direction:column;align-items:center;
+  margin-bottom:28px;
+}
+.auth-logo img{
+  width:88px;height:88px;border-radius:50%;
+  border:4px solid var(--yolk);
+  box-shadow:0 0 32px rgba(245,210,0,.35);
+  margin-bottom:12px;
+  animation:logo-pulse 3s ease-in-out infinite;
+}
+@keyframes logo-pulse{
+  0%,100%{box-shadow:0 0 32px rgba(245,210,0,.35);}
+  50%{box-shadow:0 0 48px rgba(245,210,0,.55);}
+}
+.auth-title{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:36px;letter-spacing:4px;color:var(--yolk);
+}
+.auth-sub{
+  font-family:'DM Mono',monospace;
+  font-size:9px;letter-spacing:3px;color:var(--muted);
+  text-transform:uppercase;margin-top:4px;
+}
+
+/* ════════════════════ TOAST ════════════════════ */
+.toast{
+  position:fixed;bottom:24px;right:24px;z-index:9999;
+  background:var(--brown);
+  border:1px solid rgba(245,210,0,.3);
+  border-left:3px solid var(--yolk);
+  padding:12px 18px;border-radius:6px;
+  font-family:'Fredoka',sans-serif;font-size:14px;
+  color:var(--cream);max-width:300px;
+  box-shadow:0 8px 32px rgba(0,0,0,.6);
+  display:none;
+}
+.toast.show{display:block;animation:slideUp .25s ease;}
+.toast.success{border-left-color:var(--green);}
+.toast.error{border-left-color:#e74c3c;}
+.toast.warning{border-left-color:var(--crisp);}
+@keyframes slideUp{from{transform:translateY(10px);opacity:0;}to{transform:none;opacity:1;}}
+
+/* ════════════════════ MODAL ════════════════════ */
+.modal-bg{
+  position:fixed;inset:0;background:rgba(0,0,0,.85);
+  z-index:200;display:none;align-items:center;
+  justify-content:center;padding:20px;backdrop-filter:blur(4px);
+}
+.modal-bg.show{display:flex;}
+.modal-card{
+  background:var(--brown);
+  border:1px solid rgba(245,210,0,.3);
+  border-radius:10px;padding:28px;
+  width:100%;max-width:400px;
+  position:relative;overflow:hidden;
+}
+.modal-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,var(--yolk),var(--crisp));
+}
+.modal-title{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:22px;letter-spacing:3px;color:var(--yolk);
+  margin-bottom:20px;
+}
+
+/* ════════════════════ RESPONSIVE ════════════════════ */
+@media(max-width:600px){
+  .body{padding:16px;}
+  .topbar{padding:0 16px;}
+  .act-grid{grid-template-columns:1fr 1fr;}
+  .stat-grid{grid-template-columns:1fr 1fr;}
+}
+
+/* ════════════════════ EMPTY STATE ════════════════════ */
+.empty{
+  text-align:center;padding:48px;
+  font-family:'DM Mono',monospace;font-size:12px;
+  color:var(--muted);line-height:2.5;
+}
+.empty .big-icon{font-size:48px;margin-bottom:12px;}
+
+/* ════════════════════ DOT ════════════════════ */
+.dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.dot.on{background:var(--green);box-shadow:0 0 8px var(--green);animation:blink 2s infinite;}
+.dot.off{background:#e74c3c;}
+.dot.idle{background:var(--muted);}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.4;}}
+
+/* ════════════════════ RECOMMENDATION CARDS ════════════════════ */
+.rec-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;}
+.rec-card{
+  background:rgba(255,255,255,.03);
+  border:1px solid rgba(245,210,0,.12);
+  border-radius:8px;padding:20px;
+  border-top:3px solid var(--yolk);
+  transition:all .2s;
+}
+.rec-card:hover{border-color:rgba(245,210,0,.35);transform:translateY(-2px);}
+.rec-card .rc-icon{font-size:32px;margin-bottom:10px;}
+.rec-card .rc-title{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:18px;letter-spacing:2px;color:var(--yolk);margin-bottom:8px;
+}
+.rec-card .rc-body{
+  font-family:'Fredoka',sans-serif;font-size:13px;
+  color:var(--muted);line-height:1.6;
+}
+.rec-card .rc-tag{
+  display:inline-block;margin-top:10px;
+  padding:3px 10px;border-radius:12px;
+  font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;
+  background:rgba(245,210,0,.1);color:var(--yolk);border:1px solid rgba(245,210,0,.2);
+}
+
+/* ════════════════════ PROGRESS BAR ════════════════════ */
+.prog-wrap{background:rgba(255,255,255,.06);border-radius:20px;overflow:hidden;height:8px;}
+.prog-bar{height:8px;border-radius:20px;background:linear-gradient(90deg,var(--yolk),var(--crisp));transition:width .5s ease;}
+
+/* ════════════════════ QR TABLE ORDERING ════════════════════ */
+.qr-table-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;margin-bottom:20px;}
+.qr-table-card{background:rgba(255,255,255,.03);border:1px solid rgba(245,210,0,.15);border-radius:8px;padding:16px;text-align:center;cursor:pointer;transition:all .2s;}
+.qr-table-card:hover{border-color:var(--yolk);transform:translateY(-2px);}
+.qr-table-card .tnum{font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--yolk);}
+.qr-table-card .torders{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:1px;}
+.qr-table-card.has-order{border-color:rgba(255,107,53,.4);background:rgba(255,107,53,.04);}
+.order-queue{display:flex;flex-direction:column;gap:8px;}
+.order-item{background:rgba(255,255,255,.03);border:1px solid rgba(245,210,0,.12);border-radius:6px;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+.order-item.pending{border-left:3px solid var(--crisp);}
+.order-item.preparing{border-left:3px solid var(--yolk);}
+.order-item.ready{border-left:3px solid var(--green);}
+
+/* ════════════════════ INVENTORY ════════════════════ */
+.inv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;}
+.inv-card{background:rgba(255,255,255,.03);border:1px solid rgba(245,210,0,.12);border-radius:8px;padding:16px;transition:all .2s;}
+.inv-card.low{border-color:rgba(231,76,60,.4);background:rgba(231,76,60,.04);}
+.inv-card.ok{border-color:rgba(46,204,113,.2);}
+.inv-card .inv-name{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:1px;color:var(--cream);margin-bottom:4px;}
+.inv-card .inv-unit{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);}
+.inv-card .inv-qty{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:2px;}
+.inv-adj{display:flex;gap:6px;margin-top:10px;align-items:center;}
+.inv-adj input{width:70px;padding:6px 10px;font-size:13px;}
+.waste-log{display:flex;flex-direction:column;gap:6px;}
+.waste-row{background:rgba(231,76,60,.05);border:1px solid rgba(231,76,60,.15);border-radius:4px;padding:8px 14px;display:flex;justify-content:space-between;align-items:center;font-family:'DM Mono',monospace;font-size:11px;}
+
+/* ════════════════════ LOYALTY ════════════════════ */
+.loyalty-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;}
+.loy-card{background:rgba(255,255,255,.03);border:1px solid rgba(245,210,0,.12);border-radius:8px;padding:18px;}
+.loy-card .loy-name{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;color:var(--cream);}
+.loy-card .loy-phone{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);margin-bottom:10px;}
+.stamp-row{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0;}
+.stamp{width:28px;height:28px;border-radius:50%;border:2px solid rgba(245,210,0,.3);display:flex;align-items:center;justify-content:center;font-size:14px;transition:all .2s;}
+.stamp.filled{background:var(--yolk);border-color:var(--yolk);}
+.stamp.free{background:var(--crisp);border-color:var(--crisp);animation:blink 1.5s infinite;}
+
+/* ════════════════════ ANALYTICS ════════════════════ */
+.analytics-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;}
+.chart-card{background:rgba(255,255,255,.03);border:1px solid rgba(245,210,0,.12);border-radius:8px;padding:20px;}
+.chart-card .chart-title{font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:2px;color:var(--yolk);margin-bottom:14px;}
+.bar-chart{display:flex;flex-direction:column;gap:8px;}
+.bar-row{display:flex;align-items:center;gap:10px;}
+.bar-label{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);width:60px;text-align:right;flex-shrink:0;}
+.bar-fill-wrap{flex:1;background:rgba(255,255,255,.05);border-radius:10px;height:18px;overflow:hidden;}
+.bar-fill{height:18px;border-radius:10px;background:linear-gradient(90deg,var(--yolk),var(--crisp));transition:width .6s ease;}
+.bar-val{font-family:'DM Mono',monospace;font-size:10px;color:var(--cream);width:50px;}
+.kpi-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+.kpi-box{background:rgba(255,255,255,.03);border:1px solid rgba(245,210,0,.1);border-radius:6px;padding:14px;text-align:center;}
+.kpi-box .kv{font-family:'Bebas Neue',sans-serif;font-size:26px;color:var(--yolk);}
+.kpi-box .kl{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;}
+
+/* ════════════════════ DELIVERY ════════════════════ */
+.delivery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;}
+.del-card{background:rgba(255,255,255,.03);border:1px solid rgba(245,210,0,.12);border-radius:8px;padding:16px;}
+.del-card .del-id{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1px;}
+.del-card .del-addr{font-family:'Fredoka',sans-serif;font-size:14px;color:var(--cream);margin:4px 0;}
+.del-status-bar{display:flex;gap:4px;margin:10px 0;}
+.del-step{flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,.08);}
+.del-step.done{background:var(--green);}
+.del-step.active{background:var(--yolk);animation:blink 1.5s infinite;}
+
+/* ════════════════════ SCHEDULER ════════════════════ */
+.sched-grid{display:grid;grid-template-columns:auto repeat(7,1fr);gap:1px;background:rgba(245,210,0,.08);border:1px solid rgba(245,210,0,.12);border-radius:6px;overflow:hidden;font-size:12px;}
+.sched-cell{background:var(--dark);padding:8px 6px;text-align:center;}
+.sched-cell.header{background:rgba(245,210,0,.06);font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;color:var(--muted);text-transform:uppercase;}
+.sched-cell.worker-name{background:rgba(61,28,2,.5);font-family:'Fredoka',sans-serif;font-size:12px;color:var(--cream);text-align:left;padding-left:10px;}
+.sched-shift-block{background:rgba(46,204,113,.15);border:1px solid rgba(46,204,113,.3);border-radius:3px;padding:2px 5px;font-family:'DM Mono',monospace;font-size:9px;color:var(--green);cursor:pointer;white-space:nowrap;transition:all .2s;}
+.sched-shift-block:hover{background:rgba(46,204,113,.25);}
+.sched-shift-block.leave{background:rgba(231,76,60,.12);border-color:rgba(231,76,60,.25);color:#e74c3c;}
+.sched-shift-block.off{background:transparent;border-color:transparent;color:var(--muted);font-size:8px;}
+
+/* ════════════════════ ALERTS ════════════════════ */
+.alert-list{display:flex;flex-direction:column;gap:8px;}
+.alert-row{display:flex;align-items:flex-start;gap:12px;padding:12px 16px;border-radius:6px;border:1px solid;}
+.alert-row.critical{background:rgba(231,76,60,.06);border-color:rgba(231,76,60,.25);}
+.alert-row.warning{background:rgba(255,107,53,.06);border-color:rgba(255,107,53,.25);}
+.alert-row.info{background:rgba(52,152,219,.06);border-color:rgba(52,152,219,.2);}
+.alert-row.success{background:rgba(46,204,113,.06);border-color:rgba(46,204,113,.2);}
+.alert-icon{font-size:20px;flex-shrink:0;margin-top:1px;}
+.alert-content .al-title{font-family:'Fredoka',sans-serif;font-size:14px;font-weight:600;color:var(--cream);}
+.alert-content .al-body{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);margin-top:2px;letter-spacing:.5px;}
+.alert-time{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);margin-left:auto;white-space:nowrap;padding-left:10px;}
+
+/* ════════════════════ BILLING ════════════════════ */
+.receipt-card{background:rgba(255,255,255,.03);border:1px dashed rgba(245,210,0,.25);border-radius:8px;padding:20px;max-width:340px;margin:0 auto 20px;font-family:'DM Mono',monospace;}
+.receipt-card .rc-header{text-align:center;border-bottom:1px dashed rgba(245,210,0,.2);padding-bottom:14px;margin-bottom:14px;}
+.receipt-card .rc-row{display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px;color:var(--cream);}
+.receipt-card .rc-total{border-top:1px dashed rgba(245,210,0,.2);margin-top:10px;padding-top:10px;font-size:14px;color:var(--yolk);font-weight:700;}
+.pay-method-row{display:flex;gap:8px;margin-bottom:16px;}
+.pay-pill{padding:8px 16px;border-radius:20px;border:1px solid rgba(245,210,0,.2);background:transparent;color:var(--muted);font-family:'DM Mono',monospace;font-size:11px;cursor:pointer;transition:all .2s;}
+.pay-pill.active{background:rgba(245,210,0,.12);border-color:var(--yolk);color:var(--yolk);}
+
+/* ════════════════════ FEEDBACK ════════════════════ */
+.fb-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;}
+.fb-card{background:rgba(255,255,255,.03);border:1px solid rgba(245,210,0,.12);border-radius:8px;padding:16px;}
+.star-row{display:flex;gap:4px;margin:6px 0;}
+.star{font-size:18px;cursor:pointer;transition:transform .15s;}
+.star:hover{transform:scale(1.2);}
+.fb-card .fb-comment{font-family:'Fredoka',sans-serif;font-size:13px;color:var(--muted);font-style:italic;margin:6px 0;}
+.fb-card .fb-meta{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:1px;}
+.rating-avg{font-family:'Bebas Neue',sans-serif;font-size:64px;color:var(--yolk);line-height:1;text-align:center;}
+.rating-dist{display:flex;flex-direction:column;gap:6px;}
+.rd-row{display:flex;align-items:center;gap:8px;font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);}
+.rd-fill{height:8px;border-radius:4px;background:var(--yolk);transition:width .5s;}
+
+/* ════════════════════ FEATURE NAV TABS ════════════════════ */
+.sub-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;}
+.sub-tab{padding:6px 14px;border-radius:20px;border:1px solid rgba(245,210,0,.15);background:transparent;color:var(--muted);font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1px;cursor:pointer;transition:all .2s;text-transform:uppercase;}
+.sub-tab.active,.sub-tab:hover{background:rgba(245,210,0,.1);border-color:rgba(245,210,0,.35);color:var(--yolk);}
+</style>
+</head>
+<body>
+
+<div class="toast" id="toast"></div>
+
+<!-- ══════════════════════════════════════════
+     EDIT WORKER MODAL
+══════════════════════════════════════════ -->
+<div class="modal-bg" id="editModal">
+  <div class="modal-card">
+    <div class="modal-title">✏️ Edit Worker</div>
+    <div class="fg">
+      <div><label class="lbl-mono">Name</label><input id="em-name" disabled/></div>
+      <div><label class="lbl-mono">Phone</label><input id="em-phone" disabled/></div>
+      <div style="background:rgba(245,210,0,.05);border:1px solid rgba(245,210,0,.2);border-radius:4px;padding:14px">
+        <label class="lbl-mono" style="color:#f0c040">💰 Hourly Rate (€)</label>
+        <input type="number" id="em-rate" min="1" step="0.5"/>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:16px">
+      <button class="btn btn-dark btn-sm" style="flex:1;padding:10px" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-yolk" style="flex:1;padding:10px;font-size:14px" onclick="saveEdit()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     ROOT
+══════════════════════════════════════════ -->
+<div id="root">
+  <div class="auth-screen">
+    <div style="text-align:center">
+      <div style="font-size:48px;margin-bottom:16px">🍗</div>
+      <div style="font-family:'DM Mono',monospace;font-size:12px;color:#8A6A50">Loading…</div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════
+//  CONSTANTS & STATE
+// ══════════════════════════════════════════
+const LOGO_SRC = 'data:image/png;base64,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';
+
+const S = {
+  screen: 'auth',
+  user: null,
+  shift: null,
+  mgrTab: 'live',
+  timerInt: null,
+  clockInt: null,
+};
+
+// ── Mock data ──────────────────────────────────────
+const WORKERS = [
+  { id:'w1', name:'Ahmed Hassan',    phone:'0501234567', role:'cashier',  hourly_rate:12, device:'dev_001' },
+  { id:'w2', name:'Fatima Al-Zahra', phone:'0509876543', role:'cook',     hourly_rate:14, device:'dev_002' },
+  { id:'w3', name:'Mohamed Saber',   phone:'0551112233', role:'delivery', hourly_rate:11, device:'dev_003' },
+  { id:'w4', name:'Sara Ahmed',      phone:'0554443322', role:'cashier',  hourly_rate:12, device:'dev_004' },
+  { id:'w5', name:'Khalid Omar',     phone:'0557778899', role:'cook',     hourly_rate:14, device:'dev_005' },
+];
+
+const LOCATIONS = [
+  { id:'l1', name:'CKN&CNKN — Main Branch', lat:24.688, lng:46.722 },
+  { id:'l2', name:'CKN&CNKN — Mall Branch', lat:24.704, lng:46.730 },
+];
+
+const MENU = [
+  { name:'Crispy Chicken Bucket',  cat:'Buckets',   price:89,  icon:'🪣',  sold:142 },
+  { name:'Spicy Wings (10 pcs)',   cat:'Wings',     price:45,  icon:'🍗',  sold:287 },
+  { name:'Zinger Burger',          cat:'Burgers',   price:32,  icon:'🍔',  sold:198 },
+  { name:'Chicken Wrap',           cat:'Wraps',     price:28,  icon:'🌯',  sold:166 },
+  { name:'Family Feast Combo',     cat:'Combos',    price:145, icon:'🍱',  sold:94  },
+  { name:'Cheese Fries',           cat:'Sides',     price:18,  icon:'🍟',  sold:324 },
+  { name:'Coleslaw',               cat:'Sides',     price:10,  icon:'🥗',  sold:211 },
+  { name:'Jalapeño Dip',           cat:'Sauces',    price:8,   icon:'🫙',  sold:189 },
+  { name:'Lemonade (L)',           cat:'Drinks',    price:16,  icon:'🍋',  sold:253 },
+  { name:'Pepsi Can',              cat:'Drinks',    price:8,   icon:'🥤',  sold:308 },
+];
+
+// Mock shifts (today)
+const now = Date.now();
+const DAY = 86400000;
+const SHIFTS = [
+  { id:'s1', worker:'w1', start: now - 4.2*3600000, end: null,              status:'working',   location:'Main Branch', hours:4.2,  earnings:50.4 },
+  { id:'s2', worker:'w2', start: now - 5.0*3600000, end: null,              status:'working',   location:'Main Branch', hours:5.0,  earnings:70.0 },
+  { id:'s3', worker:'w3', start: now - 6.5*3600000, end: now - 0.5*3600000, status:'completed', location:'Mall Branch', hours:6.0,  earnings:66.0 },
+  { id:'s4', worker:'w4', start: now - 3.0*3600000, end: null,              status:'working',   location:'Mall Branch', hours:3.0,  earnings:36.0 },
+  { id:'s5', worker:'w5', start: now - 7.0*3600000, end: now - 1.0*3600000, status:'completed', location:'Main Branch', hours:6.0,  earnings:84.0 },
+];
+
+// ── Helpers ────────────────────────────────────────
+const $ = id => document.getElementById(id);
+const fmtMs  = ms => { const s=Math.max(0,Math.floor(ms/1000)); return `${Math.floor(s/3600).toString().padStart(2,'0')}:${Math.floor((s%3600)/60).toString().padStart(2,'0')}:${(s%60).toString().padStart(2,'0')}`; };
+const fmtDur = ms => { const s=Math.max(0,Math.floor(ms/1000)); return `${Math.floor(s/3600)}h ${String(Math.floor((s%3600)/60)).padStart(2,'0')}m`; };
+const fmtTime = ts => { const d=new Date(ts); return d.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',hour12:false}); };
+const esc = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+let _toastT;
+function toast(msg, type='info') {
+  const el=$('toast'); el.textContent=msg; el.className=`toast show ${type}`;
+  clearTimeout(_toastT); _toastT=setTimeout(()=>el.classList.remove('show'),3500);
+}
+
+function statusBadge(st) {
+  const map={working:'bg',completed:'bb',absent:'br'};
+  const lbl={working:'WORKING',completed:'DONE',absent:'ABSENT'};
+  return `<span class="badge ${map[st]||'by'}">${lbl[st]||st.toUpperCase()}</span>`;
+}
+
+// ══════════════════════════════════════════
+//  RENDER
+// ══════════════════════════════════════════
+function render() {
+  if(S.screen==='auth')   { $('root').innerHTML=renderAuth();   initClock(); return; }
+  if(S.screen==='worker') { renderWorker(); return; }
+  if(S.screen==='manager'){ renderManager(); return; }
+}
+
+// ── AUTH ──────────────────────────────────────────────────────
+function renderAuth() {
+  return `
+  <div class="auth-screen">
+    <div class="auth-card" style="max-width:480px">
+      <div class="auth-logo">
+        <img src="${LOGO_SRC}" alt="CKN&CNKN Logo"/>
+        <div class="auth-title">CKN&amp;CNKN</div>
+        <div class="auth-sub">🍗 Restaurant Management System</div>
+      </div>
+
+      <div style="margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid rgba(245,210,0,.1)">
+        <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;color:#F5D200;text-transform:uppercase;margin-bottom:14px">🍗 Worker Sign-In</div>
+        <div class="fg">
+          <div><label class="lbl-mono">Phone Number</label><input id="wph" type="tel" placeholder="e.g. 0501234567"/></div>
+          <div id="wph-err" style="display:none;color:#e74c3c;font-family:monospace;font-size:11px;padding:8px 12px;background:rgba(231,76,60,.07);border:1px solid rgba(231,76,60,.2);border-radius:4px"></div>
+          <button class="btn btn-yolk" onclick="doWorkerLogin()">Sign In →</button>
+        </div>
+      </div>
+
+      <div>
+        <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;color:${S.muted||'#8A6A50'};text-transform:uppercase;margin-bottom:14px">⚙️ Manager Access</div>
+        <div class="fg">
+          <div><label class="lbl-mono">Username</label><input id="lu" placeholder="manager username" onkeydown="if(event.key==='Enter')doMgrLogin()"/></div>
+          <div><label class="lbl-mono">Password</label><input id="lp" type="password" placeholder="password" onkeydown="if(event.key==='Enter')doMgrLogin()"/></div>
+          <div id="lerr" style="display:none;color:#e74c3c;font-family:monospace;font-size:11px;padding:8px 12px;background:rgba(231,76,60,.07);border:1px solid rgba(231,76,60,.2);border-radius:4px"></div>
+          <button class="btn btn-dark btn-sm" style="padding:11px;font-size:13px;letter-spacing:1px" onclick="doMgrLogin()">Manager Sign In →</button>
+        </div>
+      </div>
+
+      <div style="margin-top:20px;padding-top:14px;border-top:1px solid rgba(245,210,0,.08);font-family:monospace;font-size:10px;color:#3D2A10;text-align:center">
+        Demo: worker phone = 0501234567 · manager = admin / admin123
+      </div>
+    </div>
+  </div>`;
+}
+
+window.doWorkerLogin = () => {
+  const ph = $('wph').value.trim().replace(/\D/g,'').replace(/^0+/,'');
+  const err = $('wph-err'); err.style.display='none';
+  if(!ph){ err.textContent='Enter your phone number.'; err.style.display='block'; return; }
+  const match = WORKERS.find(w => w.phone.replace(/\D/g,'').replace(/^0+/,'') === ph);
+  if(!match){ err.textContent='⛔ Phone not registered. Contact your manager.'; err.style.display='block'; return; }
+  S.user = { ...match, role_type:'worker' };
+  S.screen = 'worker';
+  S.shift = SHIFTS.find(s=>s.worker===match.id&&s.status==='working')||null;
+  render();
+};
+
+window.doMgrLogin = () => {
+  const u=$('lu').value.trim(), p=$('lp').value;
+  const err=$('lerr'); err.style.display='none';
+  if(u==='admin'&&p==='admin123'){
+    S.user = { id:'mgr1', name:'Mohamed (Manager)', role:'manager', role_type:'manager' };
+    S.screen = 'manager';
+    render();
+  } else {
+    err.textContent='Invalid username or password.'; err.style.display='block';
+  }
+};
+
+window.doLogout = () => {
+  clearInterval(S.timerInt);
+  S.user=null; S.shift=null; S.screen='auth';
+  render();
+};
+
+// ── WORKER SCREEN ─────────────────────────────────────────────
+function renderWorker() {
+  const u = S.user;
+  const myShifts = SHIFTS.filter(s=>s.worker===u.id);
+  const active = myShifts.find(s=>s.status==='working')||null;
+  S.shift = active;
+  const totalToday = myShifts.filter(s=>s.status==='completed').reduce((a,s)=>a+s.earnings,0) + (active ? (Date.now()-active.start)/3600000*u.hourly_rate : 0);
+
+  $('root').innerHTML = `
+  <div class="topbar">
+    <div class="brand">
+      <img src="${LOGO_SRC}" class="brand-logo" alt="logo"/>
+      <div><div class="brand-name">CKN&amp;CNKN</div><div class="brand-sub">Staff Portal</div></div>
+    </div>
+    <div class="top-right">
+      <div class="clock-display" id="clock">--:--:--</div>
+      <span style="font-family:'Fredoka',sans-serif;font-size:14px">${esc(u.name)}</span>
+      <span class="role-pill pill-wkr">${esc(u.role)}</span>
+      <button class="btn-sm btn-logout" onclick="doLogout()">Logout</button>
+    </div>
+  </div>
+
+  <div class="body">
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;flex-wrap:wrap">
+      <div class="page-title">My <span>Shift</span></div>
+      <div class="gps-bar gps-ok" style="margin:0">
+        <span class="dot on"></span>
+        CKN&amp;CNKN — Main Branch · ~42m away
+      </div>
+    </div>
+
+    <div class="shift-card ${active?'working':''}" id="scard">
+      <div class="shift-status">${active?'● SHIFT IN PROGRESS':'⚡ READY TO START'}</div>
+      <div class="timer-display" id="tbig">00:00:00</div>
+      <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:3px;color:#3D1C02;margin-bottom:8px">ELAPSED TIME</div>
+      ${active ? `<div style="background:rgba(46,204,113,.08);border:1px solid rgba(46,204,113,.2);border-radius:4px;padding:8px 14px;font-family:'DM Mono',monospace;font-size:11px;color:var(--green);margin-bottom:8px">
+        📍 ${esc(active.location)} · Started ${fmtTime(active.start)}
+      </div>` : ''}
+      <div style="background:rgba(245,210,0,.06);border:1px solid rgba(245,210,0,.12);border-radius:4px;padding:10px 14px;margin-bottom:16px">
+        <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--muted)">TODAY'S EARNINGS</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--yolk);letter-spacing:2px">€${totalToday.toFixed(2)}</div>
+      </div>
+      <div class="act-grid">
+        <button class="act-btn" style="border-color:${active?'#555':'var(--green)'};color:${active?'#555':'var(--green)'}" ${active?'disabled':''} onclick="wStart()">
+          <span class="ico">▶</span>START SHIFT
+        </button>
+        <button class="act-btn" style="border-color:${active?'#e74c3c':'#555'};color:${active?'#e74c3c':'#555'}" ${active?'':'disabled'} onclick="wEnd()">
+          <span class="ico">■</span>END SHIFT
+        </button>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <div style="padding:12px 18px;border-bottom:1px solid rgba(245,210,0,.12);font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:3px;color:var(--yolk)">📋 MY SHIFTS TODAY</div>
+      <table><thead><tr>
+        <th>Location</th><th>Start</th><th>End</th><th>Hours</th><th>Earnings</th><th>Status</th>
+      </tr></thead><tbody>
+        ${myShifts.length===0 ? `<tr><td colspan="6"><div class="empty"><div class="big-icon">🍗</div>No shifts today yet.</div></td></tr>`
+          : myShifts.map(s=>`<tr>
+            <td style="color:var(--blue)">${esc(s.location)}</td>
+            <td style="font-family:monospace">${fmtTime(s.start)}</td>
+            <td style="font-family:monospace">${s.end?fmtTime(s.end):'—'}</td>
+            <td style="font-weight:600">${s.hours.toFixed(2)}h</td>
+            <td style="color:var(--yolk);font-family:monospace">€${s.earnings.toFixed(2)}</td>
+            <td>${statusBadge(s.status)}</td>
+          </tr>`).join('')}
+      </tbody></table>
+    </div>
+  </div>`;
+
+  initClock(); startTimer();
+}
+
+window.wStart = () => {
+  const u = S.user;
+  const newShift = {
+    id: 's_'+Date.now(), worker: u.id,
+    start: Date.now(), end: null,
+    status: 'working', location: 'Main Branch',
+    hours: 0, earnings: 0
+  };
+  SHIFTS.push(newShift);
+  S.shift = newShift;
+  toast('✅ Shift started! Good luck 💪','success');
+  renderWorker();
+};
+
+window.wEnd = () => {
+  const shift = SHIFTS.find(s=>s.worker===S.user.id&&s.status==='working');
+  if(!shift){ toast('No active shift','error'); return; }
+  const ms = Date.now() - shift.start;
+  shift.end = Date.now();
+  shift.status = 'completed';
+  shift.hours = ms/3600000;
+  shift.earnings = shift.hours * S.user.hourly_rate;
+  S.shift = null;
+  clearInterval(S.timerInt);
+  toast(`✅ Shift ended! ${fmtDur(ms)} worked — €${shift.earnings.toFixed(2)} earned`,'success');
+  renderWorker();
+};
+
+function startTimer() {
+  clearInterval(S.timerInt);
+  if(!S.shift) return;
+  S.timerInt = setInterval(()=>{
+    const el=$('tbig'); if(el) el.textContent = fmtMs(Date.now()-S.shift.start);
+  }, 1000);
+}
+
+// ── MANAGER SCREEN ────────────────────────────────────────────
+function renderManager() {
+  $('root').innerHTML = `
+  <div class="topbar">
+    <div class="brand">
+      <img src="${LOGO_SRC}" class="brand-logo" alt="logo"/>
+      <div><div class="brand-name">CKN&amp;CNKN</div><div class="brand-sub">Management Dashboard</div></div>
+    </div>
+    <div class="top-right">
+      <div class="clock-display" id="clock">--:--:--</div>
+      <span style="font-family:'Fredoka',sans-serif;font-size:14px">${esc(S.user.name)}</span>
+      <span class="role-pill pill-mgr">MANAGER</span>
+      <button class="btn-sm btn-logout" onclick="doLogout()">Logout</button>
+    </div>
+  </div>
+  <div class="body">
+    <div class="page-title" style="margin-bottom:20px">
+      🍗 Crew <span>Control</span>
+    </div>
+
+    <div class="stat-grid" id="scards">
+      ${buildStats()}
+    </div>
+
+    <div class="nav-tabs">
+      <button class="nav-tab active" data-tab="live"     onclick="mTab('live')">🔴 Live</button>
+      <button class="nav-tab"        data-tab="salary"   onclick="mTab('salary')">💶 Salary</button>
+      <button class="nav-tab"        data-tab="menu"     onclick="mTab('menu')">🍗 Menu</button>
+      <button class="nav-tab"        data-tab="staff"    onclick="mTab('staff')">👷 Staff</button>
+      <button class="nav-tab"        data-tab="orders"    onclick="mTab('orders')">📲 Orders</button>
+      <button class="nav-tab"        data-tab="inventory" onclick="mTab('inventory')">📦 Inventory</button>
+      <button class="nav-tab"        data-tab="loyalty"   onclick="mTab('loyalty')">🎁 Loyalty</button>
+      <button class="nav-tab"        data-tab="analytics" onclick="mTab('analytics')">📊 Analytics</button>
+      <button class="nav-tab"        data-tab="delivery"  onclick="mTab('delivery')">🛵 Delivery</button>
+      <button class="nav-tab"        data-tab="scheduler" onclick="mTab('scheduler')">📅 Scheduler</button>
+      <button class="nav-tab"        data-tab="alerts"    onclick="mTab('alerts')">🔔 Alerts</button>
+      <button class="nav-tab"        data-tab="billing"   onclick="mTab('billing')">🧾 Billing</button>
+      <button class="nav-tab"        data-tab="feedback"  onclick="mTab('feedback')">⭐ Feedback</button>
+    </div>
+
+    <div id="mpanel">${buildLive()}</div>
+  </div>`;
+
+  initClock();
+}
+
+function buildStats() {
+  const working  = SHIFTS.filter(s=>s.status==='working').length;
+  const absent   = WORKERS.length - new Set(SHIFTS.map(s=>s.worker)).size;
+  const todayEarn= SHIFTS.reduce((a,s)=>a+(s.status==='completed'?s.earnings:s.hours*( WORKERS.find(w=>w.id===s.worker)?.hourly_rate||0)),0);
+  const topItem  = [...MENU].sort((a,b)=>b.sold-a.sold)[0];
+  return [
+    ['🟢 Working Now', working,         'var(--green)'],
+    ['⭕ Not Clocked',  absent>0?absent:0,'#e74c3c'],
+    ['💶 Today Earnings','€'+todayEarn.toFixed(0),'var(--yolk)'],
+    ['🍗 Top Seller',   topItem.name,   'var(--crisp)'],
+    ['📍 Branches',     LOCATIONS.length,'var(--blue)'],
+    ['👥 Total Staff',  WORKERS.length, 'var(--cream)'],
+  ].map(([l,v,c])=>`<div class="stat-card"><div class="sc-label">${l}</div><div class="sc-value" style="color:${c}">${v}</div></div>`).join('');
+}
+
+window.mTab = tab => {
+  S.mgrTab = tab;
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.toggle('active',t.dataset.tab===tab));
+  const p=$('mpanel'); if(!p)return;
+  if(tab==='live')      p.innerHTML=buildLive();
+  if(tab==='salary')    p.innerHTML=buildSalary();
+  if(tab==='menu')      p.innerHTML=buildMenu();
+  if(tab==='staff')     p.innerHTML=buildStaff();
+  if(tab==='orders')    p.innerHTML=buildOrders();
+  if(tab==='inventory') p.innerHTML=buildInventory();
+  if(tab==='loyalty')   p.innerHTML=buildLoyalty();
+  if(tab==='analytics') p.innerHTML=buildAnalytics();
+  if(tab==='delivery')  p.innerHTML=buildDelivery();
+  if(tab==='scheduler') p.innerHTML=buildScheduler();
+  if(tab==='alerts')    p.innerHTML=buildAlerts();
+  if(tab==='billing')   p.innerHTML=buildBilling();
+  if(tab==='feedback')  p.innerHTML=buildFeedback();
+};
+
+// LIVE TAB
+function buildLive() {
+  const now2 = Date.now();
+  return `
+  <div class="worker-list">
+    ${WORKERS.map(w=>{
+      const active = SHIFTS.find(s=>s.worker===w.id&&s.status==='working');
+      const done   = SHIFTS.filter(s=>s.worker===w.id&&s.status==='completed');
+      const st = active?'working':done.length?'done':'absent';
+      const hrs = active ? (now2-active.start)/3600000 : done.reduce((a,s)=>a+s.hours,0);
+      const earn = active ? hrs*w.hourly_rate : done.reduce((a,s)=>a+s.earnings,0);
+      const stColor = {working:'var(--green)',done:'var(--blue)',absent:'#e74c3c'}[st];
+      return `
+      <div class="wcard ${st}">
+        <div style="min-width:160px">
+          <div class="wname">${esc(w.name)}</div>
+          <div class="wphone">${esc(w.phone)}</div>
+          <div class="wrole">🍗 ${esc(w.role)}</div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;min-width:70px">
+          <div class="dot ${active?'on':'off'}"></div>
+          <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:${stColor};margin-top:4px;text-transform:uppercase">${st==='working'?'WORKING':st==='done'?'DONE':'ABSENT'}</div>
+        </div>
+        <div class="wstat-grid">
+          <div class="wstat"><div class="lbl">Started</div><div class="val">${active?fmtTime(active.start):'—'}</div></div>
+          <div class="wstat"><div class="lbl">Hours</div><div class="val" style="color:var(--green)">${hrs.toFixed(2)}h</div></div>
+          <div class="wstat"><div class="lbl">Earnings</div><div class="val" style="color:var(--yolk)">€${earn.toFixed(2)}</div></div>
+          <div class="wstat"><div class="lbl">Site</div><div class="val" style="color:var(--blue);font-size:11px">${active?esc(active.location):'—'}</div></div>
+        </div>
+        ${active ? `<button class="btn-sm btn-red" onclick="mgrEnd('${w.id}')">■ End Shift</button>` : ''}
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+
+window.mgrEnd = wid => {
+  const s = SHIFTS.find(s=>s.worker===wid&&s.status==='working');
+  if(!s) return;
+  s.end=Date.now(); s.status='completed';
+  s.hours=(s.end-s.start)/3600000;
+  s.earnings=s.hours*(WORKERS.find(w=>w.id===wid)?.hourly_rate||0);
+  const w=WORKERS.find(x=>x.id===wid);
+  toast(`✅ Shift ended for ${w?.name} — €${s.earnings.toFixed(2)} earned`,'success');
+  renderManager();
+};
+
+// SALARY TAB
+function buildSalary() {
+  return `
+  <div class="table-wrap">
+    <div style="padding:12px 18px;border-bottom:1px solid rgba(245,210,0,.12);font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:3px;color:var(--yolk)">💶 SALARY SUMMARY — TODAY</div>
+    <table><thead><tr>
+      <th>Worker</th><th>Role</th><th>Rate</th><th>Total Hours</th><th>Total Salary</th><th>Shifts</th>
+    </tr></thead><tbody>
+      ${WORKERS.map(w=>{
+        const ws = SHIFTS.filter(s=>s.worker===w.id);
+        const active = ws.find(s=>s.status==='working');
+        const done   = ws.filter(s=>s.status==='completed');
+        const liveHrs  = active?(Date.now()-active.start)/3600000:0;
+        const totalHrs = done.reduce((a,s)=>a+s.hours,0)+liveHrs;
+        const totalPay = totalHrs*w.hourly_rate;
+        return `<tr>
+          <td><strong>${esc(w.name)}</strong></td>
+          <td><span class="badge by">${esc(w.role)}</span></td>
+          <td style="font-family:monospace;color:var(--yolk)">€${w.hourly_rate}/hr</td>
+          <td style="font-weight:600">${totalHrs.toFixed(2)}h
+            ${active?`<span class="badge bg" style="font-size:8px;margin-left:4px">LIVE</span>`:''}
+          </td>
+          <td style="font-family:monospace;color:var(--green);font-weight:700;font-size:15px">€${totalPay.toFixed(2)}</td>
+          <td>${ws.length}</td>
+        </tr>`;
+      }).join('')}
+      <tr style="background:rgba(245,210,0,.04)">
+        <td colspan="4" style="font-family:'Bebas Neue',sans-serif;letter-spacing:2px;color:var(--yolk);font-size:14px">TOTAL PAYROLL TODAY</td>
+        <td style="font-family:monospace;color:var(--yolk);font-weight:700;font-size:16px">
+          €${WORKERS.reduce((acc,w)=>{
+            const ws=SHIFTS.filter(s=>s.worker===w.id);
+            const active=ws.find(s=>s.status==='working');
+            const liveHrs=active?(Date.now()-active.start)/3600000:0;
+            const totalHrs=ws.filter(s=>s.status==='completed').reduce((a,s)=>a+s.hours,0)+liveHrs;
+            return acc+totalHrs*w.hourly_rate;
+          },0).toFixed(2)}
+        </td>
+        <td>${SHIFTS.length}</td>
+      </tr>
+    </tbody></table>
+  </div>`;
+}
+
+// MENU TAB
+function buildMenu() {
+  const maxSold = Math.max(...MENU.map(m=>m.sold));
+  return `
+  <div class="panel" style="margin-bottom:16px">
+    <div class="panel-title">🏆 TOP SELLERS TODAY</div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      ${[...MENU].sort((a,b)=>b.sold-a.sold).slice(0,5).map((m,i)=>`
+        <div style="display:flex;align-items:center;gap:12px">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--yolk);width:24px">${i+1}</div>
+          <div style="font-size:24px">${m.icon}</div>
+          <div style="flex:1">
+            <div style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:14px">${esc(m.name)}</div>
+            <div class="prog-wrap" style="margin-top:5px">
+              <div class="prog-bar" style="width:${Math.round(m.sold/maxSold*100)}%"></div>
+            </div>
+          </div>
+          <div style="font-family:'DM Mono',monospace;font-size:13px;color:var(--yolk)">${m.sold} sold</div>
+          <div style="font-family:'DM Mono',monospace;font-size:13px;color:var(--green)">€${m.price}</div>
+        </div>`).join('')}
+    </div>
+  </div>
+  <div class="menu-grid">
+    ${MENU.map(m=>`
+      <div class="menu-item">
+        <div class="mi-icon">${m.icon}</div>
+        <div class="mi-cat">${m.cat}</div>
+        <div class="mi-name">${esc(m.name)}</div>
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <div class="mi-price">€${m.price}</div>
+          <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted)">${m.sold} sold</div>
+        </div>
+      </div>`).join('')}
+  </div>`;
+}
+
+// STAFF TAB
+function buildStaff() {
+  return `
+  <div class="panel">
+    <div class="panel-title">👷 STAFF DIRECTORY</div>
+    <div class="table-wrap" style="margin-bottom:0;border:none">
+      <table><thead><tr>
+        <th>Name</th><th>Phone</th><th>Role</th><th>Rate</th><th>Device</th><th>Actions</th>
+      </tr></thead><tbody>
+        ${WORKERS.map(w=>`<tr>
+          <td><strong>${esc(w.name)}</strong></td>
+          <td style="font-family:monospace;color:var(--muted)">${esc(w.phone)}</td>
+          <td><span class="badge by">${esc(w.role)}</span></td>
+          <td style="color:var(--yolk);font-family:monospace">€${w.hourly_rate}/hr</td>
+          <td style="font-family:monospace;font-size:10px;color:var(--green)">🔒 Linked</td>
+          <td>
+            <button class="btn-sm btn-dark" style="font-size:11px;padding:5px 10px" onclick="openEdit('${w.id}')">✏️ Edit</button>
+          </td>
+        </tr>`).join('')}
+      </tbody></table>
+    </div>
+  </div>`;
+}
+
+// ══════════════════════════════════════════
+// FEATURE 1 — QR TABLE ORDERING
+// ══════════════════════════════════════════
+const TABLE_ORDERS = [
+  { id:'to1', table:3, items:[{name:'Spicy Wings (10 pcs)',qty:2,price:45},{name:'Pepsi Can',qty:2,price:8}], total:106, status:'pending',  time: Date.now()-8*60000 },
+  { id:'to2', table:7, items:[{name:'Zinger Burger',qty:1,price:32},{name:'Cheese Fries',qty:1,price:18}],   total:50,  status:'preparing',time: Date.now()-4*60000 },
+  { id:'to3', table:1, items:[{name:'Family Feast Combo',qty:1,price:145}],                                  total:145, status:'ready',    time: Date.now()-1*60000 },
+  { id:'to4', table:5, items:[{name:'Chicken Wrap',qty:3,price:28},{name:'Lemonade (L)',qty:3,price:16}],   total:132, status:'pending',  time: Date.now()-2*60000 },
+];
+const TABLES = Array.from({length:12},(_,i)=>i+1);
+
+function buildOrders() {
+  const statusColor={pending:'var(--crisp)',preparing:'var(--yolk)',ready:'var(--green)'};
+  const statusNext={pending:'preparing',preparing:'ready',ready:'served'};
+  const statusLabel={pending:'⏳ Pending',preparing:'👨‍🍳 Preparing',ready:'✅ Ready'};
+  return `
+  <div class="panel" style="margin-bottom:16px">
+    <div class="panel-title">📲 TABLE MAP</div>
+    <div class="qr-table-grid">
+      ${TABLES.map(t=>{
+        const orders=TABLE_ORDERS.filter(o=>o.table===t&&o.status!=='served');
+        return `<div class="qr-table-card ${orders.length?'has-order':''}" onclick="window.openTableOrder(${t})">
+          <div style="font-size:22px">🪑</div>
+          <div class="tnum">T${t}</div>
+          <div class="torders">${orders.length?orders.length+' order(s)':'Free'}</div>
+          ${orders.length?`<div style="width:8px;height:8px;border-radius:50%;background:var(--crisp);margin:4px auto 0;animation:blink 1.5s infinite"></div>`:''}
+        </div>`;
+      }).join('')}
+    </div>
+  </div>
+  <div class="panel">
+    <div class="panel-title" style="display:flex;justify-content:space-between;align-items:center">
+      <span>🍽️ ACTIVE ORDERS</span>
+      <button class="btn-sm btn-yolk" onclick="window.addDemoOrder()" style="font-size:11px">+ New Order</button>
+    </div>
+    <div class="order-queue">
+      ${TABLE_ORDERS.filter(o=>o.status!=='served').map(o=>`
+        <div class="order-item ${o.status}" id="torder_${o.id}">
+          <div style="min-width:120px">
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:1px;color:var(--yolk)">TABLE ${o.table}</div>
+            <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted)">${Math.round((Date.now()-o.time)/60000)}m ago</div>
+          </div>
+          <div style="flex:1;padding:0 12px">
+            ${o.items.map(i=>`<div style="font-family:'Fredoka',sans-serif;font-size:13px;color:var(--cream)">${i.qty}× ${i.name} <span style="color:var(--muted)">€${i.price*i.qty}</span></div>`).join('')}
+          </div>
+          <div style="text-align:right;min-width:100px">
+            <div style="font-family:'DM Mono',monospace;font-size:14px;color:var(--yolk);font-weight:700">€${o.total}</div>
+            <div style="font-family:'DM Mono',monospace;font-size:9px;color:${statusColor[o.status]};margin:4px 0">${statusLabel[o.status]}</div>
+            ${o.status!=='served'?`<button class="btn-sm btn-dark" style="font-size:10px;padding:4px 10px;margin-top:4px" onclick="window.advOrder('${o.id}')">→ ${statusNext[o.status]==='served'?'Mark Served':statusNext[o.status].charAt(0).toUpperCase()+statusNext[o.status].slice(1)}</button>`:''}
+          </div>
+        </div>`).join('')}
+    </div>
+  </div>`;
+}
+
+window.advOrder = id => {
+  const o = TABLE_ORDERS.find(x=>x.id===id);
+  if(!o) return;
+  const next = {pending:'preparing',preparing:'ready',ready:'served'};
+  o.status = next[o.status]||'served';
+  toast(`Table ${o.table} order → ${o.status}`,'success');
+  mTab('orders');
+};
+window.addDemoOrder = () => {
+  const tables=[2,4,6,8,9,10,11,12];
+  const t=tables[Math.floor(Math.random()*tables.length)];
+  const items=[{name:'Crispy Chicken Bucket',qty:1,price:89}];
+  TABLE_ORDERS.push({id:'to'+Date.now(),table:t,items,total:89,status:'pending',time:Date.now()});
+  toast(`New order from Table ${t}! 🍗`,'success');
+  mTab('orders');
+};
+window.openTableOrder = t => {
+  const orders=TABLE_ORDERS.filter(o=>o.table===t&&o.status!=='served');
+  if(!orders.length){ toast(`Table ${t} is free`,'info'); return; }
+  toast(`Table ${t}: ${orders.length} order(s) active`,'info');
+};
+
+// ══════════════════════════════════════════
+// FEATURE 2 — INVENTORY & WASTE TRACKER
+// ══════════════════════════════════════════
+const INVENTORY = [
+  { id:'iv1', name:'Chicken (Whole)', unit:'kg',  qty:48,  min:20, icon:'🍗' },
+  { id:'iv2', name:'Cooking Oil',     unit:'L',   qty:12,  min:15, icon:'🫙' },
+  { id:'iv3', name:'Flour',           unit:'kg',  qty:30,  min:10, icon:'🌾' },
+  { id:'iv4', name:'Coleslaw Mix',    unit:'kg',  qty:8,   min:5,  icon:'🥗' },
+  { id:'iv5', name:'Pepsi Cans',      unit:'pcs', qty:144, min:48, icon:'🥤' },
+  { id:'iv6', name:'Burger Buns',     unit:'pcs', qty:60,  min:30, icon:'🍔' },
+  { id:'iv7', name:'Jalapeño Sauce',  unit:'L',   qty:4,   min:6,  icon:'🫙' },
+  { id:'iv8', name:'Packaging Boxes', unit:'pcs', qty:200, min:50, icon:'📦' },
+];
+const WASTE_LOG = [
+  { item:'Chicken (Whole)', qty:2,  unit:'kg',  reason:'Overcooked', time: Date.now()-3600000*2 },
+  { item:'Coleslaw Mix',    qty:1,  unit:'kg',  reason:'Expired',    time: Date.now()-3600000*5 },
+  { item:'Burger Buns',     qty:6,  unit:'pcs', reason:'Dropped',    time: Date.now()-3600000*1 },
+];
+
+function buildInventory() {
+  const low = INVENTORY.filter(i=>i.qty<=i.min);
+  return `
+  ${low.length?`<div style="background:rgba(231,76,60,.07);border:1px solid rgba(231,76,60,.25);border-radius:6px;padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;gap:10px">
+    <span style="font-size:20px">⚠️</span>
+    <div><div style="font-family:'Fredoka',sans-serif;font-size:14px;color:#e74c3c;font-weight:600">${low.length} item(s) running low</div>
+    <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted)">${low.map(i=>i.name).join(', ')}</div></div>
+  </div>`:''}
+  <div class="inv-grid" style="margin-bottom:20px">
+    ${INVENTORY.map(i=>`
+      <div class="inv-card ${i.qty<=i.min?'low':'ok'}">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+          <div style="font-size:28px">${i.icon}</div>
+          ${i.qty<=i.min?`<span class="badge br" style="font-size:8px">LOW STOCK</span>`:`<span class="badge bg" style="font-size:8px">OK</span>`}
+        </div>
+        <div class="inv-name">${i.name}</div>
+        <div class="inv-qty" style="color:${i.qty<=i.min?'#e74c3c':'var(--green)'}">${i.qty}<span style="font-size:14px;color:var(--muted);margin-left:4px">${i.unit}</span></div>
+        <div style="margin:8px 0"><div class="prog-wrap"><div class="prog-bar" style="width:${Math.min(100,Math.round(i.qty/Math.max(i.min*2,1)*100))}%;background:${i.qty<=i.min?'linear-gradient(90deg,#e74c3c,#c0392b)':'linear-gradient(90deg,var(--green),#27ae60)'}"></div></div></div>
+        <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted)">Min: ${i.min} ${i.unit}</div>
+        <div class="inv-adj">
+          <input type="number" id="inv_${i.id}" value="0" min="0" style="width:64px;padding:5px 8px;font-size:12px" placeholder="Qty"/>
+          <button class="btn-sm btn-green" style="font-size:11px;padding:5px 10px" onclick="window.invAdd('${i.id}')">+ Add</button>
+          <button class="btn-sm btn-red" style="font-size:11px;padding:5px 10px" onclick="window.invLog('${i.id}')">🗑 Waste</button>
+        </div>
+      </div>`).join('')}
+  </div>
+  <div class="panel">
+    <div class="panel-title">🗑 WASTE LOG TODAY</div>
+    <div class="waste-log">
+      ${WASTE_LOG.map(w=>`
+        <div class="waste-row">
+          <span style="color:var(--cream)">${w.item}</span>
+          <span style="color:#e74c3c">-${w.qty} ${w.unit}</span>
+          <span style="color:var(--muted)">${w.reason}</span>
+          <span style="color:var(--muted)">${Math.round((Date.now()-w.time)/60000)}m ago</span>
+        </div>`).join('')}
+    </div>
+    <div style="margin-top:14px;padding-top:12px;border-top:1px solid rgba(245,210,0,.1);font-family:'DM Mono',monospace;font-size:11px;color:#e74c3c">
+      Total waste cost today: <strong style="color:var(--yolk)">≈ €${(WASTE_LOG.reduce((a,w)=>{const i=INVENTORY.find(x=>x.name===w.item);return a+(i?w.qty*(i.unit==='kg'?8:i.unit==='L'?5:0.5):0);},0)).toFixed(2)}</strong>
+    </div>
+  </div>`;
+}
+window.invAdd = id => {
+  const i=INVENTORY.find(x=>x.id===id); if(!i) return;
+  const v=parseInt($('inv_'+id)?.value)||0;
+  if(v<=0){toast('Enter a quantity > 0','error');return;}
+  i.qty+=v; toast(`Added ${v} ${i.unit} of ${i.name}`,'success'); mTab('inventory');
+};
+window.invLog = id => {
+  const i=INVENTORY.find(x=>x.id===id); if(!i) return;
+  const v=parseInt($('inv_'+id)?.value)||0;
+  if(v<=0){toast('Enter waste quantity > 0','error');return;}
+  if(v>i.qty){toast('Cannot waste more than in stock','error');return;}
+  i.qty-=v;
+  WASTE_LOG.unshift({item:i.name,qty:v,unit:i.unit,reason:'Manual log',time:Date.now()});
+  toast(`Logged ${v} ${i.unit} waste for ${i.name}`,'warning'); mTab('inventory');
+};
+
+// ══════════════════════════════════════════
+// FEATURE 3 — LOYALTY PROGRAM
+// ══════════════════════════════════════════
+const LOYALTY_CUSTOMERS = [
+  { id:'lc1', name:'Youssef Al-Amin',  phone:'0512345678', stamps:9,  orders:9,  joined:'2025-11-01' },
+  { id:'lc2', name:'Nadia Rashid',     phone:'0523456789', stamps:3,  orders:13, joined:'2025-09-15' },
+  { id:'lc3', name:'Tariq Mansour',    phone:'0534567890', stamps:7,  orders:27, joined:'2025-08-20' },
+  { id:'lc4', name:'Layla Farouk',     phone:'0545678901', stamps:10, orders:10, joined:'2025-10-05' },
+  { id:'lc5', name:'Hassan Qasim',     phone:'0556789012', stamps:1,  orders:1,  joined:'2026-01-10' },
+];
+
+function buildLoyalty() {
+  return `
+  <div class="stat-grid" style="margin-bottom:20px">
+    ${[['👥 Members',LOYALTY_CUSTOMERS.length,'var(--cream)'],['🎁 Free Items Earned',LOYALTY_CUSTOMERS.filter(c=>c.stamps>=10).length,'var(--yolk)'],['⭐ Avg Orders',Math.round(LOYALTY_CUSTOMERS.reduce((a,c)=>a+c.orders,0)/LOYALTY_CUSTOMERS.length),'var(--green)']].map(([l,v,c])=>`<div class="stat-card"><div class="sc-label">${l}</div><div class="sc-value" style="color:${c}">${v}</div></div>`).join('')}
+    <div class="stat-card" style="display:flex;align-items:center;gap:10px;flex-direction:column;justify-content:center">
+      <input id="loy-phone" placeholder="Customer phone" style="font-size:12px;padding:7px 10px"/>
+      <button class="btn-sm btn-yolk" style="width:100%;font-size:11px" onclick="window.loyAddStamp()">+ Add Stamp</button>
+    </div>
+  </div>
+  <div class="loyalty-grid">
+    ${LOYALTY_CUSTOMERS.map(c=>{
+      const free = c.stamps>=10;
+      const slots = free ? Array.from({length:10},(_,i)=>({filled:true})) : Array.from({length:10},(_,i)=>({filled:i<c.stamps}));
+      return `<div class="loy-card" style="${free?'border-color:rgba(255,107,53,.4);background:rgba(255,107,53,.05)':''}">
+        <div class="loy-name">${esc(c.name)} ${free?'🎉':''}</div>
+        <div class="loy-phone">${esc(c.phone)} · ${c.orders} orders</div>
+        <div class="stamp-row">
+          ${slots.map(s=>`<div class="stamp ${s.filled?'filled':''}">${s.filled?'🍗':''}</div>`).join('')}
+        </div>
+        ${free?`<div style="background:rgba(255,107,53,.1);border:1px solid rgba(255,107,53,.3);border-radius:4px;padding:8px 12px;margin-top:8px;font-family:'DM Mono',monospace;font-size:10px;color:var(--crisp);text-align:center">🎁 FREE ITEM READY! — <button class="btn-sm btn-red" style="font-size:10px;padding:3px 8px" onclick="window.loyRedeem('${c.id}')">Redeem</button></div>`
+        :`<div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);margin-top:4px">${10-c.stamps} more to free item</div>`}
+        <div style="display:flex;gap:6px;margin-top:10px">
+          <button class="btn-sm btn-dark" style="font-size:10px;padding:4px 10px;flex:1" onclick="window.loyStamp('${c.id}')">+1 Stamp</button>
+          <button class="btn-sm btn-dark" style="font-size:10px;padding:4px 10px;flex:1;color:var(--blue)" onclick="window.loySendOffer('${c.id}')">📱 Offer</button>
+        </div>
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+window.loyStamp = id => {
+  const c=LOYALTY_CUSTOMERS.find(x=>x.id===id); if(!c) return;
+  if(c.stamps>=10){toast('Redeem free item first!','warning');return;}
+  c.stamps++; c.orders++;
+  toast(`Stamp added for ${c.name} (${c.stamps}/10)`,'success'); mTab('loyalty');
+};
+window.loyRedeem = id => {
+  const c=LOYALTY_CUSTOMERS.find(x=>x.id===id); if(!c) return;
+  c.stamps=0;
+  toast(`🎁 Free item redeemed for ${c.name}!`,'success'); mTab('loyalty');
+};
+window.loyAddStamp = () => {
+  const ph=($('loy-phone')?.value||'').replace(/\D/g,'').replace(/^0+/,'');
+  const c=LOYALTY_CUSTOMERS.find(x=>x.phone.replace(/\D/g,'').replace(/^0+/,'')=== ph);
+  if(!c){ toast('Customer not found. Add them first.','error'); return; }
+  loyStamp(c.id);
+};
+window.loySendOffer = id => {
+  const c=LOYALTY_CUSTOMERS.find(x=>x.id===id); if(!c) return;
+  toast(`📱 WhatsApp offer sent to ${c.name}`,'success');
+};
+
+// ══════════════════════════════════════════
+// FEATURE 4 — SALES ANALYTICS DASHBOARD
+// ══════════════════════════════════════════
+const ANALYTICS_DATA = {
+  hourly: [{h:'09:00',rev:120},{h:'10:00',rev:280},{h:'11:00',rev:640},{h:'12:00',rev:1180},{h:'13:00',rev:1420},{h:'14:00',rev:960},{h:'15:00',rev:520},{h:'16:00',rev:380},{h:'17:00',rev:740},{h:'18:00',rev:1260},{h:'19:00',rev:1580},{h:'20:00',rev:1140},{h:'21:00',rev:680}],
+  weekly: [{d:'Mon',rev:8240},{d:'Tue',rev:7100},{d:'Wed',rev:9300},{d:'Thu',rev:11200},{d:'Fri',rev:14800},{d:'Sat',rev:16400},{d:'Sun',rev:13600}],
+  branches: [{b:'Main Branch',rev:52000,orders:840},{b:'Mall Branch',rev:38000,orders:610}],
+};
+
+function buildAnalytics() {
+  const totalRev = ANALYTICS_DATA.weekly.reduce((a,d)=>a+d.rev,0);
+  const totalOrd = ANALYTICS_DATA.branches.reduce((a,b)=>a+b.orders,0);
+  const peakHour = ANALYTICS_DATA.hourly.reduce((a,b)=>b.rev>a.rev?b:a);
+  const maxWeek  = Math.max(...ANALYTICS_DATA.weekly.map(d=>d.rev));
+  const maxHour  = Math.max(...ANALYTICS_DATA.hourly.map(d=>d.rev));
+  return `
+  <div class="kpi-row" style="grid-template-columns:repeat(4,1fr);margin-bottom:20px">
+    ${[['Weekly Revenue','€'+totalRev.toLocaleString(),'var(--yolk)'],['Total Orders',totalOrd,'var(--green)'],['Peak Hour',peakHour.h,'var(--crisp)'],['Avg Order','€'+Math.round(totalRev/totalOrd),'var(--blue)']].map(([l,v,c])=>`<div class="kpi-box"><div class="kv" style="color:${c}">${v}</div><div class="kl">${l}</div></div>`).join('')}
+  </div>
+  <div class="analytics-grid">
+    <div class="chart-card" style="grid-column:span 2">
+      <div class="chart-title">📅 REVENUE BY DAY THIS WEEK</div>
+      <div class="bar-chart">
+        ${ANALYTICS_DATA.weekly.map(d=>`<div class="bar-row">
+          <div class="bar-label">${d.d}</div>
+          <div class="bar-fill-wrap"><div class="bar-fill" style="width:${Math.round(d.rev/maxWeek*100)}%"></div></div>
+          <div class="bar-val">€${(d.rev/1000).toFixed(1)}k</div>
+        </div>`).join('')}
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">🕐 TODAY BY HOUR</div>
+      <div class="bar-chart">
+        ${ANALYTICS_DATA.hourly.map(d=>`<div class="bar-row">
+          <div class="bar-label" style="width:42px">${d.h}</div>
+          <div class="bar-fill-wrap"><div class="bar-fill" style="width:${Math.round(d.rev/maxHour*100)}%"></div></div>
+          <div class="bar-val">€${d.rev}</div>
+        </div>`).join('')}
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">📍 REVENUE BY BRANCH</div>
+      ${ANALYTICS_DATA.branches.map(b=>`
+        <div style="margin-bottom:16px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+            <span style="font-family:'Fredoka',sans-serif;font-size:13px;color:var(--cream)">${b.b}</span>
+            <span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--yolk)">€${b.rev.toLocaleString()}</span>
+          </div>
+          <div class="prog-wrap"><div class="prog-bar" style="width:${Math.round(b.rev/90000*100)}%"></div></div>
+          <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);margin-top:4px">${b.orders} orders · avg €${Math.round(b.rev/b.orders)}/order</div>
+        </div>`).join('')}
+      <div class="panel-title" style="margin-top:16px;font-size:13px">🍗 TOP ITEMS BY REVENUE</div>
+      ${[...MENU].sort((a,b)=>b.sold*b.price-a.sold*a.price).slice(0,5).map(m=>`
+        <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-family:'DM Mono',monospace;font-size:11px">
+          <span style="color:var(--cream)">${m.icon} ${m.name}</span>
+          <span style="color:var(--yolk)">€${(m.sold*m.price).toLocaleString()}</span>
+        </div>`).join('')}
+    </div>
+  </div>`;
+}
+
+// ══════════════════════════════════════════
+// FEATURE 5 — DELIVERY MANAGEMENT
+// ══════════════════════════════════════════
+const DELIVERIES = [
+  { id:'d1', rider:'Mohamed Saber', addr:'12 Al-Nahda St, Apt 3', items:'Spicy Wings x2, Pepsi x2', total:106, status:2, created: Date.now()-25*60000 },
+  { id:'d2', rider:'Unassigned',    addr:'78 King Fahd Rd', items:'Family Feast Combo x1',          total:145, status:0, created: Date.now()-5*60000  },
+  { id:'d3', rider:'Khalid Omar',   addr:'33 Olaya Dist',   items:'Zinger Burger x2, Fries x2',     total:100, status:3, created: Date.now()-45*60000 },
+];
+const DEL_RIDERS = WORKERS.filter(w=>w.role==='delivery').map(w=>w.name);
+const DEL_STEPS=['Order Placed','Rider Assigned','Picked Up','Delivered'];
+
+function buildDelivery() {
+  const done=DELIVERIES.filter(d=>d.status===3).length;
+  const active=DELIVERIES.filter(d=>d.status<3).length;
+  return `
+  <div class="stat-grid" style="margin-bottom:20px">
+    ${[['🛵 Active Deliveries',active,'var(--crisp)'],['✅ Delivered Today',done,'var(--green)'],['💶 Delivery Revenue','€'+DELIVERIES.reduce((a,d)=>a+d.total,0),'var(--yolk)'],['⏱ Avg Time','28 min','var(--blue)']].map(([l,v,c])=>`<div class="stat-card"><div class="sc-label">${l}</div><div class="sc-value" style="color:${c}">${v}</div></div>`).join('')}
+  </div>
+  <div class="panel">
+    <div class="panel-title" style="display:flex;justify-content:space-between;align-items:center"><span>🛵 DELIVERY ORDERS</span><button class="btn-sm btn-yolk" style="font-size:11px" onclick="window.addDelivery()">+ New Delivery</button></div>
+    <div class="delivery-grid">
+      ${DELIVERIES.map(d=>`
+        <div class="del-card">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+            <div>
+              <div class="del-id">#${d.id.toUpperCase()} · ${Math.round((Date.now()-d.created)/60000)}m ago</div>
+              <div class="del-addr">${esc(d.addr)}</div>
+              <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted)">${esc(d.items)}</div>
+            </div>
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--yolk)">€${d.total}</div>
+          </div>
+          <div class="del-status-bar">
+            ${DEL_STEPS.map((_,i)=>`<div class="del-step ${i<d.status?'done':i===d.status?'active':''}"></div>`).join('')}
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px">
+            <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted)">${DEL_STEPS[d.status]||'Done'}</div>
+            <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--green)">${esc(d.rider)}</div>
+          </div>
+          ${d.status<3?`<div style="display:flex;gap:6px;margin-top:10px">
+            ${d.status===0?`<select id="rider_${d.id}" style="font-size:11px;padding:5px 8px;flex:1"><option value="">Assign Rider...</option>${DEL_RIDERS.map(r=>`<option>${r}</option>`).join('')}</select><button class="btn-sm btn-green" style="font-size:10px;padding:5px 10px" onclick="window.assignRider('${d.id}')">Assign</button>`:`<button class="btn-sm btn-yolk" style="font-size:11px;flex:1" onclick="window.advDelivery('${d.id}')">→ ${DEL_STEPS[d.status+1]||'Done'}</button>`}
+          </div>`:'<div style="font-family:\'DM Mono\',monospace;font-size:10px;color:var(--green);text-align:center;margin-top:8px">✅ DELIVERED</div>'}
+        </div>`).join('')}
+    </div>
+  </div>`;
+}
+window.advDelivery = id => {
+  const d=DELIVERIES.find(x=>x.id===id); if(!d) return;
+  if(d.status<3) d.status++;
+  toast(`Delivery ${id.toUpperCase()} → ${DEL_STEPS[d.status]||'Delivered!'}`,'success'); mTab('delivery');
+};
+window.assignRider = id => {
+  const d=DELIVERIES.find(x=>x.id===id); if(!d) return;
+  const sel=$('rider_'+id); if(!sel||!sel.value){toast('Select a rider first','error');return;}
+  d.rider=sel.value; d.status=1;
+  toast(`${sel.value} assigned to delivery ${id.toUpperCase()}`,'success'); mTab('delivery');
+};
+window.addDelivery = () => {
+  const addrs=['45 Prince Sultan Rd','7 Al-Hamra Quarter','Riyadh Park Mall, Level 2'];
+  DELIVERIES.push({id:'d'+Date.now().toString().slice(-4),rider:'Unassigned',addr:addrs[Math.floor(Math.random()*addrs.length)],items:'Crispy Bucket x1',total:89,status:0,created:Date.now()});
+  toast('New delivery order added!','success'); mTab('delivery');
+};
+
+// ══════════════════════════════════════════
+// FEATURE 6 — SHIFT SCHEDULER
+// ══════════════════════════════════════════
+const DAYS=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+const SCHEDULE = {
+  w1:['08-16','08-16','OFF','08-16','08-16','10-18','OFF'],
+  w2:['10-18','10-18','10-18','OFF','10-18','08-16','10-18'],
+  w3:['OFF','12-20','12-20','12-20','12-20','12-20','12-20'],
+  w4:['08-16','OFF','08-16','08-16','OFF','08-16','08-16'],
+  w5:['14-22','14-22','14-22','14-22','OFF','14-22','14-22'],
+};
+
+function buildScheduler() {
+  const totalHoursCost = WORKERS.reduce((acc,w)=>{
+    const wk=SCHEDULE[w.id]||[];
+    const hrs=wk.reduce((a,s)=>{if(s==='OFF'||s==='LEAVE')return a;const[sh,eh]=s.split('-').map(Number);return a+(eh-sh);},0);
+    return acc+hrs*w.hourly_rate;
+  },0);
+  return `
+  <div class="panel" style="margin-bottom:16px">
+    <div class="panel-title" style="display:flex;justify-content:space-between;align-items:center">
+      <span>📅 WEEKLY SCHEDULE — W${new Date().getMonth()+1}</span>
+      <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--yolk)">Est. labor cost: €${totalHoursCost.toFixed(0)}</div>
+    </div>
+    <div style="overflow-x:auto">
+    <div class="sched-grid" style="min-width:680px">
+      <div class="sched-cell header">WORKER</div>
+      ${DAYS.map(d=>`<div class="sched-cell header">${d}</div>`).join('')}
+      ${WORKERS.map(w=>{
+        const row=SCHEDULE[w.id]||Array(7).fill('OFF');
+        return `<div class="sched-cell worker-name">${w.name.split(' ')[0]}<div style="font-family:'DM Mono',monospace;font-size:8px;color:var(--muted)">${w.role}</div></div>
+        ${row.map((s,i)=>`<div class="sched-cell"><div class="sched-shift-block ${s==='OFF'?'off':s==='LEAVE'?'leave':''}" onclick="window.toggleSched('${w.id}',${i})">${s}</div></div>`).join('')}`;
+      }).join('')}
+    </div>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="panel-title">📊 WEEKLY HOURS SUMMARY</div>
+    <div class="bar-chart">
+      ${WORKERS.map(w=>{
+        const row=SCHEDULE[w.id]||[];
+        const hrs=row.reduce((a,s)=>{if(s==='OFF'||s==='LEAVE')return a;const[sh,eh]=s.split('-').map(Number);return a+(eh-sh);},0);
+        return `<div class="bar-row">
+          <div class="bar-label" style="width:80px;text-align:right">${w.name.split(' ')[0]}</div>
+          <div class="bar-fill-wrap"><div class="bar-fill" style="width:${Math.round(hrs/48*100)}%"></div></div>
+          <div class="bar-val">${hrs}h · €${(hrs*w.hourly_rate).toFixed(0)}</div>
+        </div>`;
+      }).join('')}
+    </div>
+  </div>`;
+}
+window.toggleSched = (wid, day) => {
+  const options=['08-16','10-18','12-20','14-22','OFF','LEAVE'];
+  const row=SCHEDULE[wid]; if(!row) return;
+  const idx=options.indexOf(row[day]);
+  row[day]=options[(idx+1)%options.length];
+  mTab('scheduler');
+};
+
+// ══════════════════════════════════════════
+// FEATURE 7 — SMART ALERTS
+// ══════════════════════════════════════════
+const ALERTS_DATA = [
+  { type:'critical', icon:'⚠️', title:'Stock Critical: Jalapeño Sauce',      body:'Only 4L remaining — below minimum threshold of 6L. Reorder required.',         time:Date.now()-12*60000  },
+  { type:'critical', icon:'🕐', title:'Worker Late: Sara Ahmed (Mall Branch)', body:'Shift was scheduled to start 18 minutes ago. No clock-in detected.',           time:Date.now()-18*60000  },
+  { type:'warning',  icon:'📉', title:'Revenue Below Target',                  body:'Today\'s revenue is 12% below daily target of €3,200. Peak hours approaching.', time:Date.now()-35*60000  },
+  { type:'warning',  icon:'🗑', title:'Waste Alert: High coleslaw disposal',   body:'3.2kg coleslaw wasted this week — ≈€25 loss. Review prep quantities.',          time:Date.now()-2*3600000 },
+  { type:'info',     icon:'📲', title:'New Loyalty Customer Registered',        body:'Hassan Qasim joined the loyalty program via QR code at Table 8.',             time:Date.now()-3*3600000 },
+  { type:'success',  icon:'🎯', title:'Daily Target Reached: Main Branch',      body:'Main Branch hit €2,800 revenue — 105% of daily target.',                      time:Date.now()-5*3600000 },
+  { type:'info',     icon:'⭐', title:'New Feedback Received (1★)',             body:'Anonymous negative review submitted for Mall Branch. Review recommended.',    time:Date.now()-6*3600000 },
+  { type:'success',  icon:'🛵', title:'Delivery Record: 32 orders today',       body:'Mohamed Saber completed 14 deliveries — new personal record.',               time:Date.now()-7*3600000 },
+];
+
+function buildAlerts() {
+  const fmtAgo = ms => {
+    const m=Math.round((Date.now()-ms)/60000);
+    return m<60?m+'m ago':Math.round(m/60)+'h ago';
+  };
+  const counts={critical:ALERTS_DATA.filter(a=>a.type==='critical').length,warning:ALERTS_DATA.filter(a=>a.type==='warning').length};
+  return `
+  <div class="stat-grid" style="margin-bottom:20px">
+    ${[['🚨 Critical',counts.critical,'#e74c3c'],['⚠️ Warnings',counts.warning,'var(--crisp)'],['✅ Today\'s Alerts',ALERTS_DATA.length,'var(--green)'],['📱 Notifications Sent',6,'var(--blue)']].map(([l,v,c])=>`<div class="stat-card"><div class="sc-label">${l}</div><div class="sc-value" style="color:${c}">${v}</div></div>`).join('')}
+  </div>
+  <div class="panel" style="margin-bottom:16px">
+    <div class="panel-title" style="display:flex;justify-content:space-between;align-items:center">
+      <span>🔔 ALERT FEED</span>
+      <button class="btn-sm btn-dark" style="font-size:10px" onclick="window.addAlert()">+ Test Alert</button>
+    </div>
+    <div class="alert-list">
+      ${ALERTS_DATA.map(a=>`
+        <div class="alert-row ${a.type}">
+          <div class="alert-icon">${a.icon}</div>
+          <div class="alert-content">
+            <div class="al-title">${a.title}</div>
+            <div class="al-body">${a.body}</div>
+          </div>
+          <div class="alert-time">${fmtAgo(a.time)}</div>
+        </div>`).join('')}
+    </div>
+  </div>
+  <div class="panel">
+    <div class="panel-title">⚙️ ALERT THRESHOLDS</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px">
+      ${[['Stock alert below','15','units'],['Worker late after','15','min'],['Revenue target','3200','€/day'],['Feedback flag below','3','stars']].map(([l,v,u])=>`
+        <div style="background:rgba(255,255,255,.03);border:1px solid rgba(245,210,0,.1);border-radius:6px;padding:12px">
+          <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">${l}</div>
+          <div style="display:flex;align-items:center;gap:6px">
+            <input type="number" value="${v}" style="font-size:13px;padding:6px 10px;flex:1"/>
+            <span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted)">${u}</span>
+          </div>
+        </div>`).join('')}
+    </div>
+    <button class="btn-sm btn-yolk" style="margin-top:12px;padding:8px 20px" onclick="toast('Alert thresholds saved!','success')">Save Thresholds</button>
+  </div>`;
+}
+window.addAlert = () => {
+  ALERTS_DATA.unshift({type:'info',icon:'🧪',title:'Test Alert',body:'This is a manually triggered test alert.',time:Date.now()});
+  toast('Test alert fired!','info'); mTab('alerts');
+};
+
+// ══════════════════════════════════════════
+// FEATURE 8 — DIGITAL RECEIPTS & BILLING
+// ══════════════════════════════════════════
+const RECEIPTS = [
+  { id:'r001', items:[{name:'Spicy Wings (10 pcs)',qty:2,price:45},{name:'Pepsi Can',qty:2,price:8}], payment:'card',  time:Date.now()-40*60000 },
+  { id:'r002', items:[{name:'Zinger Burger',qty:1,price:32},{name:'Cheese Fries',qty:1,price:18}],  payment:'cash',  time:Date.now()-80*60000 },
+  { id:'r003', items:[{name:'Family Feast Combo',qty:1,price:145}],                                 payment:'app',   time:Date.now()-20*60000 },
+];
+const S_BILLING = { items:[], payment:'cash' };
+
+function buildBilling() {
+  const totals={cash:0,card:0,app:0};
+  RECEIPTS.forEach(r=>{ const t=r.items.reduce((a,i)=>a+i.qty*i.price,0); totals[r.payment]=(totals[r.payment]||0)+t; });
+  const grandTotal=Object.values(totals).reduce((a,v)=>a+v,0);
+  return `
+  <div class="sg" style="margin-bottom:20px">
+    <div class="panel">
+      <div class="panel-title">🧾 NEW BILL</div>
+      <div id="bill-items" style="min-height:60px;margin-bottom:14px">
+        ${S_BILLING.items.length===0?'<div style="font-family:\'DM Mono\',monospace;font-size:11px;color:var(--muted);text-align:center;padding:16px">Add items below</div>':S_BILLING.items.map((it,i)=>`<div style="display:flex;justify-content:space-between;margin-bottom:6px;font-family:\'DM Mono\',monospace;font-size:12px"><span style="color:var(--cream)">${it.qty}× ${it.name}</span><span style="color:var(--yolk)">€${it.qty*it.price}</span></div>`).join('')}
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:12px">
+        <select id="bill-item-sel" style="flex:1;font-size:12px;padding:7px 10px">
+          ${MENU.map(m=>`<option value="${m.price}" data-name="${m.name}">${m.icon} ${m.name} — €${m.price}</option>`).join('')}
+        </select>
+        <button class="btn-sm btn-yolk" style="font-size:11px" onclick="window.billAddItem()">+ Add</button>
+      </div>
+      <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px">Payment Method</div>
+      <div class="pay-method-row">
+        ${['cash','card','app'].map(m=>`<button class="pay-pill ${S_BILLING.payment===m?'active':''}" onclick="window.billSetPay('${m}')">${m==='cash'?'💵 Cash':m==='card'?'💳 Card':'📱 App'}</button>`).join('')}
+      </div>
+      ${S_BILLING.items.length?`<div style="border-top:1px solid rgba(245,210,0,.12);padding-top:10px;margin-top:4px;display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:14px;color:var(--yolk)"><span>TOTAL</span><span>€${S_BILLING.items.reduce((a,i)=>a+i.qty*i.price,0)}</span></div>`:''}
+      <div style="display:flex;gap:8px;margin-top:12px">
+        <button class="btn-sm btn-yolk" style="flex:1;padding:10px" onclick="window.billIssue()">🧾 Issue Receipt</button>
+        <button class="btn-sm btn-dark" style="padding:10px" onclick="window.billClear()">✕ Clear</button>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-title">💶 TODAY'S RECONCILIATION</div>
+      ${['cash','card','app'].map(m=>`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid rgba(245,210,0,.08)">
+        <div style="font-family:'Fredoka',sans-serif;font-size:14px;color:var(--cream)">${m==='cash'?'💵 Cash':m==='card'?'💳 Card':'📱 Delivery App'}</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--yolk)">€${totals[m]||0}</div>
+      </div>`).join('')}
+      <div style="display:flex;justify-content:space-between;font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--crisp)"><span>GRAND TOTAL</span><span>€${grandTotal}</span></div>
+      <div style="margin-top:14px;padding-top:12px;border-top:1px solid rgba(245,210,0,.12)">
+        <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">Recent Receipts</div>
+        ${RECEIPTS.map(r=>`<div style="display:flex;justify-content:space-between;margin-bottom:6px;font-family:'DM Mono',monospace;font-size:10px">
+          <span style="color:var(--muted)">#${r.id} · ${Math.round((Date.now()-r.time)/60000)}m ago</span>
+          <span style="color:${r.payment==='cash'?'var(--green)':r.payment==='card'?'var(--blue)':'var(--crisp)'}">${r.payment.toUpperCase()}</span>
+          <span style="color:var(--yolk)">€${r.items.reduce((a,i)=>a+i.qty*i.price,0)}</span>
+        </div>`).join('')}
+      </div>
+    </div>
+  </div>`;
+}
+window.billAddItem = () => {
+  const sel=$('bill-item-sel'); if(!sel) return;
+  const name=sel.options[sel.selectedIndex].dataset.name;
+  const price=parseFloat(sel.value);
+  const existing=S_BILLING.items.find(i=>i.name===name);
+  if(existing) existing.qty++;
+  else S_BILLING.items.push({name,price,qty:1});
+  mTab('billing');
+};
+window.billSetPay = m => { S_BILLING.payment=m; mTab('billing'); };
+window.billIssue = () => {
+  if(!S_BILLING.items.length){toast('Add items first','error');return;}
+  const total=S_BILLING.items.reduce((a,i)=>a+i.qty*i.price,0);
+  RECEIPTS.unshift({id:'r'+Date.now().toString().slice(-4),items:[...S_BILLING.items],payment:S_BILLING.payment,time:Date.now()});
+  S_BILLING.items=[]; S_BILLING.payment='cash';
+  toast(`✅ Receipt issued — €${total} via ${RECEIPTS[0].payment}`,'success'); mTab('billing');
+};
+window.billClear = () => { S_BILLING.items=[]; mTab('billing'); };
+
+// ══════════════════════════════════════════
+// FEATURE 9 — CUSTOMER FEEDBACK SYSTEM
+// ══════════════════════════════════════════
+const FEEDBACK = [
+  { id:'fb1', order:'#r001', rating:5, comment:'Absolutely perfect wings! Will be back.', branch:'Main', time:Date.now()-30*60000,  responded:false },
+  { id:'fb2', order:'#r002', rating:2, comment:'Burger was cold and the wait was very long.', branch:'Mall',  time:Date.now()-90*60000,  responded:false },
+  { id:'fb3', order:'#r003', rating:4, comment:'Great family meal, value for money.', branch:'Main', time:Date.now()-2*3600000, responded:true  },
+  { id:'fb4', order:'#r004', rating:1, comment:'Wrong order delivered. Very disappointing.', branch:'Mall',  time:Date.now()-3*3600000, responded:false },
+  { id:'fb5', order:'#r005', rating:5, comment:'Best chicken in the city! Amazing spices.', branch:'Main', time:Date.now()-4*3600000, responded:true  },
+  { id:'fb6', order:'#r006', rating:3, comment:'Average, nothing special. Could improve sauce.', branch:'Main', time:Date.now()-5*3600000, responded:false },
+];
+
+function buildFeedback() {
+  const avg=(FEEDBACK.reduce((a,f)=>a+f.rating,0)/FEEDBACK.length);
+  const dist=[5,4,3,2,1].map(s=>({stars:s,count:FEEDBACK.filter(f=>f.rating===s).length}));
+  const maxDist=Math.max(...dist.map(d=>d.count));
+  const neg=FEEDBACK.filter(f=>f.rating<=2&&!f.responded);
+  const stars=r=>'⭐'.repeat(r)+'☆'.repeat(5-r);
+  return `
+  ${neg.length?`<div style="background:rgba(231,76,60,.07);border:1px solid rgba(231,76,60,.25);border-radius:6px;padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;gap:10px"><span style="font-size:20px">🚨</span><div><div style="font-family:'Fredoka',sans-serif;font-size:14px;color:#e74c3c;font-weight:600">${neg.length} negative review(s) need your response</div><div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted)">Respond before they go public on Google</div></div></div>`:''}
+  <div class="sg" style="margin-bottom:20px">
+    <div class="panel" style="text-align:center">
+      <div class="panel-title">⭐ OVERALL RATING</div>
+      <div class="rating-avg">${avg.toFixed(1)}</div>
+      <div style="font-size:28px;margin-bottom:8px">${'⭐'.repeat(Math.round(avg))}</div>
+      <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted)">${FEEDBACK.length} reviews total</div>
+      <div class="rating-dist" style="margin-top:16px;text-align:left">
+        ${dist.map(d=>`<div class="rd-row">
+          <span style="width:14px">${d.stars}⭐</span>
+          <div style="flex:1;background:rgba(255,255,255,.05);border-radius:10px;height:8px;overflow:hidden"><div class="rd-fill" style="width:${maxDist?Math.round(d.count/maxDist*100):0}%"></div></div>
+          <span style="width:20px;text-align:right">${d.count}</span>
+        </div>`).join('')}
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-title">📝 SUBMIT FEEDBACK</div>
+      <div style="margin-bottom:12px">
+        <label class="lbl-mono">Order Reference</label>
+        <input id="fb-order" placeholder="#r007" style="font-size:13px;padding:8px 12px"/>
+      </div>
+      <div style="margin-bottom:12px">
+        <label class="lbl-mono">Branch</label>
+        <select id="fb-branch" style="font-size:13px;padding:8px 12px"><option>Main</option><option>Mall</option></select>
+      </div>
+      <div style="margin-bottom:12px">
+        <label class="lbl-mono">Rating</label>
+        <div id="fb-stars" style="display:flex;gap:6px;margin-top:6px">
+          ${[1,2,3,4,5].map(s=>`<span class="star" onclick="window.fbSetRating(${s})" data-s="${s}" style="font-size:28px;cursor:pointer">☆</span>`).join('')}
+        </div>
+      </div>
+      <div style="margin-bottom:12px">
+        <label class="lbl-mono">Comment</label>
+        <textarea id="fb-comment" rows="3" style="width:100%;padding:10px 12px;background:rgba(255,255,255,.05);border:1px solid rgba(245,210,0,.2);border-radius:4px;color:var(--cream);font-family:'Fredoka',sans-serif;font-size:13px;resize:vertical;outline:none" placeholder="Customer feedback..."></textarea>
+      </div>
+      <button class="btn-sm btn-yolk" style="width:100%;padding:10px" onclick="window.fbSubmit()">Submit Feedback</button>
+    </div>
+  </div>
+  <div class="fb-grid">
+    ${[...FEEDBACK].sort((a,b)=>a.rating-b.rating).map(f=>`
+      <div class="fb-card" style="${f.rating<=2?'border-color:rgba(231,76,60,.3);background:rgba(231,76,60,.04)':''}">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start">
+          <div>
+            <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted)">${f.order} · ${f.branch} Branch</div>
+            <div class="star-row">${stars(f.rating)}</div>
+          </div>
+          ${f.responded?`<span class="badge bg" style="font-size:8px">RESPONDED</span>`:(f.rating<=2?`<span class="badge br" style="font-size:8px">URGENT</span>`:'')}
+        </div>
+        <div class="fb-comment">"${esc(f.comment)}"</div>
+        <div class="fb-meta">${Math.round((Date.now()-f.time)/60000)}m ago</div>
+        ${!f.responded?`<button class="btn-sm btn-dark" style="margin-top:8px;font-size:10px;padding:4px 10px;width:100%" onclick="window.fbRespond('${f.id}')">✉️ Mark Responded</button>`:''}
+      </div>`).join('')}
+  </div>`;
+}
+let _fbRating=0;
+window.fbSetRating = r => {
+  _fbRating=r;
+  const stars=document.querySelectorAll('#fb-stars .star');
+  stars.forEach(s=>{ s.textContent=parseInt(s.dataset.s)<=r?'⭐':'☆'; });
+};
+window.fbSubmit = () => {
+  if(!_fbRating){toast('Select a rating','error');return;}
+  const comment=$('fb-comment')?.value||'';
+  const order=$('fb-order')?.value||'#new';
+  const branch=$('fb-branch')?.value||'Main';
+  const wasNeg=_fbRating<=2;
+  FEEDBACK.unshift({id:'fb'+Date.now(),order,rating:_fbRating,comment,branch,time:Date.now(),responded:false});
+  _fbRating=0;
+  if(wasNeg) toast('⚠️ Negative review logged — respond ASAP!','warning');
+  else toast('✅ Feedback recorded! Thanks.','success');
+  mTab('feedback');
+};
+window.fbRespond = id => {
+  const f=FEEDBACK.find(x=>x.id===id); if(!f) return;
+  f.responded=true;
+  toast('Marked as responded!','success'); mTab('feedback');
+};
+
+// ── EDIT MODAL ─────────────────────────────────────────────────
+window.openEdit = wid => {
+  const w=WORKERS.find(x=>x.id===wid); if(!w) return;
+  $('em-name').value=w.name;
+  $('em-phone').value=w.phone;
+  $('em-rate').value=w.hourly_rate;
+  $('editModal')._wid=wid;
+  $('editModal').classList.add('show');
+};
+window.closeModal = () => $('editModal').classList.remove('show');
+window.saveEdit = () => {
+  const wid=$('editModal')._wid;
+  const w=WORKERS.find(x=>x.id===wid); if(!w) return;
+  w.hourly_rate=parseFloat($('em-rate').value)||w.hourly_rate;
+  toast('✅ Worker rate updated!','success');
+  closeModal();
+  mTab('staff');
+};
+
+// ── CLOCK ──────────────────────────────────────────────────────
+function initClock() {
+  clearInterval(S.clockInt);
+  S.clockInt=setInterval(()=>{
+    const el=$('clock'); if(el) el.textContent=new Date().toLocaleTimeString('en-US',{hour12:false});
+  },1000);
+}
+
+// ── BOOT ──────────────────────────────────────────────────────
+render();
+</script>
+</body>
+</html>
