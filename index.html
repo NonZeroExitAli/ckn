@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>CKN&CNKN — Staff Portal</title>
+<title>CKN&CKN — Staff Portal</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Fredoka:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -676,7 +676,7 @@ function buildAuth(){
   <div class="auth-card">
     <div class="auth-logo">
       <img src="${LOGO_SRC}" alt="logo"/>
-      <div class="auth-title">CKN&amp;CNKN</div>
+      <div class="auth-title">CKN&amp;CKN</div>
       <div class="auth-sub">🍗 ${t('staff_portal')}</div>
     </div>
     <div style="margin-bottom:20px;padding-bottom:18px;border-bottom:1px solid rgba(245,210,0,.1)">
@@ -761,7 +761,7 @@ function renderWorker(){
   <div class="topbar">
     <div class="brand">
       <img src="${LOGO_SRC}" class="brand-logo" alt="logo"/>
-      <div><div class="brand-name">CKN&amp;CNKN</div><div class="brand-sub">${t('staff_portal')}</div></div>
+      <div><div class="brand-name">CKN&amp;CKN</div><div class="brand-sub">${t('staff_portal')}</div></div>
     </div>
     <div class="top-right">
       ${langBar()}
@@ -891,11 +891,12 @@ function buildOrderCard(o,viewRole,delivWorkers){
   const nextLabel={new:'→ Start Prep',preparing:'→ Mark Ready',ready:o.type==='delivery'?'→ Picked Up':'→ Mark Served',pickedup:'→ DELIVERED'};
 
   // Who can do what:
-  // - cashier/cook: can advance new->preparing->ready->pickedup (NOT delivered)
+  // - cashier: can assign delivery, advance table orders new->preparing->ready->served
+  // - cook: can advance new->preparing->ready
   // - delivery worker (assigned): can mark pickedup->delivered
-  // - manager: full control
+  // - manager: VIEW ONLY — no action buttons
   const canAdvance=(status)=>{
-    if(isManager)return true;
+    if(isManager)return false; // manager view-only
     if(o.type==='delivery'){
       if(status==='pickedup')return isDelivery&&o.assignedTo===S.user?.id;
       return (isCashier||isDelivery)&&status!=='delivered';
@@ -904,7 +905,8 @@ function buildOrderCard(o,viewRole,delivWorkers){
   };
 
   const delivWorkersList=delivWorkers||WORKERS.filter(w=>w.role==='delivery');
-  const canAssign=(isCashier||isManager)&&o.type==='delivery'&&!o.assignedTo&&o.status==='new';
+  // Only cashier can assign delivery — not manager
+  const canAssign=isCashier&&o.type==='delivery'&&!o.assignedTo&&o.status==='new';
   
   return `
   <div class="order-item status-${o.status}">
@@ -923,14 +925,15 @@ function buildOrderCard(o,viewRole,delivWorkers){
       ${o.assignedName?`<div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--green);margin-top:4px">🛵 Assigned: ${esc(o.assignedName)}</div>`:''}
     </div>
     <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">
+      ${isManager?`<span class="badge bb" style="font-size:9px;padding:4px 8px">👁 View Only</span>`:''}
       ${canAssign&&delivWorkersList.length?`<select id="assign_${o.id}" style="font-size:11px;padding:4px 8px;width:130px">
         <option value="">— ${t('assign_delivery')} —</option>
         ${delivWorkersList.map(w=>`<option value="${w.id}_${w.name}">${esc(w.name)}</option>`).join('')}
       </select>
       <button class="btn btn-blue btn-sm" style="font-size:10px;padding:4px 10px;background:rgba(52,152,219,.15);color:var(--blue);border:1px solid rgba(52,152,219,.3)" onclick="assignDelivery('${o.id}')">Assign →</button>`:''}
       ${canAdvance(o.status)&&nextStatus[o.status]?`<button class="btn btn-yolk" style="padding:7px 14px;font-size:13px;white-space:nowrap" onclick="advanceOrder('${o.id}')">${nextLabel[o.status]}</button>`:''}
-      ${o.status==='pickedup'&&(isDelivery&&o.assignedTo===S.user?.id||isManager)?`<button class="btn btn-green" style="padding:7px 14px;font-size:13px" onclick="markDelivered('${o.id}')">✅ ${t('mark_delivered')}</button>`:''}
-      ${(isCashier||isManager)&&o.status!=='delivered'&&o.status!=='served'&&o.status!=='cancelled'?`<button class="btn btn-red" style="padding:4px 10px;font-size:10px;font-family:'DM Mono',monospace" onclick="cancelOrder('${o.id}')">✕ Cancel</button>`:''}
+      ${o.status==='pickedup'&&(isDelivery&&o.assignedTo===S.user?.id)?`<button class="btn btn-green" style="padding:7px 14px;font-size:13px" onclick="markDelivered('${o.id}')">✅ ${t('mark_delivered')}</button>`:''}
+      ${isCashier&&o.status!=='delivered'&&o.status!=='served'&&o.status!=='cancelled'?`<button class="btn btn-red" style="padding:4px 10px;font-size:10px;font-family:'DM Mono',monospace" onclick="cancelOrder('${o.id}')">✕ Cancel</button>`:''}
     </div>
   </div>`;
 }
@@ -963,8 +966,16 @@ window.markDelivered=id=>{
 function stampLoyalty(o){
   let loy=findLoyalty(o.phone);
   if(!loy){loy={phone:o.phone,name:o.name||'Customer',stamps:0,orders:0,joined:new Date().toISOString().split('T')[0]};LOYALTY.push(loy);}
-  loy.orders++;if(loy.stamps<10)loy.stamps++;
-  toast(loy.stamps===10?`🎁 ${loy.name} earned FREE ITEM!`:`Loyalty stamp for ${loy.name} (${loy.stamps}/10)`,'success');
+  loy.orders++;
+  // Auto loyalty: every 10 orders earns a free item. stamps = orders % 10 (cycles)
+  const prevCycle=Math.floor((loy.orders-1)/10);
+  const newCycle=Math.floor(loy.orders/10);
+  loy.stamps=loy.orders%10; // 0-9 progress in current cycle
+  if(newCycle>prevCycle){
+    toast(`🎁 ${loy.name} earned a FREE ITEM! (${loy.orders} orders total)`,'success');
+  } else {
+    toast(`Loyalty: ${loy.name} — ${loy.orders} orders (${loy.stamps}/10 to free item)`,'success');
+  }
 }
 window.cancelOrder=id=>{
   const o=ORDERS.find(x=>x.id===id);if(!o)return;
@@ -1130,7 +1141,7 @@ function renderManager(){
   <div class="topbar">
     <div class="brand">
       <img src="${LOGO_SRC}" class="brand-logo" alt="logo"/>
-      <div><div class="brand-name">CKN&amp;CNKN</div><div class="brand-sub">Manager Dashboard</div></div>
+      <div><div class="brand-name">CKN&amp;CKN</div><div class="brand-sub">Manager Dashboard</div></div>
     </div>
     <div class="top-right">
       ${langBar()}
@@ -1214,6 +1225,7 @@ function buildMgrOrders(){
   <div class="stat-grid" style="margin-bottom:14px">
     ${[['🆕 New',ORDERS.filter(o=>o.status==='new').length,'var(--blue)'],['👨‍🍳 Preparing',ORDERS.filter(o=>o.status==='preparing').length,'var(--yolk)'],['✅ Ready',ORDERS.filter(o=>o.status==='ready').length,'var(--green)'],['📦 Total Today',ORDERS.length,'var(--cream)']].map(([l,v,c])=>`<div class="stat-card"><div class="sc-label">${l}</div><div class="sc-value" style="color:${c}">${v}</div></div>`).join('')}
   </div>
+  <div class="info-bar">👁 Manager view: Orders are managed by cashiers and workers. You can monitor but not change order status.</div>
   <div class="panel" style="margin-bottom:12px">
     <div class="panel-title">🪑 TABLE MAP</div>
     <div class="table-map">
@@ -1221,16 +1233,12 @@ function buildMgrOrders(){
     </div>
   </div>
   <div class="panel">
-    <div class="panel-title" style="display:flex;justify-content:space-between;align-items:center">
-      <span>🍽️ ALL ACTIVE ORDERS</span>
-      <button class="btn btn-yolk btn-sm" style="padding:7px 14px" onclick="openNewOrderModal()">+ Table Order</button>
-    </div>
+    <div class="panel-title">🍽️ ALL ACTIVE ORDERS</div>
     <div class="order-queue">
       ${all.length===0?`<div class="empty"><div class="empty-icon">✅</div>No active orders.</div>`:
       all.sort((a,b)=>a.created-b.created).map(o=>buildOrderCard(o,'manager',delivWorkers)).join('')}
     </div>
-  </div>
-  ${buildNewOrderModalHTML()}`;
+  </div>`;
 }
 
 // ── MGR: DELIVERY ────────────────────────────────────────────
@@ -1669,19 +1677,10 @@ function buildMgrFeedback(){
   <div class="stat-grid" style="margin-bottom:14px">
     ${[['⭐ Total Reviews',FEEDBACK.length,'var(--cream)'],['😊 Positive',FEEDBACK.filter(f=>f.rating>=4).length,'var(--green)'],['😐 Neutral',FEEDBACK.filter(f=>f.rating===3).length,'var(--yolk)'],['😞 Negative',FEEDBACK.filter(f=>f.rating<=2&&!f.responded).length,'#e74c3c']].map(([l,v,c])=>`<div class="stat-card"><div class="sc-label">${l}</div><div class="sc-value" style="color:${c}">${v}</div></div>`).join('')}
   </div>
-  <div class="panel" style="margin-bottom:14px">
-    <div class="panel-title">📝 SUBMIT FEEDBACK (Walk-in)</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
-      <input id="fb-ref" placeholder="Order #" style="font-size:13px"/>
-      <input id="fb-branch" placeholder="Branch" style="font-size:13px"/>
-    </div>
-    <div style="margin-bottom:10px"><div id="fb-stars" style="display:flex;gap:4px">${[1,2,3,4,5].map(s=>`<span class="fb-star" data-s="${s}" onclick="fbRate(${s})">☆</span>`).join('')}</div></div>
-    <textarea id="fb-comment" rows="2" placeholder="Comments..." style="font-size:13px;resize:none;margin-bottom:10px"></textarea>
-    <button class="btn btn-yolk btn-sm" style="padding:8px 18px" onclick="fbSubmit()">Submit Feedback</button>
-  </div>
+  <div class="info-bar">ℹ️ Feedback is submitted by customers on the order page. Manager view is read-only.</div>
   <div class="panel">
-    <div class="panel-title">📋 ALL FEEDBACK</div>
-    ${FEEDBACK.length===0?`<div class="empty"><div class="empty-icon">⭐</div>No feedback yet.</div>`:
+    <div class="panel-title">📋 ALL CUSTOMER FEEDBACK</div>
+    ${FEEDBACK.length===0?`<div class="empty"><div class="empty-icon">⭐</div>No feedback yet. Customers submit feedback after their orders.</div>`:
     FEEDBACK.map(f=>`<div class="alert-item ${f.rating<=2?'critical':f.rating===3?'warning':'success'}" style="margin-bottom:6px">
       <div style="flex-shrink:0">
         ${'⭐'.repeat(f.rating)}${'☆'.repeat(5-f.rating)}
@@ -1692,15 +1691,11 @@ function buildMgrFeedback(){
       </div>
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
         <span class="al-time">${fmtAgo(f.time)}</span>
-        ${!f.responded?`<button class="btn btn-dark btn-sm" style="font-size:9px" onclick="fbRespond('${f.id}')">Mark Responded</button>`:`<span class="badge bg" style="font-size:8px">✓ Done</span>`}
+        ${!f.responded?`<span class="badge br" style="font-size:8px">Unread</span>`:`<span class="badge bg" style="font-size:8px">✓ Seen</span>`}
       </div>
     </div>`).join('')}
   </div>`;
 }
-let _fbRating2=0;
-window.fbRate=r=>{_fbRating2=r;document.querySelectorAll('#fb-stars .fb-star').forEach(s=>s.textContent=parseInt(s.dataset.s)<=r?'⭐':'☆');};
-window.fbSubmit=()=>{if(!_fbRating2){toast('Select a rating','error');return;}const comment=$('fb-comment')?.value||'';FEEDBACK.unshift({id:'fb'+Date.now(),orderRef:$('fb-ref')?.value||'',rating:_fbRating2,comment,branch:$('fb-branch')?.value||'Main',time:Date.now(),responded:false});_fbRating2=0;toast('Feedback recorded!','success');dbSave();mTab('feedback');};
-window.fbRespond=id=>{const f=FEEDBACK.find(x=>x.id===id);if(!f)return;f.responded=true;toast('Marked as responded!','success');dbSave();mTab('feedback');};
 
 // ── MGR: ALERTS ───────────────────────────────────────────────
 function buildMgrAlerts(){
@@ -1724,7 +1719,12 @@ function buildMgrAlerts(){
 // ══════════════════════════════════════════════════════════════
 // TIMER & CLOCK
 // ══════════════════════════════════════════════════════════════
-function initClock(){clearInterval(S.clockInt);S.clockInt=setInterval(()=>{const el=$('clock');if(el)el.textContent=new Date().toLocaleTimeString('en-US',{hour12:false});},1000);}
+function initClock(){
+  clearInterval(S.clockInt);
+  function tick(){const el=$('clock');if(el){const now=new Date();el.textContent=now.toLocaleTimeString('en-US',{hour12:false,hour:'2-digit',minute:'2-digit',second:'2-digit'});}}
+  tick();
+  S.clockInt=setInterval(tick,1000);
+}
 function startTimer(active){clearInterval(S.timerInt);if(!active)return;S.timerInt=setInterval(()=>{const el=$('tbig');if(el)el.textContent=fmtMs(Date.now()-active.start);},1000);}
 
 // ── MAPS LINK AUTO-EXTRACT (live event) ──────────────────────
