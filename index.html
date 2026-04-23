@@ -288,8 +288,9 @@ html[dir="rtl"] body{font-family:'Fredoka',sans-serif}
   <div class="modal-card">
     <div class="modal-title">➕ Add New Worker</div>
     <div class="fg">
-      <div><label class="lbl-mono">Name</label><input id="aw-name" placeholder="Full name"/></div>
-      <div><label class="lbl-mono">Phone</label><input id="aw-phone" type="tel" placeholder="e.g. 0501234567"/></div>
+      <div><label class="lbl-mono">Full Name</label><input id="aw-name" placeholder="e.g. Ahmed Hassan"/></div>
+      <div><label class="lbl-mono">Phone (used to sign in)</label><input id="aw-phone" type="tel" placeholder="e.g. 0501234567"/></div>
+      <div><label class="lbl-mono">Worker Number / ID</label><input id="aw-num" placeholder="e.g. W-007 (optional)"/></div>
       <div><label class="lbl-mono">Role</label>
         <select id="aw-role">
           <option value="cashier">Cashier</option>
@@ -297,7 +298,10 @@ html[dir="rtl"] body{font-family:'Fredoka',sans-serif}
           <option value="delivery">Delivery</option>
         </select>
       </div>
-      <div><label class="lbl-mono">Hourly Rate (€)</label><input type="number" id="aw-rate" value="12" min="1" step="0.5"/></div>
+      <div style="background:rgba(245,210,0,.04);border:1px solid rgba(245,210,0,.15);border-radius:4px;padding:12px">
+        <label class="lbl-mono" style="color:#f0c040">💰 Hourly Rate (€)</label>
+        <input type="number" id="aw-rate" value="12" min="1" step="0.5"/>
+      </div>
     </div>
     <div style="display:flex;gap:10px;margin-top:16px">
       <button class="btn btn-dark" style="flex:1;padding:10px;font-size:14px" onclick="document.getElementById('addWorkerModal').classList.remove('show')">Cancel</button>
@@ -395,6 +399,10 @@ html[dir="rtl"] body{font-family:'Fredoka',sans-serif}
         <div id="nom-loyalty-info" style="margin-top:5px;font-family:'DM Mono',monospace;font-size:10px;color:var(--green)"></div>
       </div>
       <div>
+        <label class="lbl-mono">Customer Name (optional)</label>
+        <input id="nom-custname" placeholder="e.g. Ahmed"/>
+      </div>
+      <div>
         <label class="lbl-mono">Add Items</label>
         <div style="display:flex;gap:8px;margin-bottom:8px">
           <select id="nom-item" style="flex:1;font-size:12px"></select>
@@ -444,6 +452,83 @@ const LANGS={
     worker_given_inv_access:'Worker given inventory access!',
     worker_inv_access_removed:'Inventory access removed!',
     gps_no_permission:'Location permission denied. Cannot verify branch proximity.',
+    // Live dashboard
+    staff_on_shift:'👥 Staff On Shift',active_orders:'📋 Active Orders',
+    deliveries_today:'🛵 Deliveries Today',revenue_today:'💶 Revenue Today',
+    low_stock:'⚠️ Low Stock',urgent_feedback:'⭐ Urgent Feedback',
+    staff_on_shift_title:'👷 STAFF ON SHIFT',no_one_clocked:'No one clocked in.',
+    kitchen_queue:'🍽️ LIVE KITCHEN QUEUE',kitchen_clear:'Kitchen is clear.',
+    low_stock_alerts:'⚠️ LOW STOCK ALERTS',left_min:'left (min:',
+    manager_dashboard_sub:'Manager Dashboard',
+    // Orders
+    mgr_view_only_orders:'👁 Manager view only — Orders are created and managed by cashiers and workers.',
+    new_lbl:'🆕 New',preparing_lbl:'👨‍🍳 Preparing',ready_lbl:'✅ Ready',total_today:'📦 Total Today',
+    table_map:'🪑 TABLE MAP',table_free:'Free',table_order:'order',all_active_orders:'🍽️ ALL ACTIVE ORDERS',no_active_orders:'No active orders right now.',no_active_orders_mgr:'No active orders.',
+    // Order card actions
+    start_prep:'→ Start Prep',mark_ready:'→ Mark Ready',mark_served:'→ Mark Served',
+    picked_up_action:'→ Picked Up',delivered_action:'→ DELIVERED',
+    assign_arrow:'Assign →',cancel:'✕ Cancel',view_only:'👁 VIEW ONLY',
+    assigned_lbl:'🛵 Assigned:',
+    // Delivery
+    mgr_view_only_del:'👁 Manager view only — Delivery assignments are done by cashiers. Riders mark deliveries as completed.',
+    waiting_rider:'⏳ Waiting Rider',in_transit:'🛵 In Transit',delivered:'✅ Delivered',
+    revenue:'💶 Revenue',all_delivery_orders:'🛵 ALL DELIVERY ORDERS',no_delivery_orders:'No delivery orders yet.',
+    new_del_waiting:'new delivery request(s) waiting!',tap_accept:'Tap Accept to take the order',
+    no_active_deliveries:'No active deliveries.',
+    // Inventory
+    items_low_reorder:'items low — Reorder needed',inventory_title:'📦 INVENTORY',add_item:'+ Add Item',
+    waste_log_title:'🗑 WASTE LOG',waste_est_cost:'Est. Cost Today:',no_waste:'No waste today.',
+    low_badge:'LOW',ok_badge:'OK',min_lbl:'Min:',read_only:'Read-only access',
+    view_only_inv:'👁 View only. Your manager can grant you edit access.',
+    item_low_stock:'item(s) low stock',waste_log_panel:'🗑 WASTE LOG',no_waste_today:'No waste logged today.',
+    add_btn:'+ Add',
+    // Staff
+    worker_mgmt:'👷 WORKER MANAGEMENT',add_worker:'+ Add Worker',
+    name_lbl:'Name',phone_lbl:'Phone',role_lbl:'Role',rate_lbl:'Rate/h',actions_lbl:'Actions',
+    edit_lbl:'✏️ Edit',remove_lbl:'✕ Remove',
+    // Scheduler
+    weekly_schedule:'📅 WEEKLY SCHEDULE',
+    // Salary
+    salary_title:'💶 SALARY & HOURS',total_hours:'Total Hours',total_earned:'Total Earned',shifts_lbl:'Shifts',
+    // Analytics
+    analytics_title:'📊 ANALYTICS',
+    // Loyalty
+    loyalty_title:'🎁 LOYALTY CARDS',total_members:'Total Members',stamps_issued:'Stamps Issued',
+    free_earned:'Free Items Earned',add_stamps:'+ Add Stamps',
+    no_loyalty:'No loyalty members yet.',
+    // Billing
+    billing_title:'🧾 BILLING',add_to_bill:'+ Add to Bill',clear_lbl:'Clear',charge_lbl:'Charge',
+    recent_receipts:'📋 RECENT RECEIPTS',
+    // Feedback
+    total_reviews:'⭐ Total Reviews',positive_lbl:'😊 Positive',neutral_lbl:'😐 Neutral',
+    negative_lbl:'😞 Negative',all_feedback:'📋 ALL CUSTOMER FEEDBACK',no_feedback:'No feedback yet.',
+    seen_badge:'✓ Seen',new_badge:'● New',positive_review:'Positive review',negative_review:'Negative review',
+    mgr_feedback_info:'👁 Manager view only — Feedback is submitted by customers via the order page or by cashiers at the counter.',
+    // Alerts
+    critical_lbl:'🚨 Critical',warnings_lbl:'⚠️ Warnings',success_lbl:'✅ Success',total_lbl:'📊 Total',
+    alert_feed:'🔔 ALERT FEED',refresh_lbl:'↻ Refresh',
+    all_normal:'All Systems Normal',no_alerts:'No critical alerts at this time.',
+    // Worker feedback form
+    submit_feedback:'📝 SUBMIT CUSTOMER FEEDBACK',record_feedback:'RECORD FEEDBACK FROM WALK-IN CUSTOMERS',
+    order_hash:'Order #',branch_lbl:'Branch',customer_phone_opt:'Customer Phone (optional)',
+    rating_lbl:'Rating',comments_lbl:'Comments',submit_feedback_btn:'📝 Submit Feedback',
+    recent_feedback:'📋 RECENT FEEDBACK',no_feedback_yet:'No feedback yet.',no_comment:'No comment',
+    select_rating:'Please select a rating first',feedback_recorded:'✅ Customer feedback recorded!',
+    // Worker orders
+    new_badge_order:'🆕',preparing_badge:'👨‍🍳',table_order_btn:'+ Table Order',
+    no_shifts_yet:'No shifts yet today.',elapsed_time:'ELAPSED TIME',
+    // Toasts & misc
+    shift_started:'Shift started! Have a great day 🍗',shift_ended:'Shift ended. Earned',
+    delivery_accepted:'Delivery accepted! 🛵',add_items_first:'Add items first',
+    add_at_least_one:'Add at least one item',enter_qty:'Enter quantity > 0',
+    cannot_exceed:'Cannot exceed current stock',enter_qty_inv:'Enter qty > 0',exceeds_stock:'Exceeds current stock',
+    worker_updated:'Worker updated!',worker_removed:'Worker removed',
+    branch_updated:'Branch updated!',branch_added:'Branch added!',branch_removed:'Branch removed',
+    item_updated:'Item updated!',item_added:'Item added!',enter_item_name:'Enter item name',
+    name_phone_required:'Name and phone required',phone_registered:'Phone already registered',
+    worker_added:'Worker added!',coords_extracted:'Coordinates extracted!',
+    name_coords_required:'Name and coordinates required',
+    no_shifts_panel:'No shifts yet today.',
   },
   it:{
     staff_portal:'Portale Staff',worker_signin:'👷 ACCESSO DIPENDENTE',phone:'Numero di Telefono',
@@ -469,6 +554,83 @@ const LANGS={
     worker_given_inv_access:'Accesso magazzino assegnato!',
     worker_inv_access_removed:'Accesso magazzino rimosso!',
     gps_no_permission:'Permesso posizione negato.',
+    // Live dashboard
+    staff_on_shift:'👥 Staff in Turno',active_orders:'📋 Ordini Attivi',
+    deliveries_today:'🛵 Consegne Oggi',revenue_today:'💶 Ricavi Oggi',
+    low_stock:'⚠️ Scorte Basse',urgent_feedback:'⭐ Feedback Urgenti',
+    staff_on_shift_title:'👷 STAFF IN TURNO',no_one_clocked:'Nessuno ha timbrato.',
+    kitchen_queue:'🍽️ CODA CUCINA LIVE',kitchen_clear:'Cucina libera.',
+    low_stock_alerts:'⚠️ AVVISI SCORTE BASSE',left_min:'rimasti (min:',
+    manager_dashboard_sub:'Dashboard Manager',
+    // Orders
+    mgr_view_only_orders:'👁 Solo visualizzazione — Gli ordini sono creati e gestiti da cassieri e dipendenti.',
+    new_lbl:'🆕 Nuovi',preparing_lbl:'👨‍🍳 In Preparazione',ready_lbl:'✅ Pronti',total_today:'📦 Totale Oggi',
+    table_map:'🪑 MAPPA TAVOLI',table_free:'Libero',table_order:'ordine',all_active_orders:'🍽️ TUTTI GLI ORDINI ATTIVI',no_active_orders:'Nessun ordine attivo al momento.',no_active_orders_mgr:'Nessun ordine attivo.',
+    // Order card actions
+    start_prep:'→ Inizia Preparazione',mark_ready:'→ Segna Pronto',mark_served:'→ Segna Servito',
+    picked_up_action:'→ Ritirato',delivered_action:'→ CONSEGNATO',
+    assign_arrow:'Assegna →',cancel:'✕ Annulla',view_only:'👁 SOLO VISUALIZZAZIONE',
+    assigned_lbl:'🛵 Assegnato:',
+    // Delivery
+    mgr_view_only_del:'👁 Solo visualizzazione — Le assegnazioni consegne sono fatte dai cassieri. I fattorini segnano le consegne completate.',
+    waiting_rider:'⏳ Attesa Fattorino',in_transit:'🛵 In Transito',delivered:'✅ Consegnato',
+    revenue:'💶 Ricavi',all_delivery_orders:'🛵 TUTTI GLI ORDINI DI CONSEGNA',no_delivery_orders:'Nessun ordine di consegna.',
+    new_del_waiting:'nuova/e richiesta/e in attesa!',tap_accept:'Tocca Accetta per prendere l\'ordine',
+    no_active_deliveries:'Nessuna consegna attiva.',
+    // Inventory
+    items_low_reorder:'articoli in esaurimento — Riordino necessario',inventory_title:'📦 MAGAZZINO',add_item:'+ Aggiungi Articolo',
+    waste_log_title:'🗑 REGISTRO SPRECHI',waste_est_cost:'Costo Stimato Oggi:',no_waste:'Nessuno spreco oggi.',
+    low_badge:'BASSO',ok_badge:'OK',min_lbl:'Min:',read_only:'Accesso in sola lettura',
+    view_only_inv:'👁 Solo lettura. Il manager può concederti l\'accesso in modifica.',
+    item_low_stock:'articolo/i con scorte basse',waste_log_panel:'🗑 REGISTRO SPRECHI',no_waste_today:'Nessuno spreco registrato oggi.',
+    add_btn:'+ Aggiungi',
+    // Staff
+    worker_mgmt:'👷 GESTIONE DIPENDENTI',add_worker:'+ Aggiungi Dipendente',
+    name_lbl:'Nome',phone_lbl:'Telefono',role_lbl:'Ruolo',rate_lbl:'Tariffa/h',actions_lbl:'Azioni',
+    edit_lbl:'✏️ Modifica',remove_lbl:'✕ Rimuovi',
+    // Scheduler
+    weekly_schedule:'📅 TURNI SETTIMANALI',
+    // Salary
+    salary_title:'💶 STIPENDI & ORE',total_hours:'Ore Totali',total_earned:'Totale Guadagnato',shifts_lbl:'Turni',
+    // Analytics
+    analytics_title:'📊 ANALISI',
+    // Loyalty
+    loyalty_title:'🎁 FIDELIZZAZIONE',total_members:'Membri Totali',stamps_issued:'Timbri Emessi',
+    free_earned:'Premi Riscattati',add_stamps:'+ Aggiungi Timbri',
+    no_loyalty:'Nessun membro fidelizzato.',
+    // Billing
+    billing_title:'🧾 FATTURAZIONE',add_to_bill:'+ Aggiungi al Conto',clear_lbl:'Svuota',charge_lbl:'Addebita',
+    recent_receipts:'📋 RICEVUTE RECENTI',
+    // Feedback
+    total_reviews:'⭐ Recensioni Totali',positive_lbl:'😊 Positive',neutral_lbl:'😐 Neutre',
+    negative_lbl:'😞 Negative',all_feedback:'📋 TUTTI I FEEDBACK CLIENTI',no_feedback:'Nessun feedback.',
+    seen_badge:'✓ Visto',new_badge:'● Nuovo',positive_review:'Recensione positiva',negative_review:'Recensione negativa',
+    mgr_feedback_info:'👁 Solo visualizzazione — Il feedback viene inviato dai clienti tramite la pagina ordini o dai cassieri al banco.',
+    // Alerts
+    critical_lbl:'🚨 Critici',warnings_lbl:'⚠️ Avvisi',success_lbl:'✅ OK',total_lbl:'📊 Totale',
+    alert_feed:'🔔 FEED AVVISI',refresh_lbl:'↻ Aggiorna',
+    all_normal:'Tutti i Sistemi Normali',no_alerts:'Nessun avviso critico al momento.',
+    // Worker feedback form
+    submit_feedback:'📝 INVIA FEEDBACK CLIENTE',record_feedback:'REGISTRA FEEDBACK DAI CLIENTI AL BANCO',
+    order_hash:'Ordine #',branch_lbl:'Filiale',customer_phone_opt:'Telefono Cliente (opzionale)',
+    rating_lbl:'Valutazione',comments_lbl:'Commenti',submit_feedback_btn:'📝 Invia Feedback',
+    recent_feedback:'📋 FEEDBACK RECENTI',no_feedback_yet:'Nessun feedback ancora.',no_comment:'Nessun commento',
+    select_rating:'Seleziona prima una valutazione',feedback_recorded:'✅ Feedback cliente registrato!',
+    // Worker orders
+    new_badge_order:'🆕',preparing_badge:'👨‍🍳',table_order_btn:'+ Ordine Tavolo',
+    no_shifts_yet:'Nessun turno oggi.',elapsed_time:'TEMPO TRASCORSO',
+    // Toasts & misc
+    shift_started:'Turno iniziato! Buona giornata 🍗',shift_ended:'Turno terminato. Guadagnato',
+    delivery_accepted:'Consegna accettata! 🛵',add_items_first:'Aggiungi prima degli articoli',
+    add_at_least_one:'Aggiungi almeno un articolo',enter_qty:'Inserisci quantità > 0',
+    cannot_exceed:'Non può superare la scorta attuale',enter_qty_inv:'Inserisci qty > 0',exceeds_stock:'Supera la scorta attuale',
+    worker_updated:'Dipendente aggiornato!',worker_removed:'Dipendente rimosso',
+    branch_updated:'Filiale aggiornata!',branch_added:'Filiale aggiunta!',branch_removed:'Filiale rimossa',
+    item_updated:'Articolo aggiornato!',item_added:'Articolo aggiunto!',enter_item_name:'Inserisci nome articolo',
+    name_phone_required:'Nome e telefono richiesti',phone_registered:'Telefono già registrato',
+    worker_added:'Dipendente aggiunto!',coords_extracted:'Coordinate estratte!',
+    name_coords_required:'Nome e coordinate richiesti',
+    no_shifts_panel:'Nessun turno oggi.',
   },
   ar:{
     staff_portal:'بوابة الموظفين',worker_signin:'👷 تسجيل دخول الموظف',phone:'رقم الهاتف',
@@ -494,6 +656,83 @@ const LANGS={
     worker_given_inv_access:'تم منح صلاحية المخزون!',
     worker_inv_access_removed:'تم إزالة صلاحية المخزون!',
     gps_no_permission:'تم رفض إذن الموقع.',
+    // Live dashboard
+    staff_on_shift:'👥 الموظفون في الدوام',active_orders:'📋 الطلبات النشطة',
+    deliveries_today:'🛵 توصيلات اليوم',revenue_today:'💶 إيرادات اليوم',
+    low_stock:'⚠️ مخزون منخفض',urgent_feedback:'⭐ تقييمات عاجلة',
+    staff_on_shift_title:'👷 الموظفون في الدوام',no_one_clocked:'لم يسجل أحد دخوله.',
+    kitchen_queue:'🍽️ قائمة انتظار المطبخ',kitchen_clear:'المطبخ خالٍ.',
+    low_stock_alerts:'⚠️ تنبيهات المخزون المنخفض',left_min:'متبقية (الحد الأدنى:',
+    manager_dashboard_sub:'لوحة المدير',
+    // Orders
+    mgr_view_only_orders:'👁 عرض للمدير فقط — يتم إنشاء الطلبات وإدارتها من قبل الكاشيرين والموظفين.',
+    new_lbl:'🆕 جديدة',preparing_lbl:'👨‍🍳 قيد التحضير',ready_lbl:'✅ جاهزة',total_today:'📦 إجمالي اليوم',
+    table_map:'🪑 خريطة الطاولات',table_free:'شاغرة',table_order:'طلب',all_active_orders:'🍽️ جميع الطلبات النشطة',no_active_orders:'لا توجد طلبات نشطة.',no_active_orders_mgr:'لا توجد طلبات نشطة.',
+    // Order card actions
+    start_prep:'← بدء التحضير',mark_ready:'← تحديد جاهز',mark_served:'← تحديد مُقدَّم',
+    picked_up_action:'← تم الاستلام',delivered_action:'← تم التوصيل',
+    assign_arrow:'تعيين ←',cancel:'✕ إلغاء',view_only:'👁 عرض فقط',
+    assigned_lbl:'🛵 مُعيَّن لـ:',
+    // Delivery
+    mgr_view_only_del:'👁 عرض للمدير فقط — يتم تعيين التوصيلات من قبل الكاشيرين. يُحدد السائقون اكتمال التوصيل.',
+    waiting_rider:'⏳ انتظار سائق',in_transit:'🛵 في الطريق',delivered:'✅ تم التوصيل',
+    revenue:'💶 الإيرادات',all_delivery_orders:'🛵 جميع طلبات التوصيل',no_delivery_orders:'لا توجد طلبات توصيل.',
+    new_del_waiting:'طلب/طلبات جديدة تنتظر!',tap_accept:'اضغط قبول لأخذ الطلب',
+    no_active_deliveries:'لا توجد توصيلات نشطة.',
+    // Inventory
+    items_low_reorder:'عناصر منخفضة — يلزم إعادة الطلب',inventory_title:'📦 المخزون',add_item:'+ إضافة عنصر',
+    waste_log_title:'🗑 سجل الهدر',waste_est_cost:'التكلفة التقديرية اليوم:',no_waste:'لا هدر اليوم.',
+    low_badge:'منخفض',ok_badge:'جيد',min_lbl:'الحد الأدنى:',read_only:'قراءة فقط',
+    view_only_inv:'👁 قراءة فقط. يمكن للمدير منحك صلاحية التعديل.',
+    item_low_stock:'عنصر/عناصر بمخزون منخفض',waste_log_panel:'🗑 سجل الهدر',no_waste_today:'لم يُسجَّل هدر اليوم.',
+    add_btn:'+ إضافة',
+    // Staff
+    worker_mgmt:'👷 إدارة الموظفين',add_worker:'+ إضافة موظف',
+    name_lbl:'الاسم',phone_lbl:'الهاتف',role_lbl:'الدور',rate_lbl:'الأجر/ساعة',actions_lbl:'الإجراءات',
+    edit_lbl:'✏️ تعديل',remove_lbl:'✕ حذف',
+    // Scheduler
+    weekly_schedule:'📅 الجدول الأسبوعي',
+    // Salary
+    salary_title:'💶 الرواتب والساعات',total_hours:'إجمالي الساعات',total_earned:'إجمالي الأرباح',shifts_lbl:'الدوامات',
+    // Analytics
+    analytics_title:'📊 التحليلات',
+    // Loyalty
+    loyalty_title:'🎁 برنامج الولاء',total_members:'إجمالي الأعضاء',stamps_issued:'الطوابع الصادرة',
+    free_earned:'المكافآت المستلمة',add_stamps:'+ إضافة طوابع',
+    no_loyalty:'لا يوجد أعضاء في برنامج الولاء.',
+    // Billing
+    billing_title:'🧾 الفواتير',add_to_bill:'+ إضافة للحساب',clear_lbl:'مسح',charge_lbl:'تحصيل',
+    recent_receipts:'📋 الإيصالات الأخيرة',
+    // Feedback
+    total_reviews:'⭐ إجمالي التقييمات',positive_lbl:'😊 إيجابية',neutral_lbl:'😐 محايدة',
+    negative_lbl:'😞 سلبية',all_feedback:'📋 جميع تقييمات العملاء',no_feedback:'لا توجد تقييمات.',
+    seen_badge:'✓ مُشاهَد',new_badge:'● جديد',positive_review:'تقييم إيجابي',negative_review:'تقييم سلبي',
+    mgr_feedback_info:'👁 عرض للمدير فقط — يُرسل التقييم من قبل العملاء أو الكاشيرين.',
+    // Alerts
+    critical_lbl:'🚨 حرجة',warnings_lbl:'⚠️ تحذيرات',success_lbl:'✅ ناجح',total_lbl:'📊 الإجمالي',
+    alert_feed:'🔔 تغذية التنبيهات',refresh_lbl:'↻ تحديث',
+    all_normal:'جميع الأنظمة طبيعية',no_alerts:'لا توجد تنبيهات حرجة حالياً.',
+    // Worker feedback form
+    submit_feedback:'📝 إرسال تقييم العميل',record_feedback:'تسجيل تقييم من العملاء',
+    order_hash:'رقم الطلب',branch_lbl:'الفرع',customer_phone_opt:'هاتف العميل (اختياري)',
+    rating_lbl:'التقييم',comments_lbl:'التعليقات',submit_feedback_btn:'📝 إرسال التقييم',
+    recent_feedback:'📋 التقييمات الأخيرة',no_feedback_yet:'لا توجد تقييمات بعد.',no_comment:'لا يوجد تعليق',
+    select_rating:'يرجى اختيار تقييم أولاً',feedback_recorded:'✅ تم تسجيل تقييم العميل!',
+    // Worker orders
+    new_badge_order:'🆕',preparing_badge:'👨‍🍳',table_order_btn:'+ طلب طاولة',
+    no_shifts_yet:'لا توجد دوامات اليوم.',elapsed_time:'الوقت المنقضي',
+    // Toasts & misc
+    shift_started:'بدأ الدوام! يوم سعيد 🍗',shift_ended:'انتهى الدوام. الأرباح',
+    delivery_accepted:'تم قبول التوصيل! 🛵',add_items_first:'أضف عناصر أولاً',
+    add_at_least_one:'أضف عنصراً واحداً على الأقل',enter_qty:'أدخل كمية > 0',
+    cannot_exceed:'لا يمكن تجاوز المخزون الحالي',enter_qty_inv:'أدخل qty > 0',exceeds_stock:'يتجاوز المخزون الحالي',
+    worker_updated:'تم تحديث الموظف!',worker_removed:'تم حذف الموظف',
+    branch_updated:'تم تحديث الفرع!',branch_added:'تم إضافة الفرع!',branch_removed:'تم حذف الفرع',
+    item_updated:'تم تحديث العنصر!',item_added:'تم إضافة العنصر!',enter_item_name:'أدخل اسم العنصر',
+    name_phone_required:'الاسم والهاتف مطلوبان',phone_registered:'الهاتف مسجل بالفعل',
+    worker_added:'تم إضافة الموظف!',coords_extracted:'تم استخراج الإحداثيات!',
+    name_coords_required:'الاسم والإحداثيات مطلوبة',
+    no_shifts_panel:'لا توجد دوامات اليوم.',
   }
 };
 let LANG='en';
@@ -511,7 +750,7 @@ function setLang(l){
 // ═══════════════════════════════════════════════════
 // SHARED DATABASE (localStorage for cross-tab sharing)
 // ═══════════════════════════════════════════════════
-const LOGO_SRC='data:image/png;base64,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';
+const LOGO_SRC='data:image/jpeg;base64,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';
 
 // ── DB helpers ──────────────────────────────────────────────
 function dbGet(key,def){try{const v=localStorage.getItem('ckncnkn_'+key);return v?JSON.parse(v):def;}catch{return def;}}
@@ -534,22 +773,22 @@ let BRANCHES=dbGet('branches',[
 ]);
 
 let MENU=dbGet('menu_dyn',[
-  {id:'m1',name:'Crispy Chicken Bucket', cat:'Buckets',price:89, icon:'🪣',desc:'Golden crispy whole chicken, serves 2-3',sold:142,branchPrices:{}},
-  {id:'m2',name:'Spicy Wings (10 pcs)',  cat:'Wings',  price:45, icon:'🍗',desc:'Fiery buffalo wings with ranch dip',sold:287,branchPrices:{}},
-  {id:'m3',name:'Zinger Burger',         cat:'Burgers',price:32, icon:'🍔',desc:'Spicy crispy chicken fillet, jalapeño sauce',sold:198,branchPrices:{}},
-  {id:'m4',name:'Chicken Wrap',          cat:'Wraps',  price:28, icon:'🌯',desc:'Grilled chicken, fresh veggies, garlic sauce',sold:166,branchPrices:{}},
-  {id:'m5',name:'Family Feast Combo',    cat:'Combos', price:145,icon:'🍱',desc:'2 buckets + 4 sides + 4 drinks',sold:94,branchPrices:{}},
-  {id:'m6',name:'Cheese Fries',          cat:'Sides',  price:18, icon:'🍟',desc:'Crispy fries loaded with cheddar',sold:324,branchPrices:{}},
-  {id:'m7',name:'Coleslaw',              cat:'Sides',  price:10, icon:'🥗',desc:'Creamy homemade coleslaw',sold:211,branchPrices:{}},
-  {id:'m8',name:'Jalapeño Dip',          cat:'Sauces', price:8,  icon:'🫙',desc:'House-made jalapeño hot sauce',sold:189,branchPrices:{}},
-  {id:'m9',name:'Lemonade (L)',          cat:'Drinks', price:16, icon:'🍋',desc:'Fresh-squeezed lemonade, large',sold:253,branchPrices:{}},
-  {id:'m10',name:'Pepsi Can',            cat:'Drinks', price:8,  icon:'🥤',desc:'330ml chilled Pepsi',sold:308,branchPrices:{}},
+  {id:'m1',name:'Secchio Pollo Croccante', cat:'Secchi',  price:89, icon:'🪣',desc:'Pollo croccante dorato intero, per 2-3 persone',sold:142,branchPrices:{}},
+  {id:'m2',name:'Ali Piccanti (10 pz)',    cat:'Ali',     price:45, icon:'🍗',desc:'Ali di pollo piccanti con salsa ranch',sold:287,branchPrices:{}},
+  {id:'m3',name:'Zinger Burger',           cat:'Burger',  price:32, icon:'🍔',desc:'Filetto di pollo croccante piccante, salsa jalapeño',sold:198,branchPrices:{}},
+  {id:'m4',name:'Wrap di Pollo',           cat:'Wrap',    price:28, icon:'🌯',desc:'Pollo alla griglia, verdure fresche, salsa aglio',sold:166,branchPrices:{}},
+  {id:'m5',name:'Combo Festa in Famiglia', cat:'Combo',   price:145,icon:'🍱',desc:'2 secchi + 4 contorni + 4 bevande',sold:94,branchPrices:{}},
+  {id:'m6',name:'Patatine al Formaggio',   cat:'Contorni',price:18, icon:'🍟',desc:'Patatine croccanti con cheddar fuso',sold:324,branchPrices:{}},
+  {id:'m7',name:'Coleslaw',               cat:'Contorni',price:10, icon:'🥗',desc:'Coleslaw cremoso fatto in casa',sold:211,branchPrices:{}},
+  {id:'m8',name:'Salsa Jalapeño',          cat:'Salse',   price:8,  icon:'🫙',desc:'Salsa piccante jalapeño della casa',sold:189,branchPrices:{}},
+  {id:'m9',name:'Limonata (L)',            cat:'Bevande', price:16, icon:'🍋',desc:'Limonata fresca spremitura, grande',sold:253,branchPrices:{}},
+  {id:'m10',name:'Pepsi Lattina',          cat:'Bevande', price:8,  icon:'🥤',desc:'330ml Pepsi ghiacciata',sold:308,branchPrices:{}},
 ]);
 
 const TABLES=Array.from({length:14},(_,i)=>i+1);
 const DAYS=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-const DEL_STEPS=['Order Placed','Preparing','Ready','Picked Up','Delivered'];
-const TAB_STEPS=['Order Placed','Preparing','Ready','Served'];
+const DEL_STEPS=['Ordine Ricevuto','In Preparazione','Pronto','Ritirato','Consegnato'];
+const TAB_STEPS=['Ordine Ricevuto','In Preparazione','Pronto','Servito'];
 
 const now=Date.now();
 const SHIFTS=[
@@ -568,10 +807,10 @@ const SCHEDULE={
 };
 
 let ORDERS=dbGet('orders',[
-  {id:'ord001',type:'table',table:3, status:'preparing',items:[{id:'m2',name:'Spicy Wings (10 pcs)',qty:2,price:45},{id:'m10',name:'Pepsi Can',qty:2,price:8}],  total:106,phone:'0512345678',name:'Youssef',addr:null,  created:now-12*60000,branch:'Main',assignedTo:null,assignedName:null},
-  {id:'ord002',type:'table',table:7, status:'new',      items:[{id:'m3',name:'Zinger Burger',qty:1,price:32},{id:'m6',name:'Cheese Fries',qty:1,price:18}],        total:50, phone:null,        name:null,    addr:null,  created:now-4*60000, branch:'Main',assignedTo:null,assignedName:null},
-  {id:'ord003',type:'delivery',table:null,status:'new', items:[{id:'m5',name:'Family Feast Combo',qty:1,price:145}],                                               total:145,phone:'0534567890',name:'Nadia', addr:'45 Al-Nahda St, Apt 3',created:now-2*60000,branch:'Main',assignedTo:null,assignedName:null,deliveryFee:3.5},
-  {id:'ord004',type:'delivery',table:null,status:'new', items:[{id:'m1',name:'Crispy Chicken Bucket',qty:1,price:89},{id:'m9',name:'Lemonade (L)',qty:2,price:16}],total:121,phone:'0523456789',name:'Tariq', addr:'78 King Fahd Rd',created:now-1*60000,branch:'Main',assignedTo:null,assignedName:null,deliveryFee:3.5},
+  {id:'ord001',type:'table',table:3, status:'preparing',items:[{id:'m2',name:'Ali Piccanti (10 pz)',qty:2,price:45},{id:'m10',name:'Pepsi Lattina',qty:2,price:8}],  total:106,phone:'0512345678',name:'Youssef',addr:null,  created:now-12*60000,branch:'Main',assignedTo:null,assignedName:null},
+  {id:'ord002',type:'table',table:7, status:'new',      items:[{id:'m3',name:'Zinger Burger',qty:1,price:32},{id:'m6',name:'Patatine al Formaggio',qty:1,price:18}],        total:50, phone:null,        name:null,    addr:null,  created:now-4*60000, branch:'Main',assignedTo:null,assignedName:null},
+  {id:'ord003',type:'delivery',table:null,status:'new', items:[{id:'m5',name:'Combo Festa in Famiglia',qty:1,price:145}],                                               total:145,phone:'0534567890',name:'Nadia', addr:'45 Al-Nahda St, Apt 3',created:now-2*60000,branch:'Main',assignedTo:null,assignedName:null,deliveryFee:3.5},
+  {id:'ord004',type:'delivery',table:null,status:'new', items:[{id:'m1',name:'Secchio Pollo Croccante',qty:1,price:89},{id:'m9',name:'Limonata (L)',qty:2,price:16}],total:121,phone:'0523456789',name:'Tariq', addr:'78 King Fahd Rd',created:now-1*60000,branch:'Main',assignedTo:null,assignedName:null,deliveryFee:3.5},
 ]);
 let LOYALTY=dbGet('loyalty',[
   {phone:'0512345678',name:'Youssef Al-Amin',stamps:9, orders:9, joined:'2025-11-01'},
@@ -756,6 +995,7 @@ function renderWorker(){
   if(u.role==='cashier'||u.role==='cook'){tabs.push({id:'orders',label:t('orders'),badge:pendingOrders});}
   if(u.role==='delivery'){tabs.push({id:'deliveries',label:t('deliveries'),badge:unassignedDels+myDelActive});}
   if(u.inv_perm||u.role==='manager'){tabs.push({id:'inventory',label:t('inventory')});}
+  if(u.role==='cashier'){tabs.push({id:'feedback',label:t('feedback')});}
 
   $('root').innerHTML=`
   <div class="topbar">
@@ -787,8 +1027,60 @@ function buildWPanel(u,active,myShifts){
   if(S.wTab==='orders')return buildWorkerOrders(u);
   if(S.wTab==='deliveries')return buildWorkerDeliveries(u);
   if(S.wTab==='inventory')return buildWorkerInventory(u);
+  if(S.wTab==='feedback')return buildWorkerFeedback(u);
   return '';
 }
+
+// ── WORKER FEEDBACK (Cashier submits on behalf of walk-in customers) ─
+function buildWorkerFeedback(u){
+  return `
+  <div class="panel" style="margin-bottom:14px">
+    <div class="panel-title">📝 SUBMIT CUSTOMER FEEDBACK</div>
+    <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);margin-bottom:12px;letter-spacing:1px">RECORD FEEDBACK FROM WALK-IN CUSTOMERS</div>
+    <div class="fg">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div><label class="lbl-mono">Order #</label><input id="fb-ref" placeholder="e.g. ord001" style="font-size:13px"/></div>
+        <div><label class="lbl-mono">Branch</label><input id="fb-branch" placeholder="Main" style="font-size:13px" value="Main"/></div>
+      </div>
+      <div><label class="lbl-mono">Customer Phone (optional)</label><input id="fb-phone" type="tel" placeholder="e.g. 0501234567" style="font-size:13px"/></div>
+      <div>
+        <label class="lbl-mono">Rating</label>
+        <div id="fb-stars" style="display:flex;gap:8px;margin-top:4px">${[1,2,3,4,5].map(s=>`<span class="fb-star" data-s="${s}" onclick="fbRateW(${s})" style="font-size:28px;cursor:pointer;transition:transform .1s">☆</span>`).join('')}</div>
+      </div>
+      <div><label class="lbl-mono">Comments</label><textarea id="fb-comment" rows="3" placeholder="Customer comments..." style="font-size:13px;resize:none"></textarea></div>
+      <button class="btn btn-yolk" style="padding:12px" onclick="fbSubmitWorker()">📝 Submit Feedback</button>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="panel-title">📋 RECENT FEEDBACK</div>
+    ${FEEDBACK.slice(0,6).length===0?`<div class="empty"><div class="empty-icon">⭐</div>'+t('no_feedback_yet')+'</div>`:
+    FEEDBACK.slice(0,6).map(f=>`<div style="padding:8px 0;border-bottom:1px solid rgba(245,210,0,.06)">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px">
+        <span>${'⭐'.repeat(f.rating)}${'☆'.repeat(5-f.rating)}</span>
+        <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted)">${fmtAgo(f.time)} · #${f.orderRef||'?'}</span>
+      </div>
+      <div style="font-size:13px;color:var(--cream)">${f.comment?esc(f.comment.slice(0,60)):'No comment'}</div>
+    </div>`).join('')}
+  </div>`;
+}
+let _fbRatingW=0;
+window.fbRateW=r=>{_fbRatingW=r;document.querySelectorAll('#fb-stars .fb-star').forEach(s=>{const v=parseInt(s.dataset.s);s.textContent=v<=r?'⭐':'☆';s.style.transform=v===r?'scale(1.2)':'scale(1)';});};
+window.fbSubmitWorker=()=>{
+  if(!_fbRatingW){toast(t('select_rating'),'error');return;}
+  const comment=$('fb-comment')?.value?.trim()||'';
+  const ref=$('fb-ref')?.value?.trim()||'';
+  const branch=$('fb-branch')?.value?.trim()||'Main';
+  const phone=$('fb-phone')?.value?.trim()||'';
+  FEEDBACK.unshift({id:'fb'+Date.now(),orderRef:ref,rating:_fbRatingW,comment,branch,time:Date.now(),responded:false,phone:phone||null,submittedBy:S.user.name});
+  _fbRatingW=0;
+  document.querySelectorAll('#fb-stars .fb-star').forEach(s=>{s.textContent='☆';s.style.transform='scale(1)';});
+  if($('fb-comment'))$('fb-comment').value='';
+  if($('fb-ref'))$('fb-ref').value='';
+  if($('fb-phone'))$('fb-phone').value='';
+  toast(t('feedback_recorded'),'success');
+  dbSave();
+  renderWorker();
+};
 
 // ── SHIFT TAB ──────────────────────────────────────────────
 function buildWorkerShift(u,active,myShifts){
@@ -812,7 +1104,7 @@ function buildWorkerShift(u,active,myShifts){
   <div class="table-wrap">
     <div style="padding:10px 14px;border-bottom:1px solid rgba(245,210,0,.08);font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:2px;color:var(--yolk)">📋 ${t('my_shifts')}</div>
     <table><thead><tr><th>${t('location')}</th><th>In</th><th>Out</th><th>${t('hours')}</th><th>${t('earnings')}</th><th>${t('status')}</th></tr></thead>
-    <tbody>${myShifts.length===0?`<tr><td colspan="6"><div class="empty"><div class="empty-icon">🍗</div>No shifts yet today.</div></td></tr>`:
+    <tbody>${myShifts.length===0?`<tr><td colspan="6"><div class="empty"><div class="empty-icon">🍗</div>'+t('no_shifts_yet')+'</div></td></tr>`:
       myShifts.map(s=>`<tr>
         <td style="color:var(--blue)">${esc(s.location)}</td>
         <td style="font-family:monospace;font-size:12px">${fmtTime(s.start)}</td>
@@ -835,7 +1127,7 @@ window.wEnd=()=>{
   const s=SHIFTS.find(x=>x.worker===S.user.id&&x.status==='working');if(!s)return;
   s.end=Date.now();s.status='completed';
   s.hours=(s.end-s.start)/3600000;s.earnings=s.hours*S.user.hourly_rate;
-  S.shift=null;toast(`Shift ended. Earned €${s.earnings.toFixed(2)} 💰`,'success');renderWorker();
+  S.shift=null;toast(`${t('shift_ended')} €${s.earnings.toFixed(2)} 💰`,'success');renderWorker();
 };
 
 // ── WORKER ORDERS TAB (cashier/cook) ────────────────────────
@@ -847,8 +1139,8 @@ function buildWorkerOrders(u){
   return `
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
     <div style="display:flex;gap:8px">
-      <span class="badge bb" style="font-size:11px;padding:5px 10px">🆕 ${newCount} New</span>
-      <span class="badge by" style="font-size:11px;padding:5px 10px">👨‍🍳 ${prepCount} Preparing</span>
+      <span class="badge bb" style="font-size:11px;padding:5px 10px">${t('new_lbl')} ${newCount}</span>
+      <span class="badge by" style="font-size:11px;padding:5px 10px">${t('preparing_lbl')} ${prepCount}</span>
     </div>
     ${u.role==='cashier'?`<button class="btn btn-yolk btn-sm" style="padding:7px 14px" onclick="openNewOrderModal()">+ Table Order</button>`:''}
   </div>
@@ -860,7 +1152,7 @@ function buildWorkerOrders(u){
         const cls=tOrds.length?(tOrds.some(o=>o.status==='new')?'has-order':'occupied'):'';
         return `<div class="t-card ${cls}" onclick="toast('Table ${t}: ${tOrds.length?tOrds.length+' order(s)':'Free'}','info')">
           <div>🪑</div><div class="t-num">${t}</div>
-          <div class="t-status">${tOrds.length?tOrds.length+' order':'Free'}</div>
+          <div class="t-status">${tOrds.length?tOrds.length+' '+t('table_order'):'Free'}</div>
         </div>`;
       }).join('')}
     </div>
@@ -868,7 +1160,7 @@ function buildWorkerOrders(u){
   <div class="panel">
     <div class="panel-title">🍽️ ALL ACTIVE ORDERS</div>
     <div class="order-queue">
-      ${active.length===0?`<div class="empty"><div class="empty-icon">✅</div>No active orders right now.</div>`:
+      ${active.length===0?`<div class="empty"><div class="empty-icon">✅</div>'+t('no_active_orders')+'</div>`:
       active.sort((a,b)=>a.created-b.created).map(o=>buildOrderCard(o,'cashier',delivWorkers)).join('')}
     </div>
   </div>
@@ -877,37 +1169,38 @@ function buildWorkerOrders(u){
 
 // ── ORDER CARD (new unified) ─────────────────────────────────
 function buildOrderCard(o,viewRole,delivWorkers){
-  const isCashier=viewRole==='cashier'||viewRole==='cook';
+  const isCashier=viewRole==='cashier';
+  const isCook=viewRole==='cook';
   const isDelivery=viewRole==='delivery';
   const isManager=viewRole==='manager';
   const loy=o.phone?findLoyalty(o.phone):null;
 
-  // Delivery status flow:
-  // new -> preparing -> ready -> pickedup -> delivered
-  // Anyone can advance until pickedup; only the assigned delivery worker can mark delivered
+  // Status flow:
+  // new -> preparing -> ready -> pickedup(delivery) / served(table)
+  // -> delivered (delivery only, by assigned rider)
   const delSteps={new:'preparing',preparing:'ready',ready:'pickedup'};
   const tabSteps={new:'preparing',preparing:'ready',ready:'served'};
   const nextStatus=o.type==='delivery'?delSteps:tabSteps;
-  const nextLabel={new:'→ Start Prep',preparing:'→ Mark Ready',ready:o.type==='delivery'?'→ Picked Up':'→ Mark Served',pickedup:'→ DELIVERED'};
+  const nextLabel={new:t('start_prep'),preparing:t('mark_ready'),ready:o.type==='delivery'?'→ Picked Up':'→ Mark Served',pickedup:'→ DELIVERED'};
 
-  // Who can do what:
-  // - cashier: can assign delivery, advance table orders new->preparing->ready->served
-  // - cook: can advance new->preparing->ready
-  // - delivery worker (assigned): can mark pickedup->delivered
-  // - manager: VIEW ONLY — no action buttons
+  // Permission rules:
+  // - Delivery assignment: CASHIER only (not manager, not cook)
+  // - Status advancement: cashier/cook for table/delivery up to ready; delivery worker for pickedup->delivered
+  // - Manager: VIEW ONLY — no status changes, no assignment
   const canAdvance=(status)=>{
-    if(isManager)return false; // manager view-only
+    if(isManager) return false; // manager view-only
     if(o.type==='delivery'){
-      if(status==='pickedup')return isDelivery&&o.assignedTo===S.user?.id;
-      return (isCashier||isDelivery)&&status!=='delivered';
+      if(status==='pickedup') return isDelivery && o.assignedTo===S.user?.id;
+      return (isCashier||isCook) && status!=='delivered';
     }
-    return isCashier&&status!=='served';
+    return (isCashier||isCook) && status!=='served';
   };
 
   const delivWorkersList=delivWorkers||WORKERS.filter(w=>w.role==='delivery');
-  // Only cashier can assign delivery — not manager
-  const canAssign=isCashier&&o.type==='delivery'&&!o.assignedTo&&o.status==='new';
-  
+  // Only cashier can assign delivery (not manager)
+  const canAssign=isCashier && o.type==='delivery' && !o.assignedTo && o.status==='new';
+  const canCancel=(isCashier||isCook) && !isManager && o.status!=='delivered' && o.status!=='served' && o.status!=='cancelled';
+
   return `
   <div class="order-item status-${o.status}">
     <div style="flex:1;min-width:0">
@@ -917,7 +1210,7 @@ function buildOrderCard(o,viewRole,delivWorkers){
         ${orderStatusBadge(o.status)}
         <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);margin-left:auto">${fmtAgo(o.created)}</span>
       </div>
-      ${o.phone?`<div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);margin-bottom:4px">📱 ${esc(o.phone)} ${loy?`· <span style="color:var(--green)">${loy.name} (${loy.stamps}/10 stamps)</span>`:''}</div>`:''}
+      ${o.phone?`<div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);margin-bottom:4px">📱 ${esc(o.phone)} ${loy?`· <span style="color:var(--green)">${loy.name} (${loy.stamps}/10 stamps · ${loy.orders} orders)</span>`:''}</div>`:''}
       <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:6px">
         ${o.items.map(i=>`<span style="background:rgba(255,255,255,.04);border:1px solid rgba(245,210,0,.1);border-radius:4px;padding:2px 8px;font-size:12px">${i.qty}× ${esc(i.name)} <span style="color:var(--yolk)">€${i.qty*i.price}</span></span>`).join('')}
       </div>
@@ -925,7 +1218,6 @@ function buildOrderCard(o,viewRole,delivWorkers){
       ${o.assignedName?`<div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--green);margin-top:4px">🛵 Assigned: ${esc(o.assignedName)}</div>`:''}
     </div>
     <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">
-      ${isManager?`<span class="badge bb" style="font-size:9px;padding:4px 8px">👁 View Only</span>`:''}
       ${canAssign&&delivWorkersList.length?`<select id="assign_${o.id}" style="font-size:11px;padding:4px 8px;width:130px">
         <option value="">— ${t('assign_delivery')} —</option>
         ${delivWorkersList.map(w=>`<option value="${w.id}_${w.name}">${esc(w.name)}</option>`).join('')}
@@ -933,7 +1225,8 @@ function buildOrderCard(o,viewRole,delivWorkers){
       <button class="btn btn-blue btn-sm" style="font-size:10px;padding:4px 10px;background:rgba(52,152,219,.15);color:var(--blue);border:1px solid rgba(52,152,219,.3)" onclick="assignDelivery('${o.id}')">Assign →</button>`:''}
       ${canAdvance(o.status)&&nextStatus[o.status]?`<button class="btn btn-yolk" style="padding:7px 14px;font-size:13px;white-space:nowrap" onclick="advanceOrder('${o.id}')">${nextLabel[o.status]}</button>`:''}
       ${o.status==='pickedup'&&(isDelivery&&o.assignedTo===S.user?.id)?`<button class="btn btn-green" style="padding:7px 14px;font-size:13px" onclick="markDelivered('${o.id}')">✅ ${t('mark_delivered')}</button>`:''}
-      ${isCashier&&o.status!=='delivered'&&o.status!=='served'&&o.status!=='cancelled'?`<button class="btn btn-red" style="padding:4px 10px;font-size:10px;font-family:'DM Mono',monospace" onclick="cancelOrder('${o.id}')">✕ Cancel</button>`:''}
+      ${canCancel?`<button class="btn btn-red" style="padding:4px 10px;font-size:10px;font-family:'DM Mono',monospace" onclick="cancelOrder('${o.id}')">✕ Cancel</button>`:''}
+      ${isManager?`<span style="font-family:'DM Mono',monospace;font-size:8px;color:var(--muted);letter-spacing:.5px">👁 VIEW ONLY</span>`:''}
     </div>
   </div>`;
 }
@@ -949,8 +1242,14 @@ window.advanceOrder=id=>{
   const o=ORDERS.find(x=>x.id===id);if(!o)return;
   const del={new:'preparing',preparing:'ready',ready:o.type==='delivery'?'pickedup':'served'};
   const prev=o.status;o.status=del[prev]||o.status;
-  if((o.status==='served')&&o.phone){stampLoyalty(o);}
-  else{toast(`Order → ${o.status}`,'success');}
+  // When table order is served, add to receipts for dashboard revenue tracking
+  if(o.status==='served'&&prev==='ready'){
+    RECEIPTS.unshift({id:'r'+Date.now(),items:[...o.items],payment:'cash',total:o.total,time:Date.now(),type:'table',table:o.table});
+    if(o.phone) stampLoyalty(o);
+    else toast(`✅ Table ${o.table} order served! €${o.total}`,'success');
+  } else {
+    toast(`Order → ${o.status}`,'success');
+  }
   dbSave();
   if(S.screen==='worker')renderWorker();else renderManager();
 };
@@ -958,6 +1257,7 @@ window.markDelivered=id=>{
   const o=ORDERS.find(x=>x.id===id);if(!o)return;
   if(o.status!=='pickedup'){toast('Order must be picked up first!','warning');return;}
   o.status='delivered';
+  RECEIPTS.unshift({id:'r'+Date.now(),items:[...o.items],payment:'cash',total:o.total,time:Date.now(),type:'delivery',phone:o.phone});
   if(o.phone)stampLoyalty(o);
   else toast('Order delivered! ✅','success');
   dbSave();
@@ -967,14 +1267,14 @@ function stampLoyalty(o){
   let loy=findLoyalty(o.phone);
   if(!loy){loy={phone:o.phone,name:o.name||'Customer',stamps:0,orders:0,joined:new Date().toISOString().split('T')[0]};LOYALTY.push(loy);}
   loy.orders++;
-  // Auto loyalty: every 10 orders earns a free item. stamps = orders % 10 (cycles)
-  const prevCycle=Math.floor((loy.orders-1)/10);
-  const newCycle=Math.floor(loy.orders/10);
-  loy.stamps=loy.orders%10; // 0-9 progress in current cycle
-  if(newCycle>prevCycle){
-    toast(`🎁 ${loy.name} earned a FREE ITEM! (${loy.orders} orders total)`,'success');
+  // Auto-calculate stamps: stamps = orders mod 10 (0 means just earned free item)
+  const prevStamps = loy.stamps;
+  loy.stamps = loy.orders % 10;
+  const earnedFree = (loy.orders % 10 === 0); // every 10th order earns a free item
+  if(earnedFree){
+    toast(`🎁 ${loy.name} earned FREE ITEM! (${loy.orders} orders total)`,'success');
   } else {
-    toast(`Loyalty: ${loy.name} — ${loy.orders} orders (${loy.stamps}/10 to free item)`,'success');
+    toast(`✅ Loyalty stamp for ${loy.name} — ${loy.stamps}/10 (${loy.orders} total orders)`,'success');
   }
 }
 window.cancelOrder=id=>{
@@ -1014,10 +1314,15 @@ window.nomSubmit=()=>{
   if(!_nomItems.length){toast('Add at least one item','error');return;}
   const table=parseInt($('nom-table')?.value)||1;
   const phone=($('nom-phone')?.value||'').trim();
+  const custName=($('nom-custname')?.value||'').trim();
   const total=_nomItems.reduce((a,i)=>a+i.qty*i.price,0);
-  const ord={id:'ord'+Date.now(),type:'table',table,status:'new',items:_nomItems.map(i=>({...i})),total,phone:phone||null,name:null,addr:null,created:Date.now(),branch:'Main',assignedTo:null,assignedName:null};
-  ORDERS.push(ord);if(phone){let loy=findLoyalty(phone);if(!loy){loy={phone,name:'Customer',stamps:0,orders:0,joined:new Date().toISOString().split('T')[0]};LOYALTY.push(loy);}}
-  dbSave();closeNewOrder();toast(`Table ${table} order placed!`,'success');renderWorker();
+  const ord={id:'ord'+Date.now(),type:'table',table,status:'new',items:_nomItems.map(i=>({...i})),total,phone:phone||null,name:custName||null,addr:null,created:Date.now(),branch:'Main',assignedTo:null,assignedName:null};
+  ORDERS.push(ord);
+  // Add to loyalty if phone given
+  if(phone){let loy=findLoyalty(phone);if(!loy){loy={phone,name:custName||'Customer',stamps:0,orders:0,joined:new Date().toISOString().split('T')[0]};LOYALTY.push(loy);}}
+  dbSave();closeNewOrder();
+  toast(`🪑 Table ${table} order placed! €${total.toFixed(2)}`,'success');
+  renderWorker();
 };
 
 // ── WORKER DELIVERY TAB ──────────────────────────────────────
@@ -1046,7 +1351,7 @@ function buildWorkerDeliveries(u){
   </div>`:''}
   <div class="panel" style="margin-bottom:12px">
     <div class="panel-title">${t('active_deliveries')} (${mine.length})</div>
-    ${mine.length===0?`<div class="empty"><div class="empty-icon">🛵</div>No active deliveries.</div>`:
+    ${mine.length===0?`<div class="empty"><div class="empty-icon">🛵</div>'+t('no_active_deliveries')+'</div>`:
     mine.map(o=>`<div class="order-item status-${o.status}" style="margin-bottom:8px">
       <div style="flex:1">
         <div style="font-family:'Fredoka',sans-serif;font-size:14px;color:var(--cream);margin-bottom:4px">${esc(o.name)} — ${esc(o.addr)}</div>
@@ -1055,7 +1360,7 @@ function buildWorkerDeliveries(u){
         <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--yolk);margin-top:4px">€${o.total}</div>
       </div>
       <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">
-        ${o.status!=='pickedup'&&o.status!=='delivered'?`<button class="btn btn-yolk btn-sm" onclick="advanceOrder('${o.id}')">${{new:'→ Start Prep',preparing:'→ Mark Ready',ready:t('picked_up')}[o.status]||'→ Next'}</button>`:''}
+        ${o.status!=='pickedup'&&o.status!=='delivered'?`<button class="btn btn-yolk btn-sm" onclick="advanceOrder('${o.id}')">${{new:t('start_prep'),preparing:t('mark_ready'),ready:t('picked_up')}[o.status]||'→ Next'}</button>`:''}
         ${o.status==='pickedup'?`<button class="btn btn-green btn-sm" onclick="markDelivered('${o.id}')">✅ ${t('mark_delivered')}</button>`:''}
       </div>
     </div>`).join('')}
@@ -1104,7 +1409,7 @@ function buildWorkerInventory(u){
   </div>
   <div class="panel" style="margin-top:14px">
     <div class="panel-title">🗑 WASTE LOG</div>
-    ${WASTE_LOG.length===0?`<div class="empty"><div class="empty-icon">✅</div>No waste logged today.</div>`:
+    ${WASTE_LOG.length===0?`<div class="empty"><div class="empty-icon">✅</div>'+t('no_waste_today')+'</div>`:
     WASTE_LOG.slice(0,8).map(w=>`<div class="waste-row">
       <span style="color:var(--cream)">${w.item}</span>
       <span style="color:#e74c3c">-${w.qty} ${w.unit}</span>
@@ -1205,12 +1510,12 @@ function buildMgrLive(){
   <div class="sg">
     <div class="panel">
       <div class="panel-title">👷 STAFF ON SHIFT</div>
-      ${onShift.length===0?`<div class="empty"><div class="empty-icon">👤</div>No one clocked in.</div>`:
-      onShift.map(s=>{const w=WORKERS.find(x=>x.id===s.worker)||{name:'?',role:'?',hourly_rate:0};const hrs=(Date.now()-s.start)/3600000;return `<div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid rgba(245,210,0,.06)"><div><div style="font-family:'Fredoka',sans-serif;font-size:14px;font-weight:600">${esc(w.name)}</div><div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted)">${esc(w.role)} · ${esc(s.location)} · Since ${fmtTime(s.start)}</div></div><div style="text-align:right"><div style="font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--green)">${hrs.toFixed(1)}h</div><div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--yolk)">€${(hrs*w.hourly_rate).toFixed(2)}</div></div></div>`;}).join('')}
+      ${onShift.length===0?`<div class="empty"><div class="empty-icon">👤</div>'+t('no_one_clocked')+'</div>`:
+      onShift.map(s=>{const w=WORKERS.find(x=>x.id===s.worker)||{name:'?',role:'?',hourly_rate:0};const hrs=(Date.now()-s.start)/3600000;return `<div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid rgba(245,210,0,.06)"><div><div style="font-family:'Fredoka',sans-serif;font-size:14px;font-weight:600">${esc(w.name)}</div><div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted)">${esc(w.role)} · ${esc(s.location)} · '+t('shift')[:1]+' ${fmtTime(s.start)}</div></div><div style="text-align:right"><div style="font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--green)">${hrs.toFixed(1)}h</div><div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--yolk)">€${(hrs*w.hourly_rate).toFixed(2)}</div></div></div>`;}).join('')}
     </div>
     <div class="panel">
       <div class="panel-title">🍽️ LIVE KITCHEN QUEUE</div>
-      ${activeOrds.length===0?`<div class="empty"><div class="empty-icon">✅</div>Kitchen is clear.</div>`:
+      ${activeOrds.length===0?`<div class="empty"><div class="empty-icon">✅</div>'+t('kitchen_clear')+'</div>`:
       activeOrds.slice(0,6).map(o=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(245,210,0,.06)"><div>${o.type==='delivery'?`<span class="order-type-del">🛵</span>`:`<span class="order-type-tbl">T${o.table}</span>`}<span style="font-size:12px;color:var(--cream);margin-left:6px">${o.items.map(i=>i.qty+'×'+i.name).join(', ').slice(0,40)}</span></div><div style="display:flex;align-items:center;gap:8px"><span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted)">${fmtAgo(o.created)}</span>${orderStatusBadge(o.status)}</div></div>`).join('')}
     </div>
   </div>
@@ -1222,20 +1527,22 @@ function buildMgrOrders(){
   const all=ORDERS.filter(o=>o.status!=='served'&&o.status!=='delivered'&&o.status!=='cancelled');
   const delivWorkers=WORKERS.filter(w=>w.role==='delivery');
   return `
-  <div class="stat-grid" style="margin-bottom:14px">
-    ${[['🆕 New',ORDERS.filter(o=>o.status==='new').length,'var(--blue)'],['👨‍🍳 Preparing',ORDERS.filter(o=>o.status==='preparing').length,'var(--yolk)'],['✅ Ready',ORDERS.filter(o=>o.status==='ready').length,'var(--green)'],['📦 Total Today',ORDERS.length,'var(--cream)']].map(([l,v,c])=>`<div class="stat-card"><div class="sc-label">${l}</div><div class="sc-value" style="color:${c}">${v}</div></div>`).join('')}
+  <div style="background:rgba(52,152,219,.06);border:1px solid rgba(52,152,219,.2);border-radius:6px;padding:10px 14px;margin-bottom:14px;font-family:'DM Mono',monospace;font-size:10px;color:var(--blue)">
+    👁 Manager view only — Orders are created and managed by cashiers and workers.
   </div>
-  <div class="info-bar">👁 Manager view: Orders are managed by cashiers and workers. You can monitor but not change order status.</div>
+  <div class="stat-grid" style="margin-bottom:14px">
+    ${[['🆕 New',ORDERS.filter(o=>o.status==='new').length,'var(--blue)'],[t('preparing_lbl'),ORDERS.filter(o=>o.status==='preparing').length,'var(--yolk)'],['✅ Ready',ORDERS.filter(o=>o.status==='ready').length,'var(--green)'],['📦 Total Today',ORDERS.length,'var(--cream)']].map(([l,v,c])=>`<div class="stat-card"><div class="sc-label">${l}</div><div class="sc-value" style="color:${c}">${v}</div></div>`).join('')}
+  </div>
   <div class="panel" style="margin-bottom:12px">
     <div class="panel-title">🪑 TABLE MAP</div>
     <div class="table-map">
-      ${TABLES.map(t=>{const tO=ORDERS.filter(o=>o.table===t&&o.status!=='served'&&o.status!=='cancelled');return `<div class="t-card ${tO.length?(tO.some(o=>o.status==='new')?'has-order':'occupied'):''}"><div>🪑</div><div class="t-num">${t}</div><div class="t-status">${tO.length?tO.length+' order':'Free'}</div></div>`;}).join('')}
+      ${TABLES.map(t=>{const tO=ORDERS.filter(o=>o.table===t&&o.status!=='served'&&o.status!=='cancelled');return `<div class="t-card ${tO.length?(tO.some(o=>o.status==='new')?'has-order':'occupied'):''}"><div>🪑</div><div class="t-num">${t}</div><div class="t-status">${tO.length?tO.length+' '+t('table_order'):'Free'}</div></div>`;}).join('')}
     </div>
   </div>
   <div class="panel">
     <div class="panel-title">🍽️ ALL ACTIVE ORDERS</div>
     <div class="order-queue">
-      ${all.length===0?`<div class="empty"><div class="empty-icon">✅</div>No active orders.</div>`:
+      ${all.length===0?`<div class="empty"><div class="empty-icon">✅</div>'+t('no_active_orders_mgr')+'</div>`:
       all.sort((a,b)=>a.created-b.created).map(o=>buildOrderCard(o,'manager',delivWorkers)).join('')}
     </div>
   </div>`;
@@ -1249,23 +1556,18 @@ function buildMgrDelivery(){
   const done=dels.filter(o=>o.status==='delivered');
   const delivWorkers=WORKERS.filter(w=>w.role==='delivery');
   return `
+  <div style="background:rgba(52,152,219,.06);border:1px solid rgba(52,152,219,.2);border-radius:6px;padding:10px 14px;margin-bottom:14px;font-family:'DM Mono',monospace;font-size:10px;color:var(--blue)">
+    👁 Manager view only — Delivery assignments are done by cashiers. Riders mark deliveries as completed.
+  </div>
   <div class="stat-grid" style="margin-bottom:14px">
     ${[['⏳ Waiting Rider',waiting.length,'var(--crisp)'],['🛵 In Transit',active.length,'var(--yolk)'],['✅ Delivered',done.length,'var(--green)'],['💶 Revenue','€'+dels.reduce((a,o)=>a+o.total,0),'var(--blue)']].map(([l,v,c])=>`<div class="stat-card"><div class="sc-label">${l}</div><div class="sc-value" style="color:${c}">${v}</div></div>`).join('')}
   </div>
   <div class="panel">
-    <div class="panel-title" style="display:flex;justify-content:space-between;align-items:center">
-      <span>🛵 ALL DELIVERY ORDERS</span>
-      <button class="btn btn-yolk btn-sm" style="padding:7px 14px" onclick="mgrAddDelivery()">+ New Delivery</button>
-    </div>
-    ${dels.length===0?`<div class="empty"><div class="empty-icon">🛵</div>No delivery orders yet.</div>`:
+    <div class="panel-title">🛵 ALL DELIVERY ORDERS</div>
+    ${dels.length===0?`<div class="empty"><div class="empty-icon">🛵</div>'+t('no_delivery_orders')+'</div>`:
     dels.map(o=>buildOrderCard(o,'manager',delivWorkers)).join('')}
   </div>`;
 }
-window.mgrAddDelivery=()=>{
-  const item=MENU[Math.floor(Math.random()*MENU.length)];
-  const ord={id:'ord'+Date.now(),type:'delivery',table:null,status:'new',items:[{id:item.id,name:item.name,qty:1,price:item.price}],total:item.price+3.5,phone:'0500000000',name:'New Customer',addr:'45 Prince Sultan Rd',created:Date.now(),branch:'Main',assignedTo:null,assignedName:null,deliveryFee:3.5};
-  ORDERS.push(ord);dbSave();toast('New delivery request added!','success');mTab('delivery');
-};
 
 // ── MGR: INVENTORY ───────────────────────────────────────────
 function buildMgrInventory(){
@@ -1274,7 +1576,7 @@ function buildMgrInventory(){
   return `
   ${low.length?`<div style="background:rgba(231,76,60,.07);border:1px solid rgba(231,76,60,.25);border-radius:6px;padding:10px 14px;margin-bottom:12px;display:flex;align-items:center;gap:8px"><span>⚠️</span><div><div style="font-size:13px;color:#e74c3c;font-weight:600">${low.length} items low — Reorder needed</div><div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted)">${low.map(i=>i.name).join(', ')}</div></div></div>`:''}
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
-    <div style="font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:2px;color:var(--yolk)">📦 INVENTORY</div>
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:2px;color:var(--yolk)">'+t('inventory_title')+'</div>
     <button class="btn btn-yolk btn-sm" style="padding:8px 14px" onclick="openAddInv()">+ Add Item</button>
   </div>
   <div class="inv-grid" style="margin-bottom:14px">
@@ -1300,7 +1602,7 @@ function buildMgrInventory(){
   </div>
   <div class="panel">
     <div class="panel-title">🗑 WASTE LOG — Est. Cost Today: <span style="color:#e74c3c">€${wasteCost.toFixed(2)}</span></div>
-    ${WASTE_LOG.length===0?`<div class="empty"><div class="empty-icon">✅</div>No waste today.</div>`:
+    ${WASTE_LOG.length===0?`<div class="empty"><div class="empty-icon">✅</div>'+t('no_waste')+'</div>`:
     WASTE_LOG.slice(0,10).map(w=>`<div class="waste-row"><span style="color:var(--cream)">${w.item}</span><span style="color:#e74c3c">-${w.qty} ${w.unit}</span><span>${w.reason}</span><span style="color:var(--muted)">${w.by||'Worker'}</span><span style="color:var(--muted)">${fmtAgo(w.time)}</span></div>`).join('')}
   </div>`;
 }
@@ -1345,9 +1647,10 @@ function buildMgrStaff(){
   </div>
   <div class="table-wrap">
     <table>
-      <thead><tr><th>Name</th><th>Phone</th><th>Role</th><th>Rate/h</th><th>${t('inventory_perm')}</th><th>Actions</th></tr></thead>
+      <thead><tr><th>#</th><th>'+t('name_lbl')+'</th><th>'+t('phone_lbl')+'</th><th>'+t('role_lbl')+'</th><th>'+t('rate_lbl')+'</th><th>${t('inventory_perm')}</th><th>'+t('actions_lbl')+'</th></tr></thead>
       <tbody>
         ${WORKERS.map(w=>`<tr>
+          <td style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted)">${esc(w.worker_num||'—')}</td>
           <td style="font-weight:600">${esc(w.name)}</td>
           <td style="font-family:'DM Mono',monospace;font-size:12px">${esc(w.phone)}</td>
           <td>${esc(w.role)}</td>
@@ -1397,9 +1700,10 @@ window.submitAddWorker=()=>{
   const phone=($('aw-phone')?.value||'').trim();
   const role=$('aw-role')?.value||'cashier';
   const rate=parseFloat($('aw-rate')?.value)||12;
+  const workerNum=($('aw-num')?.value||'').trim();
   if(!name||!phone){toast('Name and phone required','error');return;}
   if(WORKERS.find(w=>normPhone(w.phone)===normPhone(phone))){toast('Phone already registered','warning');return;}
-  WORKERS.push({id:'w'+Date.now(),name,phone,role,hourly_rate:rate,inv_perm:false});
+  WORKERS.push({id:'w'+Date.now(),name,phone,role,hourly_rate:rate,worker_num:workerNum||null,inv_perm:false});
   toast('Worker added!','success');dbSave();$('addWorkerModal').classList.remove('show');mTab('staff');
 };
 
@@ -1536,43 +1840,44 @@ window.saveMenuItem=()=>{
 
 // ── MGR: LOYALTY ──────────────────────────────────────────────
 function buildMgrLoyalty(){
+  const freeReady=LOYALTY.filter(c=>c.orders>0&&c.orders%10===0);
   return `
   <div class="stat-grid" style="margin-bottom:14px">
-    ${[['👥 Members',LOYALTY.length,'var(--cream)'],['🎁 Free Items Ready',LOYALTY.filter(c=>c.stamps>=10).length,'var(--yolk)'],['⭐ Avg Orders',Math.round(LOYALTY.reduce((a,c)=>a+c.orders,0)/Math.max(1,LOYALTY.length)),'var(--green)'],['📱 Total Orders',LOYALTY.reduce((a,c)=>a+c.orders,0),'var(--blue)']].map(([l,v,c])=>`<div class="stat-card"><div class="sc-label">${l}</div><div class="sc-value" style="color:${c}">${v}</div></div>`).join('')}
+    ${[['👥 Members',LOYALTY.length,'var(--cream)'],['🎁 Free Items Ready',freeReady.length,'var(--crisp)'],['⭐ Avg Orders',Math.round(LOYALTY.reduce((a,c)=>a+c.orders,0)/Math.max(1,LOYALTY.length)),'var(--green)'],['📱 Total Orders',LOYALTY.reduce((a,c)=>a+c.orders,0),'var(--blue)']].map(([l,v,c])=>`<div class="stat-card"><div class="sc-label">${l}</div><div class="sc-value" style="color:${c}">${v}</div></div>`).join('')}
+  </div>
+  <div style="background:rgba(46,204,113,.06);border:1px solid rgba(46,204,113,.2);border-radius:6px;padding:10px 14px;margin-bottom:14px;font-family:'DM Mono',monospace;font-size:10px;color:var(--green)">
+    🤖 Loyalty is fully automatic — stamps are awarded when orders complete. Every 10th order earns a free item.
   </div>
   <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
     <input id="loy-search" placeholder="Search by name or phone..." style="flex:1;min-width:200px;font-size:13px" oninput="mTab('loyalty')"/>
-    <input id="loy-addphone" placeholder="New member phone" style="width:180px;font-size:13px"/>
-    <input id="loy-addname" placeholder="Name" style="width:140px;font-size:13px"/>
-    <button class="btn btn-yolk btn-sm" style="padding:8px 14px" onclick="loyAddMember()">+ Add Member</button>
   </div>
   <div class="loy-grid">
     ${LOYALTY.filter(c=>{const q=($('loy-search')?.value||'').toLowerCase();return !q||c.name.toLowerCase().includes(q)||c.phone.includes(q);}).map(c=>{
-      const free=c.stamps>=10;
+      const stampsOnCard = c.orders % 10; // current progress toward next reward
+      const totalRewards = Math.floor(c.orders / 10);
+      const free = c.orders > 0 && c.orders % 10 === 0;
+      const displayStamps = free ? 10 : stampsOnCard;
       return `<div class="loy-card" style="${free?'border-color:rgba(255,107,53,.4);background:rgba(255,107,53,.04)':''}">
         <div style="display:flex;justify-content:space-between;align-items:flex-start">
           <div>
             <div style="font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:1px">${esc(c.name)} ${free?'🎉':''}</div>
-            <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted)">${esc(c.phone)} · ${c.orders} orders</div>
+            <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted)">${esc(c.phone)} · ${c.orders} total orders · ${totalRewards} rewards earned</div>
           </div>
-          <span class="${free?'badge bo':'badge bb'}" style="font-size:9px">${c.stamps}/10</span>
+          <span class="${free?'badge bo':'badge bb'}" style="font-size:9px">${displayStamps}/10</span>
         </div>
-        <div class="stamp-row">${Array.from({length:10},(_,i)=>`<div class="stamp ${i<c.stamps?(i===9&&free?'free':'filled'):''}">${i<c.stamps?'🍗':''}</div>`).join('')}</div>
-        ${free?`<div style="background:rgba(255,107,53,.1);border:1px solid rgba(255,107,53,.25);border-radius:4px;padding:7px 10px;margin-top:6px;font-family:'DM Mono',monospace;font-size:10px;color:var(--crisp);display:flex;justify-content:space-between;align-items:center"><span>🎁 FREE ITEM READY!</span><button class="btn btn-red btn-sm" style="font-size:10px;padding:3px 8px" onclick="loyRedeem('${c.phone}')">Redeem</button></div>`:`<div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);margin-top:4px">${10-c.stamps} stamps until free item</div>`}
-        <div style="display:flex;gap:6px;margin-top:8px">
-          <button class="btn btn-dark btn-sm" style="flex:1;font-size:10px" onclick="loyStamp('${c.phone}')">+1 Stamp</button>
-          <button class="btn btn-dark btn-sm" style="flex:1;font-size:10px;color:var(--blue)" onclick="toast('Offer sent to ${esc(c.name)}!','success')">📱 Offer</button>
-        </div>
+        <div class="stamp-row">${Array.from({length:10},(_,i)=>`<div class="stamp ${i<displayStamps?(i===9&&free?'free':'filled'):''}">${i<displayStamps?'🍗':''}</div>`).join('')}</div>
+        ${free?`<div style="background:rgba(255,107,53,.1);border:1px solid rgba(255,107,53,.25);border-radius:4px;padding:7px 10px;margin-top:6px;font-family:'DM Mono',monospace;font-size:10px;color:var(--crisp);display:flex;justify-content:space-between;align-items:center"><span>🎁 FREE ITEM READY!</span><button class="btn btn-red btn-sm" style="font-size:10px;padding:3px 8px" onclick="loyRedeem('${c.phone}')">Redeem</button></div>`:`<div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);margin-top:4px">${10-displayStamps} more orders until free item</div>`}
       </div>`;}).join('')}
   </div>`;
 }
-window.loyStamp=phone=>{const c=findLoyalty(phone);if(!c)return;if(c.stamps>=10){toast('Redeem free item first!','warning');return;}c.stamps++;c.orders++;toast(`Stamp added (${c.stamps}/10)`,'success');dbSave();mTab('loyalty');};
-window.loyRedeem=phone=>{const c=findLoyalty(phone);if(!c)return;c.stamps=0;toast(`🎁 Free item redeemed for ${c.name}!`,'success');dbSave();mTab('loyalty');};
-window.loyAddMember=()=>{
-  const ph=($('loy-addphone')?.value||'').trim();const nm=($('loy-addname')?.value||'').trim()||'Customer';
-  if(!ph){toast('Enter phone number','error');return;}if(findLoyalty(ph)){toast('Already exists!','warning');return;}
-  LOYALTY.push({phone:ph,name:nm,stamps:0,orders:0,joined:new Date().toISOString().split('T')[0]});
-  toast('Member added!','success');dbSave();mTab('loyalty');
+window.loyRedeem=phone=>{
+  const c=findLoyalty(phone);if(!c)return;
+  // Reset by adding a phantom order to make orders not divisible by 10
+  // Actually just set a redeemed flag tracked separately - simplest: increment orders by 1 to move past milestone
+  c.orders++; // move past the reward milestone so it won't show free again until next 10
+  c.stamps = c.orders % 10;
+  toast(`🎁 Free item redeemed for ${c.name}! Next reward in ${10 - c.stamps} orders.`,'success');
+  dbSave();mTab('loyalty');
 };
 
 // ── MGR: ANALYTICS ───────────────────────────────────────────
@@ -1677,21 +1982,23 @@ function buildMgrFeedback(){
   <div class="stat-grid" style="margin-bottom:14px">
     ${[['⭐ Total Reviews',FEEDBACK.length,'var(--cream)'],['😊 Positive',FEEDBACK.filter(f=>f.rating>=4).length,'var(--green)'],['😐 Neutral',FEEDBACK.filter(f=>f.rating===3).length,'var(--yolk)'],['😞 Negative',FEEDBACK.filter(f=>f.rating<=2&&!f.responded).length,'#e74c3c']].map(([l,v,c])=>`<div class="stat-card"><div class="sc-label">${l}</div><div class="sc-value" style="color:${c}">${v}</div></div>`).join('')}
   </div>
-  <div class="info-bar">ℹ️ Feedback is submitted by customers on the order page. Manager view is read-only.</div>
+  <div style="background:rgba(52,152,219,.06);border:1px solid rgba(52,152,219,.2);border-radius:6px;padding:10px 14px;margin-bottom:14px;font-family:'DM Mono',monospace;font-size:10px;color:var(--blue)">
+    👁 Manager view only — Feedback is submitted by customers via the order page or by cashiers at the counter.
+  </div>
   <div class="panel">
     <div class="panel-title">📋 ALL CUSTOMER FEEDBACK</div>
-    ${FEEDBACK.length===0?`<div class="empty"><div class="empty-icon">⭐</div>No feedback yet. Customers submit feedback after their orders.</div>`:
+    ${FEEDBACK.length===0?`<div class="empty"><div class="empty-icon">⭐</div>'+t('no_feedback_yet')+'</div>`:
     FEEDBACK.map(f=>`<div class="alert-item ${f.rating<=2?'critical':f.rating===3?'warning':'success'}" style="margin-bottom:6px">
       <div style="flex-shrink:0">
         ${'⭐'.repeat(f.rating)}${'☆'.repeat(5-f.rating)}
       </div>
       <div style="flex:1">
         <div class="al-title">${f.comment?esc(f.comment.slice(0,80)):f.rating>=4?'Positive review':'Negative review'}</div>
-        <div class="al-body">#${f.orderRef||'?'} · ${f.branch||'Main'} · ${f.phone||''}</div>
+        <div class="al-body">#${f.orderRef||'?'} · ${f.branch||'Main'} · ${f.phone||'Walk-in'}</div>
       </div>
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
         <span class="al-time">${fmtAgo(f.time)}</span>
-        ${!f.responded?`<span class="badge br" style="font-size:8px">Unread</span>`:`<span class="badge bg" style="font-size:8px">✓ Seen</span>`}
+        ${f.responded?`<span class="badge bg" style="font-size:8px">✓ Seen</span>`:`<span class="badge br" style="font-size:8px">● New</span>`}
       </div>
     </div>`).join('')}
   </div>`;
@@ -1721,7 +2028,7 @@ function buildMgrAlerts(){
 // ══════════════════════════════════════════════════════════════
 function initClock(){
   clearInterval(S.clockInt);
-  function tick(){const el=$('clock');if(el){const now=new Date();el.textContent=now.toLocaleTimeString('en-US',{hour12:false,hour:'2-digit',minute:'2-digit',second:'2-digit'});}}
+  const tick=()=>{const el=$('clock');if(el){const n=new Date();el.textContent=n.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false});}};
   tick();
   S.clockInt=setInterval(tick,1000);
 }
