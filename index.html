@@ -253,59 +253,59 @@ html[dir="rtl"] body{font-family:'Fredoka',sans-serif}
 <!-- Edit Worker Modal -->
 <div class="modal-bg" id="editModal">
   <div class="modal-card">
-    <div class="modal-title" id="em-title">✏️ Edit Worker</div>
+    <div class="modal-title" id="em-title">✏️ —</div>
     <div class="fg">
-      <div><label class="lbl-mono" id="lbl-name">Name</label><input id="em-name" disabled/></div>
-      <div><label class="lbl-mono" id="lbl-phone">Phone</label><input id="em-phone" disabled/></div>
-      <div><label class="lbl-mono" id="lbl-role">Role</label>
+      <div><label class="lbl-mono" id="lbl-name">—</label><input id="em-name" disabled/></div>
+      <div><label class="lbl-mono" id="lbl-phone">—</label><input id="em-phone" disabled/></div>
+      <div><label class="lbl-mono" id="lbl-role">—</label>
         <select id="em-role">
-          <option value="cashier">Cashier</option>
-          <option value="cook">Cook</option>
-          <option value="delivery">Delivery</option>
+          <option value="cashier" id="opt-cashier">—</option>
+          <option value="cook" id="opt-cook">—</option>
+          <option value="delivery" id="opt-delivery">—</option>
         </select>
       </div>
       <div style="background:rgba(245,210,0,.04);border:1px solid rgba(245,210,0,.15);border-radius:4px;padding:12px">
-        <label class="lbl-mono" style="color:#f0c040" id="lbl-rate">💰 Hourly Rate (€)</label>
+        <label class="lbl-mono" style="color:#f0c040" id="lbl-rate">—</label>
         <input type="number" id="em-rate" min="1" step="0.5"/>
       </div>
       <div style="background:rgba(52,152,219,.06);border:1px solid rgba(52,152,219,.2);border-radius:4px;padding:12px">
-        <label class="lbl-mono" style="color:var(--blue)" id="lbl-inv-perm">📦 Inventory Edit Permission</label>
+        <label class="lbl-mono" style="color:var(--blue)" id="lbl-inv-perm">—</label>
         <select id="em-inv-perm">
-          <option value="0">❌ No Access</option>
-          <option value="1">✅ Can Edit Inventory</option>
+          <option value="0" id="opt-no-access">—</option>
+          <option value="1" id="opt-can-edit">—</option>
         </select>
       </div>
     </div>
     <div style="display:flex;gap:10px;margin-top:16px">
-      <button class="btn btn-dark" style="flex:1;padding:10px;font-size:14px" onclick="closeModal()">Cancel</button>
-      <button class="btn btn-yolk" style="flex:1;padding:10px;font-size:14px" onclick="saveEdit()" id="btn-save">Save</button>
+      <button class="btn btn-dark" style="flex:1;padding:10px;font-size:14px" onclick="closeModal()" id="btn-cancel-edit">—</button>
+      <button class="btn btn-yolk" style="flex:1;padding:10px;font-size:14px" onclick="saveEdit()" id="btn-save">—</button>
     </div>
   </div>
 </div>
 
 <!-- Add Worker Modal -->
 <div class="modal-bg" id="addWorkerModal">
-  <div class="modal-card">
-    <div class="modal-title">➕ Add New Worker</div>
+  <div class="modal-card" id="addWorkerModalCard">
+    <div class="modal-title" id="aw-title">—</div>
     <div class="fg">
-      <div><label class="lbl-mono">Full Name</label><input id="aw-name" placeholder="e.g. Ahmed Hassan"/></div>
-      <div><label class="lbl-mono">Phone (used to sign in)</label><input id="aw-phone" type="tel" placeholder="e.g. 0501234567"/></div>
-      <div><label class="lbl-mono">Worker Number / ID</label><input id="aw-num" placeholder="e.g. W-007 (optional)"/></div>
-      <div><label class="lbl-mono">Role</label>
+      <div><label class="lbl-mono" id="lbl-aw-name">—</label><input id="aw-name" placeholder="Ahmed Hassan"/></div>
+      <div><label class="lbl-mono" id="lbl-aw-phone">—</label><input id="aw-phone" type="tel" placeholder="0501234567"/></div>
+      <div><label class="lbl-mono" id="lbl-aw-num">—</label><input id="aw-num" placeholder="W-007"/></div>
+      <div><label class="lbl-mono" id="lbl-aw-role">—</label>
         <select id="aw-role">
-          <option value="cashier">Cashier</option>
-          <option value="cook">Cook</option>
-          <option value="delivery">Delivery</option>
+          <option value="cashier" id="aw-opt-cashier">—</option>
+          <option value="cook" id="aw-opt-cook">—</option>
+          <option value="delivery" id="aw-opt-delivery">—</option>
         </select>
       </div>
       <div style="background:rgba(245,210,0,.04);border:1px solid rgba(245,210,0,.15);border-radius:4px;padding:12px">
-        <label class="lbl-mono" style="color:#f0c040">💰 Hourly Rate (€)</label>
+        <label class="lbl-mono" style="color:#f0c040" id="lbl-aw-rate">—</label>
         <input type="number" id="aw-rate" value="12" min="1" step="0.5"/>
       </div>
     </div>
     <div style="display:flex;gap:10px;margin-top:16px">
-      <button class="btn btn-dark" style="flex:1;padding:10px;font-size:14px" onclick="document.getElementById('addWorkerModal').classList.remove('show')">Cancel</button>
-      <button class="btn btn-yolk" style="flex:1;padding:10px;font-size:14px" onclick="submitAddWorker()">Add Worker</button>
+      <button class="btn btn-dark" style="flex:1;padding:10px;font-size:14px" onclick="document.getElementById('addWorkerModal').classList.remove('show')" id="btn-cancel-addw">—</button>
+      <button class="btn btn-yolk" style="flex:1;padding:10px;font-size:14px" onclick="submitAddWorker()" id="btn-submit-addw">—</button>
     </div>
   </div>
 </div>
@@ -313,23 +313,23 @@ html[dir="rtl"] body{font-family:'Fredoka',sans-serif}
 <!-- Add/Edit Branch Modal -->
 <div class="modal-bg" id="branchModal">
   <div class="modal-card">
-    <div class="modal-title" id="branch-modal-title">🏪 Add Branch</div>
+    <div class="modal-title" id="branch-modal-title">—</div>
     <div class="fg">
-      <div><label class="lbl-mono">Branch Name</label><input id="br-name" placeholder="e.g. Main Branch"/></div>
+      <div><label class="lbl-mono" id="lbl-br-name">—</label><input id="br-name" placeholder=""/></div>
       <div>
-        <label class="lbl-mono">Google Maps Link (with coordinates)</label>
+        <label class="lbl-mono" id="lbl-br-maps">—</label>
         <input id="br-maps" placeholder="https://maps.google.com/?q=24.7136,46.6753"/>
-        <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);margin-top:4px">Paste a Google Maps link — coordinates will be extracted automatically</div>
+        <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);margin-top:4px" id="lbl-br-maps-hint">—</div>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-        <div><label class="lbl-mono">Latitude (auto)</label><input id="br-lat" placeholder="24.7136" type="number" step="any"/></div>
-        <div><label class="lbl-mono">Longitude (auto)</label><input id="br-lng" placeholder="46.6753" type="number" step="any"/></div>
+        <div><label class="lbl-mono" id="lbl-br-lat">—</label><input id="br-lat" placeholder="24.7136" type="number" step="any"/></div>
+        <div><label class="lbl-mono" id="lbl-br-lng">—</label><input id="br-lng" placeholder="46.6753" type="number" step="any"/></div>
       </div>
-      <div><label class="lbl-mono">Address</label><input id="br-addr" placeholder="Street address"/></div>
+      <div><label class="lbl-mono" id="lbl-br-addr">—</label><input id="br-addr" placeholder=""/></div>
     </div>
     <div style="display:flex;gap:10px;margin-top:16px">
-      <button class="btn btn-dark" style="flex:1;padding:10px;font-size:14px" onclick="document.getElementById('branchModal').classList.remove('show')">Cancel</button>
-      <button class="btn btn-yolk" style="flex:1;padding:10px;font-size:14px" onclick="saveBranch()">Save Branch</button>
+      <button class="btn btn-dark" style="flex:1;padding:10px;font-size:14px" onclick="document.getElementById('branchModal').classList.remove('show')" id="btn-cancel-branch">—</button>
+      <button class="btn btn-yolk" style="flex:1;padding:10px;font-size:14px" onclick="saveBranch()" id="btn-save-branch">—</button>
     </div>
   </div>
 </div>
@@ -337,27 +337,27 @@ html[dir="rtl"] body{font-family:'Fredoka',sans-serif}
 <!-- Add/Edit Menu Item Modal -->
 <div class="modal-bg" id="menuItemModal">
   <div class="modal-card">
-    <div class="modal-title" id="mi-title">🍗 Add Menu Item</div>
+    <div class="modal-title" id="mi-title">—</div>
     <div class="fg">
-      <div><label class="lbl-mono">Item Name</label><input id="mi-name" placeholder="e.g. Crispy Chicken Bucket"/></div>
-      <div><label class="lbl-mono">Category</label>
+      <div><label class="lbl-mono" id="lbl-mi-name">—</label><input id="mi-name" placeholder=""/></div>
+      <div><label class="lbl-mono" id="lbl-mi-cat">—</label>
         <select id="mi-cat">
-          <option>Buckets</option><option>Wings</option><option>Burgers</option>
-          <option>Wraps</option><option>Combos</option><option>Sides</option>
-          <option>Sauces</option><option>Drinks</option><option>Other</option>
+          <option id="mi-cat-buckets">—</option><option id="mi-cat-wings">—</option><option id="mi-cat-burgers">—</option>
+          <option id="mi-cat-wraps">—</option><option id="mi-cat-combos">—</option><option id="mi-cat-sides">—</option>
+          <option id="mi-cat-sauces">—</option><option id="mi-cat-drinks">—</option><option id="mi-cat-other">—</option>
         </select>
       </div>
-      <div><label class="lbl-mono">Price (€)</label><input type="number" id="mi-price" min="0.5" step="0.5" placeholder="0"/></div>
-      <div><label class="lbl-mono">Description</label><input id="mi-desc" placeholder="Brief description"/></div>
-      <div><label class="lbl-mono">Emoji Icon</label><input id="mi-icon" placeholder="🍗" maxlength="4"/></div>
+      <div><label class="lbl-mono" id="lbl-mi-price">—</label><input type="number" id="mi-price" min="0.5" step="0.5" placeholder="0"/></div>
+      <div><label class="lbl-mono" id="lbl-mi-desc">—</label><input id="mi-desc" placeholder=""/></div>
+      <div><label class="lbl-mono" id="lbl-mi-icon">—</label><input id="mi-icon" placeholder="🍗" maxlength="4"/></div>
       <div id="mi-price-branches" style="display:none">
-        <label class="lbl-mono">Branch-specific Prices (optional)</label>
+        <label class="lbl-mono" id="lbl-mi-branch-prices">—</label>
         <div id="mi-branch-prices"></div>
       </div>
     </div>
     <div style="display:flex;gap:10px;margin-top:16px">
-      <button class="btn btn-dark" style="flex:1;padding:10px;font-size:14px" onclick="document.getElementById('menuItemModal').classList.remove('show')">Cancel</button>
-      <button class="btn btn-yolk" style="flex:1;padding:10px;font-size:14px" onclick="saveMenuItem()">Save Item</button>
+      <button class="btn btn-dark" style="flex:1;padding:10px;font-size:14px" onclick="document.getElementById('menuItemModal').classList.remove('show')" id="btn-cancel-menu">—</button>
+      <button class="btn btn-yolk" style="flex:1;padding:10px;font-size:14px" onclick="saveMenuItem()" id="btn-save-menu">—</button>
     </div>
   </div>
 </div>
@@ -365,21 +365,21 @@ html[dir="rtl"] body{font-family:'Fredoka',sans-serif}
 <!-- Add Inventory Item Modal -->
 <div class="modal-bg" id="addInvModal">
   <div class="modal-card">
-    <div class="modal-title" id="ai-title">📦 Add Inventory Item</div>
+    <div class="modal-title" id="ai-title">—</div>
     <div class="fg">
-      <div><label class="lbl-mono">Name</label><input id="ai-name" placeholder="e.g. Chicken Wings"/></div>
-      <div><label class="lbl-mono">Unit</label>
+      <div><label class="lbl-mono" id="lbl-ai-name">—</label><input id="ai-name" placeholder=""/></div>
+      <div><label class="lbl-mono" id="lbl-ai-unit">—</label>
         <select id="ai-unit">
           <option value="kg">kg</option><option value="L">L</option><option value="pcs">pcs</option><option value="g">g</option>
         </select>
       </div>
-      <div><label class="lbl-mono">Current Quantity</label><input type="number" id="ai-qty" value="0" min="0"/></div>
-      <div><label class="lbl-mono">Minimum Level (alert threshold)</label><input type="number" id="ai-min" value="10" min="0"/></div>
-      <div><label class="lbl-mono">Emoji Icon</label><input id="ai-icon" placeholder="📦" maxlength="4"/></div>
+      <div><label class="lbl-mono" id="lbl-ai-qty">—</label><input type="number" id="ai-qty" value="0" min="0"/></div>
+      <div><label class="lbl-mono" id="lbl-ai-min">—</label><input type="number" id="ai-min" value="10" min="0"/></div>
+      <div><label class="lbl-mono" id="lbl-ai-icon">—</label><input id="ai-icon" placeholder="📦" maxlength="4"/></div>
     </div>
     <div style="display:flex;gap:10px;margin-top:16px">
-      <button class="btn btn-dark" style="flex:1;padding:10px;font-size:14px" onclick="document.getElementById('addInvModal').classList.remove('show')">Cancel</button>
-      <button class="btn btn-yolk" style="flex:1;padding:10px;font-size:14px" onclick="saveInvItem()">Save</button>
+      <button class="btn btn-dark" style="flex:1;padding:10px;font-size:14px" onclick="document.getElementById('addInvModal').classList.remove('show')" id="btn-cancel-inv">—</button>
+      <button class="btn btn-yolk" style="flex:1;padding:10px;font-size:14px" onclick="saveInvItem()" id="btn-save-inv">—</button>
     </div>
   </div>
 </div>
@@ -631,6 +631,24 @@ const LANGS={
     customer_lbl:'Cliente',comments_placeholder:'Commenti del cliente...',
     order_hash2:'es. ord001',pickup_first:'L\'ordine deve essere prima ritirato!',
     since_lbl:'Dalle',off_lbl:'OFF',manager_log:'Nota manager',manual_log:'Nota manuale',
+    role_cashier:'Cassiere',role_cook:'Cuoco',role_delivery:'Fattorino',role_manager:'Manager',
+    edit_worker_title:'✏️ Modifica Dipendente',add_worker_title:'➕ Aggiungi Nuovo Dipendente',
+    full_name_lbl:'Nome Completo',phone_signin_lbl:'Telefono (per accedere)',
+    worker_num_lbl:'Numero/ID Dipendente',
+    hourly_rate_lbl:'💰 Tariffa Oraria (€)',inv_edit_perm_lbl:'📦 Permesso Modifica Magazzino',
+    no_access_lbl:'❌ Nessun Accesso',can_edit_inv_lbl:'✅ Può Modificare il Magazzino',
+    cancel_lbl:'Annulla',save_lbl:'Salva',add_worker_btn:'Aggiungi Dipendente',
+    branch_name_lbl:'Nome Filiale',maps_link_hint:'Incolla un link Google Maps — le coordinate saranno estratte automaticamente',
+    latitude_lbl:'Latitudine (auto)',longitude_lbl:'Longitudine (auto)',address_lbl:'Indirizzo',
+    save_branch_btn:'Salva Filiale',
+    item_name_lbl:'Nome Articolo',category_lbl:'Categoria',price_lbl:'Prezzo (€)',
+    description_lbl:'Descrizione',emoji_icon_lbl:'Icona Emoji',
+    branch_prices_lbl:'Prezzi per Filiale (opzionale)',save_item_btn:'Salva Articolo',
+    unit_lbl:'Unità',current_qty_lbl:'Quantità Attuale',min_level_lbl:'Livello Minimo (soglia alert)',
+    save_inv_btn:'Salva',
+    started_lbl:'Iniziato',orders_count:'ordini',walk_in_lbl:'Banco',
+    ago_min:'min fa',ago_hour:'h fa',avg_lbl:'💰 Media',
+    payment_cash:'💵 Contanti',payment_card:'💳 Carta',payment_app:'📱 App',
   },
   ar:{
     staff_portal:'بوابة الموظفين',worker_signin:'👷 تسجيل دخول الموظف',phone:'رقم الهاتف',
@@ -749,10 +767,28 @@ const LANGS={
     customer_lbl:'العميل',comments_placeholder:'تعليقات العميل...',
     order_hash2:'مثال: ord001',pickup_first:'يجب استلام الطلب أولاً!',
     since_lbl:'منذ',off_lbl:'إجازة',manager_log:'ملاحظة المدير',manual_log:'ملاحظة يدوية',
+    role_cashier:'كاشير',role_cook:'طاهٍ',role_delivery:'سائق',role_manager:'مدير',
+    edit_worker_title:'✏️ تعديل موظف',add_worker_title:'➕ إضافة موظف جديد',
+    full_name_lbl:'الاسم الكامل',phone_signin_lbl:'الهاتف (للدخول)',
+    worker_num_lbl:'رقم/معرف الموظف',
+    hourly_rate_lbl:'💰 الأجر الساعي (€)',inv_edit_perm_lbl:'📦 صلاحية تعديل المخزون',
+    no_access_lbl:'❌ بدون صلاحية',can_edit_inv_lbl:'✅ يمكن تعديل المخزون',
+    cancel_lbl:'إلغاء',save_lbl:'حفظ',add_worker_btn:'إضافة موظف',
+    branch_name_lbl:'اسم الفرع',maps_link_hint:'الصق رابط خرائط جوجل — ستُستخرج الإحداثيات تلقائياً',
+    latitude_lbl:'خط العرض (تلقائي)',longitude_lbl:'خط الطول (تلقائي)',address_lbl:'العنوان',
+    save_branch_btn:'حفظ الفرع',
+    item_name_lbl:'اسم الصنف',category_lbl:'الفئة',price_lbl:'السعر (€)',
+    description_lbl:'الوصف',emoji_icon_lbl:'أيقونة إيموجي',
+    branch_prices_lbl:'أسعار الفروع (اختياري)',save_item_btn:'حفظ الصنف',
+    unit_lbl:'الوحدة',current_qty_lbl:'الكمية الحالية',min_level_lbl:'الحد الأدنى (حد التنبيه)',
+    save_inv_btn:'حفظ',
+    started_lbl:'بدأ',orders_count:'طلبات',walk_in_lbl:'حضوري',
+    ago_min:'د مضت',ago_hour:'س مضت',avg_lbl:'💰 متوسط',
+    payment_cash:'💵 نقداً',payment_card:'💳 بطاقة',payment_app:'📱 تطبيق',
   }
 };
-let LANG='en';
-function t(key){return (LANGS[LANG]||LANGS.en)[key]||LANGS.en[key]||key;}
+let LANG='it';
+function t(key){return (LANGS[LANG]||LANGS.it)[key]||LANGS.it[key]||key;}
 function setLang(l){
   LANG=l;
   document.getElementById('html-root').setAttribute('lang',l);
@@ -760,8 +796,8 @@ function setLang(l){
   localStorage.setItem('ckncnkn_lang',l);
   render();
 }
-// Load saved lang
-(()=>{const sl=localStorage.getItem('ckncnkn_lang');if(sl)LANG=sl;})();
+// Load saved lang (only ar or it)
+(()=>{const sl=localStorage.getItem('ckncnkn_lang');if(sl&&(sl==='ar'||sl==='it'))LANG=sl;})();
 
 // ═══════════════════════════════════════════════════
 // SHARED DATABASE (localStorage for cross-tab sharing)
@@ -784,8 +820,8 @@ let WORKERS=dbGet('workers_dyn',[
 const MANAGER={id:'mgr',name:'Manager',phone:'0500000000',role:'manager',pin:'1234'};
 
 let BRANCHES=dbGet('branches',[
-  {id:'b1',name:'Main Branch',lat:24.7136,lng:46.6753,addr:'King Fahd Road, Riyadh'},
-  {id:'b2',name:'Mall Branch',lat:24.7505,lng:46.6694,addr:'Al Nakheel Mall, Riyadh'},
+  {id:'b1',name:'Filiale Principale',lat:24.7136,lng:46.6753,addr:'King Fahd Road, Riyadh'},
+  {id:'b2',name:'Filiale Centro',lat:24.7505,lng:46.6694,addr:'Al Nakheel Mall, Riyadh'},
 ]);
 
 let MENU=dbGet('menu_dyn',[
@@ -808,11 +844,11 @@ const TAB_STEPS=['Ordine Ricevuto','In Preparazione','Pronto','Servito'];
 
 const now=Date.now();
 const SHIFTS=[
-  {id:'s1',worker:'w1',start:now-4.2*3600000,end:null,           status:'working',  location:'Main Branch',hours:4.2, earnings:50.4},
-  {id:'s2',worker:'w2',start:now-5.0*3600000,end:null,           status:'working',  location:'Main Branch',hours:5.0, earnings:70.0},
-  {id:'s3',worker:'w3',start:now-6.5*3600000,end:now-0.5*3600000,status:'completed',location:'Mall Branch',hours:6.0, earnings:66.0},
-  {id:'s4',worker:'w4',start:now-3.0*3600000,end:null,           status:'working',  location:'Mall Branch',hours:3.0, earnings:36.0},
-  {id:'s5',worker:'w5',start:now-7.0*3600000,end:now-1.0*3600000,status:'completed',location:'Main Branch',hours:6.0, earnings:66.0},
+  {id:'s1',worker:'w1',start:now-4.2*3600000,end:null,           status:'working',  location:'Filiale Principale',hours:4.2, earnings:50.4},
+  {id:'s2',worker:'w2',start:now-5.0*3600000,end:null,           status:'working',  location:'Filiale Principale',hours:5.0, earnings:70.0},
+  {id:'s3',worker:'w3',start:now-6.5*3600000,end:now-0.5*3600000,status:'completed',location:'Filiale Centro',hours:6.0, earnings:66.0},
+  {id:'s4',worker:'w4',start:now-3.0*3600000,end:null,           status:'working',  location:'Filiale Centro',hours:3.0, earnings:36.0},
+  {id:'s5',worker:'w5',start:now-7.0*3600000,end:now-1.0*3600000,status:'completed',location:'Filiale Principale',hours:6.0, earnings:66.0},
 ];
 const SCHEDULE={
   w1:['08-16','08-16','OFF','08-16','08-16','10-18','OFF'],
@@ -836,24 +872,24 @@ let LOYALTY=dbGet('loyalty',[
   {phone:'0556789012',name:'Hassan Qasim',   stamps:1, orders:1, joined:'2026-01-10'},
 ]);
 let INVENTORY=dbGet('inventory',[
-  {id:'iv1',name:'Chicken (Whole)',unit:'kg', qty:48, min:20,icon:'🍗'},
-  {id:'iv2',name:'Cooking Oil',   unit:'L',  qty:12, min:15,icon:'🫙'},
-  {id:'iv3',name:'Flour',         unit:'kg', qty:30, min:10,icon:'🌾'},
+  {id:'iv1',name:'Pollo (Intero)',unit:'kg', qty:48, min:20,icon:'🍗'},
+  {id:'iv2',name:'Olio da Cucina',unit:'L',  qty:12, min:15,icon:'🫙'},
+  {id:'iv3',name:'Farina',        unit:'kg', qty:30, min:10,icon:'🌾'},
   {id:'iv4',name:'Coleslaw Mix',  unit:'kg', qty:8,  min:5, icon:'🥗'},
-  {id:'iv5',name:'Pepsi Cans',    unit:'pcs',qty:144,min:48,icon:'🥤'},
-  {id:'iv6',name:'Burger Buns',   unit:'pcs',qty:60, min:30,icon:'🍔'},
-  {id:'iv7',name:'Jalapeño Sauce',unit:'L',  qty:4,  min:6, icon:'🫙'},
-  {id:'iv8',name:'Packaging Boxes',unit:'pcs',qty:200,min:50,icon:'📦'},
+  {id:'iv5',name:'Pepsi Lattine', unit:'pcs',qty:144,min:48,icon:'🥤'},
+  {id:'iv6',name:'Panini Burger', unit:'pcs',qty:60, min:30,icon:'🍔'},
+  {id:'iv7',name:'Salsa Jalapeño',unit:'L',  qty:4,  min:6, icon:'🫙'},
+  {id:'iv8',name:'Scatole Imball.',unit:'pcs',qty:200,min:50,icon:'📦'},
 ]);
 let WASTE_LOG=dbGet('waste',[
-  {item:'Chicken (Whole)',qty:2,unit:'kg', reason:'Overcooked',time:now-2*3600000,by:'Ahmed Hassan'},
-  {item:'Coleslaw Mix',   qty:1,unit:'kg', reason:'Expired',   time:now-5*3600000,by:'Fatima Al-Zahra'},
-  {item:'Burger Buns',    qty:6,unit:'pcs',reason:'Dropped',   time:now-1*3600000,by:'Ahmed Hassan'},
+  {item:'Pollo (Intero)',qty:2,unit:'kg', reason:'Bruciacchiato',time:now-2*3600000,by:'Ahmed Hassan'},
+  {item:'Coleslaw Mix',  qty:1,unit:'kg', reason:'Scaduto',     time:now-5*3600000,by:'Fatima Al-Zahra'},
+  {item:'Panini Burger', qty:6,unit:'pcs',reason:'Caduto',      time:now-1*3600000,by:'Ahmed Hassan'},
 ]);
 let FEEDBACK=dbGet('feedback',[
-  {id:'fb1',orderRef:'ord001',rating:5,comment:'Amazing wings!',branch:'Main',time:now-30*60000,responded:false,phone:'0512345678'},
-  {id:'fb2',orderRef:'ord002',rating:2,comment:'Waited 40 mins, cold.',branch:'Main',time:now-90*60000,responded:false,phone:null},
-  {id:'fb3',orderRef:'ord003',rating:4,comment:'Great value.',branch:'Main',time:now-2*3600000,responded:true,phone:'0534567890'},
+  {id:'fb1',orderRef:'ord001',rating:5,comment:'Ali croccanti fantastiche!',branch:'Main Branch',time:now-30*60000,responded:false,phone:'0512345678'},
+  {id:'fb2',orderRef:'ord002',rating:2,comment:'Atteso 40 minuti, cibo freddo.',branch:'Main Branch',time:now-90*60000,responded:false,phone:null},
+  {id:'fb3',orderRef:'ord003',rating:4,comment:'Ottimo rapporto qualità-prezzo.',branch:'Main Branch',time:now-2*3600000,responded:true,phone:'0534567890'},
 ]);
 let RECEIPTS=dbGet('receipts',[
   {id:'r001',items:[{name:'Spicy Wings',qty:2,price:45},{name:'Pepsi Can',qty:2,price:8}],payment:'card',total:106,time:now-40*60000},
@@ -871,12 +907,20 @@ const $=id=>document.getElementById(id);
 const esc=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 const fmtMs=ms=>{const s=Math.max(0,Math.floor(ms/1000));return `${Math.floor(s/3600).toString().padStart(2,'0')}:${Math.floor((s%3600)/60).toString().padStart(2,'0')}:${(s%60).toString().padStart(2,'0')}`;};
 const fmtTime=ts=>{const d=new Date(ts);return d.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',hour12:false});};
-const fmtAgo=ms=>{const m=Math.round((Date.now()-ms)/60000);return m<60?m+'m ago':Math.round(m/60)+'h ago';};
+const fmtAgo=ms=>{const m=Math.round((Date.now()-ms)/60000);return m<60?m+' '+t('ago_min'):Math.round(m/60)+' '+t('ago_hour');};
 const normPhone=p=>String(p||'').replace(/\D/g,'').replace(/^0+/,'');
 const findLoyalty=phone=>LOYALTY.find(c=>normPhone(c.phone)===normPhone(phone));
 function progBar(pct,color){return `<div class="prog-wrap"><div class="prog-bar" style="width:${pct}%;background:${color||'linear-gradient(90deg,var(--yolk),var(--crisp))'}"></div></div>`;}
-function statusBadge(st){const m={working:'bg',completed:'bb',absent:'br'};const l={working:t('shift_in_progress').replace('● ','').toUpperCase(),completed:t('completed_today').replace('✅ ','').toUpperCase(),absent:t('no_one_clocked').replace('No one clocked in.','ABSENT').replace('لم يسجل أحد دخوله.','غائب').replace('Nessuno ha timbrato.','ASSENTE')};return `<span class="badge ${m[st]||'by'}">${l[st]||st.toUpperCase()}</span>`;}
-function orderStatusBadge(st){const m={new:'bb',preparing:'by',ready:'bg',pickedup:'bo',delivered:'bg',served:'bg',cancelled:'br'};const l={new:t('new_lbl').replace('🆕 ','').toUpperCase(),preparing:t('preparing_lbl').replace('👨‍🍳 ','').toUpperCase(),ready:t('ready_lbl').replace('✅ ','').toUpperCase(),pickedup:t('picked_up').replace('🏃 ','').toUpperCase(),delivered:t('delivered').replace('✅ ','').toUpperCase(),served:t('mark_served').replace('→ ','').replace('Segna ','').replace('← ','').replace('← تحديد ','').toUpperCase(),cancelled:t('cancel').replace('✕ ','').toUpperCase()};return `<span class="badge ${m[st]||'bb'}">${l[st]||st.toUpperCase()}</span>`;}
+function statusBadge(st){
+  const m={working:'bg',completed:'bb',absent:'br'};
+  const l={
+    working:(t('shift_in_progress')||'').replace(/^[●⚡]\s*/,'').toUpperCase(),
+    completed:(t('completed_today')||'').replace(/^[✅]\s*/,'').toUpperCase(),
+    absent:LANG==='ar'?'غائب':LANG==='it'?'ASSENTE':'ABSENT'
+  };
+  return `<span class="badge ${m[st]||'by'}">${l[st]||st.toUpperCase()}</span>`;
+}
+function orderStatusBadge(st){const m={new:'bb',preparing:'by',ready:'bg',pickedup:'bo',delivered:'bg',served:'bg',cancelled:'br'};const l={new:t('new_lbl').replace('🆕 ','').toUpperCase(),preparing:t('preparing_lbl').replace('👨‍🍳 ','').toUpperCase(),ready:t('ready_lbl').replace('✅ ','').toUpperCase(),pickedup:t('picked_up').replace('🏃 ','').toUpperCase(),delivered:t('delivered').replace('✅ ','').toUpperCase(),served:(t('order_served')||'served').replace(/[→←✕⬅]\s*/g,'').toUpperCase(),cancelled:t('cancel').replace('✕ ','').toUpperCase()};return `<span class="badge ${m[st]||'bb'}">${l[st]||st.toUpperCase()}</span>`;}
 
 let _toastT;
 function toast(msg,type='info'){const el=$('toast');if(!el)return;el.textContent=msg;el.className='toast show '+type;clearTimeout(_toastT);_toastT=setTimeout(()=>el.classList.remove('show'),3500);}
@@ -911,12 +955,54 @@ function render(){
   if(S.screen==='auth')   {$('root').innerHTML=buildAuth();initClock();}
   if(S.screen==='worker') renderWorker();
   if(S.screen==='manager')renderManager();
+  setTimeout(updateModalLabels,0);
+}
+
+// ── ROLE LABEL HELPER ────────────────────────────────────────
+function roleLabel(role){
+  const map={cashier:t('role_cashier'),cook:t('role_cook'),delivery:t('role_delivery'),manager:t('role_manager')};
+  return map[role]||role;
+}
+
+// ── FMT AGO (translated) ─────────────────────────────────────
+function fmtAgoT(ms){const m=Math.round((Date.now()-ms)/60000);return m<60?m+' '+t('ago_min'):Math.round(m/60)+' '+t('ago_hour');}
+
+// ── UPDATE STATIC MODAL LABELS ───────────────────────────────
+function updateModalLabels(){
+  const set=(id,txt)=>{const el=document.getElementById(id);if(el)el.textContent=txt;};
+  set('em-title',t('edit_worker_title'));
+  set('lbl-name',t('name_lbl'));set('lbl-phone',t('phone_lbl'));set('lbl-role',t('role_lbl'));
+  set('opt-cashier',t('role_cashier'));set('opt-cook',t('role_cook'));set('opt-delivery',t('role_delivery'));
+  set('lbl-rate',t('hourly_rate_lbl'));set('lbl-inv-perm',t('inv_edit_perm_lbl'));
+  set('opt-no-access',t('no_access_lbl'));set('opt-can-edit',t('can_edit_inv_lbl'));
+  set('btn-cancel-edit',t('cancel_lbl'));set('btn-save',t('save_lbl'));
+  set('aw-title',t('add_worker_title'));set('lbl-aw-name',t('full_name_lbl'));
+  set('lbl-aw-phone',t('phone_signin_lbl'));set('lbl-aw-num',t('worker_num_lbl'));
+  set('lbl-aw-role',t('role_lbl'));set('aw-opt-cashier',t('role_cashier'));
+  set('aw-opt-cook',t('role_cook'));set('aw-opt-delivery',t('role_delivery'));
+  set('lbl-aw-rate',t('hourly_rate_lbl'));set('btn-cancel-addw',t('cancel_lbl'));set('btn-submit-addw',t('add_worker_btn'));
+  set('lbl-br-name',t('branch_name_lbl'));set('lbl-br-maps',t('maps_link'));
+  set('lbl-br-maps-hint',t('maps_link_hint'));set('lbl-br-lat',t('latitude_lbl'));
+  set('lbl-br-lng',t('longitude_lbl'));set('lbl-br-addr',t('address_lbl'));
+  set('btn-cancel-branch',t('cancel_lbl'));set('btn-save-branch',t('save_branch_btn'));
+  set('lbl-mi-name',t('item_name_lbl'));set('lbl-mi-cat',t('category_lbl'));
+  set('lbl-mi-price',t('price_lbl'));set('lbl-mi-desc',t('description_lbl'));
+  set('lbl-mi-icon',t('emoji_icon_lbl'));set('lbl-mi-branch-prices',t('branch_prices_lbl'));
+  set('btn-cancel-menu',t('cancel_lbl'));set('btn-save-menu',t('save_item_btn'));
+  const cats={'mi-cat-buckets':LANG==='ar'?'سطل':'Secchi','mi-cat-wings':LANG==='ar'?'أجنحة':'Ali',
+    'mi-cat-burgers':LANG==='ar'?'برغر':'Burger','mi-cat-wraps':LANG==='ar'?'راب':'Wrap',
+    'mi-cat-combos':LANG==='ar'?'كومبو':'Combo','mi-cat-sides':LANG==='ar'?'مقبلات':'Contorni',
+    'mi-cat-sauces':LANG==='ar'?'صلصات':'Salse','mi-cat-drinks':LANG==='ar'?'مشروبات':'Bevande',
+    'mi-cat-other':LANG==='ar'?'أخرى':'Altro'};
+  Object.entries(cats).forEach(([id,txt])=>{const el=document.getElementById(id);if(el){el.textContent=txt;el.value=txt;}});
+  set('lbl-ai-name',t('name_lbl'));set('lbl-ai-unit',t('unit_lbl'));
+  set('lbl-ai-qty',t('current_qty_lbl'));set('lbl-ai-min',t('min_level_lbl'));
+  set('lbl-ai-icon',t('emoji_icon_lbl'));set('btn-cancel-inv',t('cancel_lbl'));set('btn-save-inv',t('save_inv_btn'));
 }
 
 // ── LANGUAGE BAR ─────────────────────────────────────────────
 function langBar(){
   return `<div class="lang-switcher">
-    <button class="lang-btn ${LANG==='en'?'active':''}" onclick="setLang('en')">EN</button>
     <button class="lang-btn ${LANG==='it'?'active':''}" onclick="setLang('it')">IT</button>
     <button class="lang-btn ${LANG==='ar'?'active':''}" onclick="setLang('ar')">AR</button>
   </div>`;
@@ -974,7 +1060,7 @@ window.doWorkerLogin=async()=>{
         return;
       }
       S.gpsStatus='ok';
-      S.gpsNearBranch=branch?branch.name:'Unknown';
+      S.gpsNearBranch=branch?branch.name:t('branches_mgr').replace('🏪 ','');
     }catch(err){
       // If GPS is denied, let manager decide — show warning but allow if no branches require it
       if(errEl){errEl.textContent=t('gps_no_permission')+' — signing in without location check.';errEl.style.display='block';errEl.style.color='var(--crisp)';}
@@ -1023,7 +1109,7 @@ function renderWorker(){
       ${langBar()}
       <div class="clock-display" id="clock">--:--:--</div>
       <span style="font-family:'Fredoka',sans-serif;font-size:14px">${esc(u.name)}</span>
-      <span class="role-pill pill-wkr">${esc(u.role)}</span>
+      <span class="role-pill pill-wkr">${roleLabel(u.role)}</span>
       <button class="btn-logout" onclick="doLogout()">${t('logout')}</button>
     </div>
   </div>
@@ -1106,7 +1192,7 @@ function buildWorkerShift(u,active,myShifts){
     <div class="shift-status">${active?t('shift_in_progress'):t('ready_clock')}</div>
     <div class="timer-display" id="tbig">00:00:00</div>
     <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:3px;color:${active?'#2ecc71':'var(--muted)'};margin-bottom:8px">${t('elapsed_time')}</div>
-    ${active?`<div class="gps-bar gps-ok" style="margin-bottom:12px"><span class="dot"></span>${esc(active.location)} · Started ${fmtTime(active.start)}</div>`:''}
+    ${active?`<div class="gps-bar gps-ok" style="margin-bottom:12px"><span class="dot"></span>${esc(active.location)} · ${t('started_lbl')} ${fmtTime(active.start)}</div>`:''}
     <div style="background:rgba(245,210,0,.06);border:1px solid rgba(245,210,0,.1);border-radius:6px;padding:12px;margin-bottom:16px">
       <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--muted)">${t('today_earnings')}</div>
       <div style="font-family:'Bebas Neue',sans-serif;font-size:30px;color:var(--yolk)">€${todayEarnings.toFixed(2)}</div>
@@ -1163,11 +1249,11 @@ function buildWorkerOrders(u){
   <div class="panel" style="margin-bottom:12px">
     <div class="panel-title">${t('table_map')}</div>
     <div class="table-map">
-      ${TABLES.map(t=>{
-        const tOrds=ORDERS.filter(o=>o.table===t&&o.status!=='served'&&o.status!=='cancelled');
+      ${TABLES.map(tNum=>{
+        const tOrds=ORDERS.filter(o=>o.table===tNum&&o.status!=='served'&&o.status!=='cancelled');
         const cls=tOrds.length?(tOrds.some(o=>o.status==='new')?'has-order':'occupied'):'';
-        return `<div class="t-card ${cls}" onclick="toast(t('table_map')+' ${t}: ${tOrds.length?tOrds.length+' order(s)':t('table_free')}','info')">
-          <div>🪑</div><div class="t-num">${t}</div>
+        return `<div class="t-card ${cls}" onclick="toast(t('table_map')+' ${tNum}: ${tOrds.length?tOrds.length+' '+t('orders_count'):t('table_free')}','info')">
+          <div>🪑</div><div class="t-num">${tNum}</div>
           <div class="t-status">${tOrds.length?tOrds.length+' '+t('table_order'):t('table_free')}</div>
         </div>`;
       }).join('')}
@@ -1301,7 +1387,7 @@ window.cancelOrder=id=>{
 
 // ── NEW TABLE ORDER MODAL ────────────────────────────────────
 function buildNewOrderModalHTML(){
-  const tableOpts=TABLES.map(t=>`<option value="${t}">${t('table_lbl')} ${t}</option>`).join('');
+  const tableOpts=TABLES.map(tNum=>`<option value="${tNum}">${t('table_lbl')} ${tNum}</option>`).join('');
   const menuOpts=MENU.map(m=>`<option value="${m.price}" data-id="${m.id}" data-name="${m.name}">${m.icon} ${m.name} — €${m.price}</option>`).join('');
   const sel=$('nom-table');if(sel&&!sel.innerHTML){sel.innerHTML=tableOpts;}
   const msel=$('nom-item');if(msel&&!msel.innerHTML){msel.innerHTML=menuOpts;}
@@ -1467,7 +1553,7 @@ window.wInvWaste=id=>{
   if(v<=0){toast(t('enter_qty'),'error');return;}
   if(v>i.qty){toast(t('cannot_exceed'),'error');return;}
   i.qty-=v;WASTE_LOG.unshift({item:i.name,qty:v,unit:i.unit,reason:t('manual_log'),time:Date.now(),by:S.user.name});
-  toast(`Logged ${v} ${i.unit} waste for ${i.name}`,'warning');dbSave();renderWorker();
+  toast(`${t('waste_log_title')}: -${v} ${i.unit} ${i.name}`,'warning');dbSave();renderWorker();
 };
 
 // ══════════════════════════════════════════════════════════════
@@ -1547,7 +1633,7 @@ function buildMgrLive(){
     <div class="panel">
       <div class="panel-title">👷 STAFF ON SHIFT</div>
       ${onShift.length===0?`<div class="empty"><div class="empty-icon">👤</div>${t('no_one_clocked')}</div>`:
-      onShift.map(s=>{const w=WORKERS.find(x=>x.id===s.worker)||{name:'?',role:'?',hourly_rate:0};const hrs=(Date.now()-s.start)/3600000;return `<div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid rgba(245,210,0,.06)"><div><div style="font-family:'Fredoka',sans-serif;font-size:14px;font-weight:600">${esc(w.name)}</div><div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted)">${esc(w.role)} · ${esc(s.location)} · '+t('shift')[:1]+' ${fmtTime(s.start)}</div></div><div style="text-align:right"><div style="font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--green)">${hrs.toFixed(1)}h</div><div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--yolk)">€${(hrs*w.hourly_rate).toFixed(2)}</div></div></div>`;}).join('')}
+      onShift.map(s=>{const w=WORKERS.find(x=>x.id===s.worker)||{name:'?',role:'?',hourly_rate:0};const hrs=(Date.now()-s.start)/3600000;return `<div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid rgba(245,210,0,.06)"><div><div style="font-family:'Fredoka',sans-serif;font-size:14px;font-weight:600">${esc(w.name)}</div><div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted)">${roleLabel(w.role)} · ${esc(s.location)} · ⏱ ${fmtTime(s.start)}</div></div><div style="text-align:right"><div style="font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--green)">${hrs.toFixed(1)}h</div><div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--yolk)">€${(hrs*w.hourly_rate).toFixed(2)}</div></div></div>`;}).join('')}
     </div>
     <div class="panel">
       <div class="panel-title">🍽️ LIVE KITCHEN QUEUE</div>
@@ -1572,7 +1658,7 @@ function buildMgrOrders(){
   <div class="panel" style="margin-bottom:12px">
     <div class="panel-title">${t('table_map')}</div>
     <div class="table-map">
-      ${TABLES.map(tn=>{const t=tn,tO=ORDERS.filter(o=>o.table===t&&o.status!=='served'&&o.status!=='cancelled');return `<div class="t-card ${tO.length?(tO.some(o=>o.status==='new')?'has-order':'occupied'):''}"><div>🪑</div><div class="t-num">${t}</div><div class="t-status">${tO.length?tO.length+' '+t('table_order'):t('table_free')}</div></div>`;}).join('')}
+      ${TABLES.map(tn=>{const tO=ORDERS.filter(o=>o.table===tn&&o.status!=='served'&&o.status!=='cancelled');return `<div class="t-card ${tO.length?(tO.some(o=>o.status==='new')?'has-order':'occupied'):''}"><div>🪑</div><div class="t-num">${tn}</div><div class="t-status">${tO.length?tO.length+' '+t('table_order'):t('table_free')}</div></div>`;}).join('')}
     </div>
   </div>
   <div class="panel">
@@ -1643,20 +1729,20 @@ function buildMgrInventory(){
   </div>`;
 }
 window.invAdd=id=>{const i=INVENTORY.find(x=>x.id===id);if(!i)return;const v=parseInt($('inv_'+id)?.value)||0;if(v<=0){toast(t('enter_qty_inv'),'error');return;}i.qty+=v;toast(`+${v} ${i.unit} ${i.name}`,'success');dbSave();mTab('inventory');};
-window.invLog=id=>{const i=INVENTORY.find(x=>x.id===id);if(!i)return;const v=parseInt($('inv_'+id)?.value)||0;if(v<=0){toast(t('enter_qty_inv'),'error');return;}if(v>i.qty){toast(t('exceeds_stock'),'error');return;}i.qty-=v;WASTE_LOG.unshift({item:i.name,qty:v,unit:i.unit,reason:t('manager_log'),time:Date.now(),by:'Manager'});toast(`Logged ${v} ${i.unit} waste`,'warning');dbSave();mTab('inventory');};
+window.invLog=id=>{const i=INVENTORY.find(x=>x.id===id);if(!i)return;const v=parseInt($('inv_'+id)?.value)||0;if(v<=0){toast(t('enter_qty_inv'),'error');return;}if(v>i.qty){toast(t('exceeds_stock'),'error');return;}i.qty-=v;WASTE_LOG.unshift({item:i.name,qty:v,unit:i.unit,reason:t('manager_log'),time:Date.now(),by:S.user?S.user.name:'Manager'});toast(`${t('waste_log_title')}: ${v} ${i.unit}`,'warning');dbSave();mTab('inventory');};
 
 window.openAddInv=()=>{
   S.editInvId=null;
   $('ai-title').textContent=t('add_inv_item');
   $('ai-name').value='';$('ai-qty').value=0;$('ai-min').value=10;$('ai-icon').value='📦';
-  $('addInvModal').classList.add('show');
+  $('addInvModal').classList.add('show');updateModalLabels();
 };
 window.editInvItem=id=>{
   const i=INVENTORY.find(x=>x.id===id);if(!i)return;
   S.editInvId=id;
   $('ai-title').textContent=t('edit_inv_item');
   $('ai-name').value=i.name;$('ai-qty').value=i.qty;$('ai-min').value=i.min;$('ai-icon').value=i.icon;$('ai-unit').value=i.unit;
-  $('addInvModal').classList.add('show');
+  $('addInvModal').classList.add('show');updateModalLabels();
 };
 window.saveInvItem=()=>{
   const name=($('ai-name')?.value||'').trim();
@@ -1679,7 +1765,7 @@ function buildMgrStaff(){
   return `
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
     <div style="font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:2px;color:var(--yolk)">${t('worker_mgmt')}</div>
-    <button class="btn btn-yolk btn-sm" style="padding:8px 14px" onclick="$('addWorkerModal').classList.add('show')">${t('add_worker')}</button>
+    <button class="btn btn-yolk btn-sm" style="padding:8px 14px" onclick="$('addWorkerModal').classList.add('show');updateModalLabels()">${t('add_worker')}</button>
   </div>
   <div class="table-wrap">
     <table>
@@ -1689,7 +1775,7 @@ function buildMgrStaff(){
           <td style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted)">${esc(w.worker_num||'—')}</td>
           <td style="font-weight:600">${esc(w.name)}</td>
           <td style="font-family:'DM Mono',monospace;font-size:12px">${esc(w.phone)}</td>
-          <td>${esc(w.role)}</td>
+          <td>${roleLabel(w.role)}</td>
           <td style="color:var(--yolk)">€${w.hourly_rate}/h</td>
           <td>
             <button class="btn ${w.inv_perm?'btn-green':'btn-dark'} btn-sm" style="font-size:10px" onclick="toggleInvPerm('${w.id}')">
@@ -1716,7 +1802,7 @@ window.openEditWorker=id=>{
   S.editWorkerId=id;
   $('em-name').value=w.name;$('em-phone').value=w.phone;$('em-role').value=w.role;$('em-rate').value=w.hourly_rate;
   $('em-inv-perm').value=w.inv_perm?'1':'0';
-  $('editModal').classList.add('show');
+  $('editModal').classList.add('show');updateModalLabels();
 };
 window.saveEdit=()=>{
   const w=WORKERS.find(x=>x.id===S.editWorkerId);if(!w)return;
@@ -1772,14 +1858,14 @@ window.openAddBranch=()=>{
   S.editBranchId=null;
   $('branch-modal-title').textContent=t('add_branch_title');
   $('br-name').value='';$('br-maps').value='';$('br-lat').value='';$('br-lng').value='';$('br-addr').value='';
-  $('branchModal').classList.add('show');
+  $('branchModal').classList.add('show');updateModalLabels();
 };
 window.openEditBranch=id=>{
   const b=BRANCHES.find(x=>x.id===id);if(!b)return;
   S.editBranchId=id;
   $('branch-modal-title').textContent=t('edit_branch_title');
   $('br-name').value=b.name;$('br-lat').value=b.lat;$('br-lng').value=b.lng;$('br-addr').value=b.addr;
-  $('branchModal').classList.add('show');
+  $('branchModal').classList.add('show');updateModalLabels();
 };
 // Auto-extract coords when maps link is pasted
 document.getElementById('br-maps').addEventListener('input',function(){
@@ -1844,7 +1930,7 @@ window.openAddMenuItem=()=>{
   // Show branch prices
   const bp=$('mi-price-branches');
   if(bp){bp.style.display='block';bp.querySelector('#mi-branch-prices').innerHTML=BRANCHES.map(b=>`<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><label style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);width:120px">${esc(b.name)}</label><input type="number" id="mibp_${b.id}" placeholder="${t('default_price')}" style="flex:1;font-size:12px;padding:5px 8px"/></div>`).join('');}
-  $('menuItemModal').classList.add('show');
+  $('menuItemModal').classList.add('show');updateModalLabels();
 };
 window.openEditMenuItem=id=>{
   const m=MENU.find(x=>x.id===id);if(!m)return;
@@ -1853,7 +1939,7 @@ window.openEditMenuItem=id=>{
   $('mi-name').value=m.name;$('mi-price').value=m.price;$('mi-desc').value=m.desc;$('mi-icon').value=m.icon;$('mi-cat').value=m.cat;
   const bp=$('mi-price-branches');
   if(bp){bp.style.display='block';$('mi-branch-prices').innerHTML=BRANCHES.map(b=>`<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><label style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);width:120px">${esc(b.name)}</label><input type="number" id="mibp_${b.id}" value="${m.branchPrices&&m.branchPrices[b.id]||''}" placeholder="${m.price}" style="flex:1;font-size:12px;padding:5px 8px"/></div>`).join('');}
-  $('menuItemModal').classList.add('show');
+  $('menuItemModal').classList.add('show');updateModalLabels();
 };
 window.saveMenuItem=()=>{
   const name=($('mi-name')?.value||'').trim();
@@ -1927,7 +2013,7 @@ function buildMgrAnalytics(){
   const maxSold=topItems[0]?topItems[0].sold*topItems[0].price:1;
   return `
   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:16px">
-    ${[[t('orders'),completedOrders.length,'var(--blue)'],[t('revenue'),rev?'€'+rev:'€0','var(--yolk)'],['💰 Avg','€'+avgOrder,'var(--green)'],[t('loyalty'),LOYALTY.length,'var(--purple)'],[t('waste_log_title'),'€'+WASTE_LOG.reduce((a,w)=>{const i=INVENTORY.find(x=>x.name===w.item);return a+(i?w.qty*(i.unit==='kg'?8:i.unit==='L'?5:.5):0);},0).toFixed(0),'#e74c3c'],['⭐ Avg',FEEDBACK.length?(FEEDBACK.reduce((a,f)=>a+f.rating,0)/FEEDBACK.length).toFixed(1):'—','var(--yolk)']].map(([l,v,c])=>`<div class="kpi-box"><div class="kv" style="color:${c}">${v}</div><div class="kl">${l}</div></div>`).join('')}
+    ${[[t('orders'),completedOrders.length,'var(--blue)'],[t('revenue'),rev?'€'+rev:'€0','var(--yolk)'],[t('avg_lbl'),'€'+avgOrder,'var(--green)'],[t('loyalty'),LOYALTY.length,'var(--purple)'],[t('waste_log_title'),'€'+WASTE_LOG.reduce((a,w)=>{const i=INVENTORY.find(x=>x.name===w.item);return a+(i?w.qty*(i.unit==='kg'?8:i.unit==='L'?5:.5):0);},0).toFixed(0),'#e74c3c'],['⭐ Avg',FEEDBACK.length?(FEEDBACK.reduce((a,f)=>a+f.rating,0)/FEEDBACK.length).toFixed(1):'—','var(--yolk)']].map(([l,v,c])=>`<div class="kpi-box"><div class="kv" style="color:${c}">${v}</div><div class="kl">${l}</div></div>`).join('')}
   </div>
   <div class="sg">
     <div class="panel">
@@ -1953,7 +2039,7 @@ function buildMgrSalary(){
   <div class="table-wrap">
     <table>
       <thead><tr><th>${t('name_lbl')}</th><th>${t('role_lbl')}</th><th>${t('rate_lbl')}</th><th>${t('hours')} (7d)</th><th>${t('total_earned')}</th></tr></thead>
-      <tbody>${WORKERS.map(w=>{const hrs=weekShifts.filter(s=>s.worker===w.id&&s.status==='completed').reduce((a,s)=>a+s.hours,0);return `<tr><td style="font-weight:600">${esc(w.name)}</td><td>${esc(w.role)}</td><td style="color:var(--yolk)">€${w.hourly_rate}/h</td><td>${hrs.toFixed(1)}h</td><td style="color:var(--green);font-weight:600">€${(hrs*w.hourly_rate).toFixed(2)}</td></tr>`;}).join('')}</tbody>
+      <tbody>${WORKERS.map(w=>{const hrs=weekShifts.filter(s=>s.worker===w.id&&s.status==='completed').reduce((a,s)=>a+s.hours,0);return `<tr><td style="font-weight:600">${esc(w.name)}</td><td>${roleLabel(w.role)}</td><td style="color:var(--yolk)">€${w.hourly_rate}/h</td><td>${hrs.toFixed(1)}h</td><td style="color:var(--green);font-weight:600">€${(hrs*w.hourly_rate).toFixed(2)}</td></tr>`;}).join('')}</tbody>
     </table>
   </div>`;
 }
@@ -1990,7 +2076,7 @@ function buildMgrBilling(){
       </div>
       <div style="display:flex;justify-content:space-between;font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--yolk);margin-bottom:12px"><span>${t('orders').replace('📋 ','')}</span><span>€${sub.toFixed(2)}</span></div>
       <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px">
-        ${['cash','card','app'].map(p=>`<button class="pay-pill ${BILLING_STATE.payment===p?'active':''}" onclick="billPay('${p}')">${{cash:'💵 Cash',card:'💳 '+t('billing_title').replace('🧾 ',''),app:'📱 App'}[p]}</button>`).join('')}
+        ${['cash','card','app'].map(p=>`<button class="pay-pill ${BILLING_STATE.payment===p?'active':''}" onclick="billPay('${p}')">${{cash:t('payment_cash'),card:t('payment_card'),app:t('payment_app')}[p]}</button>`).join('')}
       </div>
       <div style="display:flex;gap:8px">
         <button class="btn btn-red" style="flex:1;padding:10px" onclick="billClear()">${t('clear_lbl')}</button>
@@ -1999,7 +2085,7 @@ function buildMgrBilling(){
     </div>
     <div class="panel">
       <div class="panel-title">${t('recent_receipts')}</div>
-      ${RECEIPTS.slice(0,8).map(r=>`<div style="padding:8px 0;border-bottom:1px solid rgba(245,210,0,.06)"><div style="display:flex;justify-content:space-between;margin-bottom:3px"><span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted)">#${r.id} · ${fmtAgo(r.time)}</span><span class="badge ${r.payment==='cash'?'by':r.payment==='card'?'bb':'bg'}" style="font-size:8px">${r.payment}</span></div><div style="display:flex;justify-content:space-between;font-size:13px"><span style="color:var(--cream)">${r.items.map(i=>i.qty+'× '+i.name).join(', ')}</span><span style="color:var(--yolk);font-family:'Bebas Neue',sans-serif">€${r.total}</span></div></div>`).join('')}
+      ${RECEIPTS.slice(0,8).map(r=>`<div style="padding:8px 0;border-bottom:1px solid rgba(245,210,0,.06)"><div style="display:flex;justify-content:space-between;margin-bottom:3px"><span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted)">#${r.id} · ${fmtAgo(r.time)}</span><span class="badge ${r.payment==='cash'?'by':r.payment==='card'?'bb':'bg'}" style="font-size:8px">${{cash:t('payment_cash'),card:t('payment_card'),app:t('payment_app')}[r.payment]||r.payment}</span></div><div style="display:flex;justify-content:space-between;font-size:13px"><span style="color:var(--cream)">${r.items.map(i=>i.qty+'× '+i.name).join(', ')}</span><span style="color:var(--yolk);font-family:'Bebas Neue',sans-serif">€${r.total}</span></div></div>`).join('')}
     </div>
   </div>`;
 }
@@ -2031,11 +2117,11 @@ function buildMgrFeedback(){
       </div>
       <div style="flex:1">
         <div class="al-title">${f.comment?esc(f.comment.slice(0,80)):f.rating>=4?t('positive_review'):t('negative_review')}</div>
-        <div class="al-body">#${f.orderRef||'?'} · ${f.branch||'Main'} · ${f.phone||'Walk-in'}</div>
+        <div class="al-body">#${f.orderRef||'?'} · ${f.branch||t('branches_mgr').replace('🏪 ','')} · ${f.phone||t('walk_in_lbl')}</div>
       </div>
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
         <span class="al-time">${fmtAgo(f.time)}</span>
-        ${f.responded?`<span class="badge bg" style="font-size:8px">✓ Seen</span>`:`<span class="badge br" style="font-size:8px">● New</span>`}
+        ${f.responded?`<span class="badge bg" style="font-size:8px">${t('seen_badge')}</span>`:`<span class="badge br" style="font-size:8px">${t('new_badge')}</span>`}
       </div>
     </div>`).join('')}
   </div>`;
@@ -2044,11 +2130,11 @@ function buildMgrFeedback(){
 // ── MGR: ALERTS ───────────────────────────────────────────────
 function buildMgrAlerts(){
   const autoAlerts=[];
-  INVENTORY.filter(i=>i.qty<=i.min).forEach(i=>autoAlerts.push({type:'critical',icon:'⚠️',title:`Low Stock: ${i.name}`,body:`Only ${i.qty} ${i.unit} left — minimum is ${i.min}`,time:Date.now()-5*60000}));
-  ORDERS.filter(o=>o.type==='delivery'&&!o.assignedTo&&o.status==='new'&&Date.now()-o.created>10*60000).forEach(o=>autoAlerts.push({type:'warning',icon:'🛵',title:`Unassigned Delivery #${o.id}`,body:`${esc(o.name)} at ${esc(o.addr)} — waiting ${fmtAgo(o.created)}`,time:o.created}));
-  FEEDBACK.filter(f=>f.rating<=2&&!f.responded).forEach(f=>autoAlerts.push({type:'critical',icon:'⭐',title:`Negative Review (${f.rating}★)`,body:`${f.comment?esc(f.comment.slice(0,60))+'...':t('no_comment')}`,time:f.time}));
+  INVENTORY.filter(i=>i.qty<=i.min).forEach(i=>autoAlerts.push({type:'critical',icon:'⚠️',title:`${t('low_stock')}: ${i.name}`,body:`${i.qty} ${i.unit} ${t('left_min')} ${i.min})`,time:Date.now()-5*60000}));
+  ORDERS.filter(o=>o.type==='delivery'&&!o.assignedTo&&o.status==='new'&&Date.now()-o.created>10*60000).forEach(o=>autoAlerts.push({type:'warning',icon:'🛵',title:`${t('delivery')} #${o.id}`,body:`${esc(o.name)} — ${fmtAgo(o.created)}`,time:o.created}));
+  FEEDBACK.filter(f=>f.rating<=2&&!f.responded).forEach(f=>autoAlerts.push({type:'critical',icon:'⭐',title:`${t('negative_lbl')} (${f.rating}★)`,body:`${f.comment?esc(f.comment.slice(0,60))+'...':t('no_comment')}`,time:f.time}));
   const todayRev=ORDERS.filter(o=>o.status==='delivered'||o.status==='served').reduce((a,o)=>a+o.total,0);
-  if(todayRev<500)autoAlerts.push({type:'warning',icon:'📉',title:t('revenue_today')+' ⚠️',body:`Today: €${todayRev} vs target €3,200`,time:Date.now()-20*60000});
+  if(todayRev<500)autoAlerts.push({type:'warning',icon:'📉',title:t('revenue_today')+' ⚠️',body:`€${todayRev} vs €3,200`,time:Date.now()-20*60000});
   if(!autoAlerts.length)autoAlerts.push({type:'success',icon:'✅',title:t('all_normal'),body:t('no_alerts'),time:Date.now()});
   return `
   <div class="stat-grid" style="margin-bottom:14px">
