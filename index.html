@@ -384,41 +384,9 @@ html[dir="rtl"] body{font-family:'Fredoka',sans-serif}
   </div>
 </div>
 
-<!-- New Table Order Modal -->
+<!-- New Table Order Modal — rebuilt dynamically by openNewOrderModal() -->
 <div class="modal-bg" id="newOrderModal">
-  <div class="modal-card" style="max-width:480px">
-    <div class="modal-title">🍽️ New Table Order</div>
-    <div class="fg">
-      <div>
-        <label class="lbl-mono">Table Number</label>
-        <select id="nom-table"></select>
-      </div>
-      <div>
-        <label class="lbl-mono">Customer Phone (for Loyalty)</label>
-        <input id="nom-phone" type="tel" placeholder="e.g. 0501234567" oninput="nomPhoneLookup()"/>
-        <div id="nom-loyalty-info" style="margin-top:5px;font-family:'DM Mono',monospace;font-size:10px;color:var(--green)"></div>
-      </div>
-      <div>
-        <label class="lbl-mono">Customer Name (optional)</label>
-        <input id="nom-custname" placeholder="e.g. Ahmed"/>
-      </div>
-      <div>
-        <label class="lbl-mono">Add Items</label>
-        <div style="display:flex;gap:8px;margin-bottom:8px">
-          <select id="nom-item" style="flex:1;font-size:12px"></select>
-          <button class="btn btn-yolk btn-sm" style="padding:7px 12px" onclick="nomAddItem()">+ Add</button>
-        </div>
-        <div id="nom-items-list" style="min-height:40px;background:rgba(255,255,255,.02);border:1px solid rgba(245,210,0,.08);border-radius:4px;padding:8px">
-          <span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted)">No items added</span>
-        </div>
-        <div id="nom-total" style="text-align:right;font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--yolk);margin-top:4px"></div>
-      </div>
-    </div>
-    <div style="display:flex;gap:10px;margin-top:16px">
-      <button class="btn btn-dark" style="flex:1;padding:10px;font-size:14px" onclick="closeNewOrder()">Cancel</button>
-      <button class="btn btn-yolk" style="flex:1;padding:10px;font-size:14px" onclick="nomSubmit()">Place Order</button>
-    </div>
-  </div>
+  <div class="modal-card" style="max-width:480px" id="newOrderModalInner"></div>
 </div>
 
 <div id="root"></div>
@@ -529,6 +497,22 @@ const LANGS={
     worker_added:'Worker added!',coords_extracted:'Coordinates extracted!',
     name_coords_required:'Name and coordinates required',
     no_shifts_panel:'No shifts yet today.',
+    // Extra action strings
+    order_assigned:'Order assigned to',order_must_pickup:'Order must be picked up first!',
+    order_delivered:'Order delivered! ✅',loyalty_stamp:'Loyalty stamp for',
+    order_cancelled:'Order cancelled',free_item_earned:'earned FREE ITEM!',
+    orders_total:'orders total',next_reward:'Next reward in',free_item_redeemed:'Free item redeemed for',
+    menu_item_updated:'Menu item updated!',menu_item_added:'Menu item added!',
+    menu_items_lbl:'🍗 Menu Items',total_sold:'📦 Total Sold',top_item:'🏆 Top Item',avg_price:'💶 Avg Price',
+    revenue_this_week:'📅 Revenue This Week',top_items_revenue:'🍗 Top Items by Revenue',
+    worker_header:'Worker',default_price:'Default price',table_lbl:'Table',
+    no_items_added:'No items added',total_lbl2:'TOTAL',charge_lbl2:'Charge',
+    order_served:'Table order served!',order_next:'Order →',add_inv_item:'📦 Add Inventory Item',
+    edit_inv_item:'✏️ Edit Inventory Item',add_menu_item:'🍗 Add Menu Item',edit_menu_item:'✏️ Edit Menu Item',
+    add_branch_title:'🏪 Add Branch',edit_branch_title:'✏️ Edit Branch',
+    customer_lbl:'Customer',comments_placeholder:'Customer comments...',
+    order_hash2:'e.g. ord001',pickup_first:'Order must be picked up first!',
+    since_lbl:'Since',off_lbl:'OFF',manager_log:'Manager log',manual_log:'Manual log',
   },
   it:{
     staff_portal:'Portale Staff',worker_signin:'👷 ACCESSO DIPENDENTE',phone:'Numero di Telefono',
@@ -631,6 +615,22 @@ const LANGS={
     worker_added:'Dipendente aggiunto!',coords_extracted:'Coordinate estratte!',
     name_coords_required:'Nome e coordinate richiesti',
     no_shifts_panel:'Nessun turno oggi.',
+    // Extra action strings
+    order_assigned:'Ordine assegnato a',order_must_pickup:'L\'ordine deve essere prima ritirato!',
+    order_delivered:'Ordine consegnato! ✅',loyalty_stamp:'Timbro fedeltà per',
+    order_cancelled:'Ordine annullato',free_item_earned:'ha guadagnato UN ARTICOLO GRATIS!',
+    orders_total:'ordini totali',next_reward:'Prossimo premio tra',free_item_redeemed:'Articolo gratis riscattato per',
+    menu_item_updated:'Articolo menu aggiornato!',menu_item_added:'Articolo menu aggiunto!',
+    menu_items_lbl:'🍗 Articoli Menu',total_sold:'📦 Totale Venduto',top_item:'🏆 Top Articolo',avg_price:'💶 Prezzo Medio',
+    revenue_this_week:'📅 Ricavi Questa Settimana',top_items_revenue:'🍗 Top Articoli per Ricavi',
+    worker_header:'Dipendente',default_price:'Prezzo predefinito',table_lbl:'Tavolo',
+    no_items_added:'Nessun articolo aggiunto',total_lbl2:'TOTALE',charge_lbl2:'Addebita',
+    order_served:'Ordine tavolo servito!',order_next:'Ordine →',add_inv_item:'📦 Aggiungi Articolo Magazzino',
+    edit_inv_item:'✏️ Modifica Articolo Magazzino',add_menu_item:'🍗 Aggiungi Articolo Menu',edit_menu_item:'✏️ Modifica Articolo Menu',
+    add_branch_title:'🏪 Aggiungi Filiale',edit_branch_title:'✏️ Modifica Filiale',
+    customer_lbl:'Cliente',comments_placeholder:'Commenti del cliente...',
+    order_hash2:'es. ord001',pickup_first:'L\'ordine deve essere prima ritirato!',
+    since_lbl:'Dalle',off_lbl:'OFF',manager_log:'Nota manager',manual_log:'Nota manuale',
   },
   ar:{
     staff_portal:'بوابة الموظفين',worker_signin:'👷 تسجيل دخول الموظف',phone:'رقم الهاتف',
@@ -733,6 +733,22 @@ const LANGS={
     worker_added:'تم إضافة الموظف!',coords_extracted:'تم استخراج الإحداثيات!',
     name_coords_required:'الاسم والإحداثيات مطلوبة',
     no_shifts_panel:'لا توجد دوامات اليوم.',
+    // Extra action strings
+    order_assigned:'تم تعيين الطلب لـ',order_must_pickup:'يجب استلام الطلب أولاً!',
+    order_delivered:'تم تسليم الطلب! ✅',loyalty_stamp:'طابع ولاء لـ',
+    order_cancelled:'تم إلغاء الطلب',free_item_earned:'حصل على عنصر مجاني!',
+    orders_total:'إجمالي الطلبات',next_reward:'المكافأة القادمة بعد',free_item_redeemed:'تم استبدال عنصر مجاني لـ',
+    menu_item_updated:'تم تحديث عنصر القائمة!',menu_item_added:'تم إضافة عنصر للقائمة!',
+    menu_items_lbl:'🍗 عناصر القائمة',total_sold:'📦 إجمالي المبيعات',top_item:'🏆 أفضل عنصر',avg_price:'💶 متوسط السعر',
+    revenue_this_week:'📅 إيرادات هذا الأسبوع',top_items_revenue:'🍗 أفضل العناصر حسب الإيرادات',
+    worker_header:'الموظف',default_price:'السعر الافتراضي',table_lbl:'طاولة',
+    no_items_added:'لم يتم إضافة عناصر',total_lbl2:'المجموع',charge_lbl2:'تحصيل',
+    order_served:'تم تقديم طلب الطاولة!',order_next:'الطلب →',add_inv_item:'📦 إضافة عنصر مخزون',
+    edit_inv_item:'✏️ تعديل عنصر مخزون',add_menu_item:'🍗 إضافة عنصر قائمة',edit_menu_item:'✏️ تعديل عنصر قائمة',
+    add_branch_title:'🏪 إضافة فرع',edit_branch_title:'✏️ تعديل فرع',
+    customer_lbl:'العميل',comments_placeholder:'تعليقات العميل...',
+    order_hash2:'مثال: ord001',pickup_first:'يجب استلام الطلب أولاً!',
+    since_lbl:'منذ',off_lbl:'إجازة',manager_log:'ملاحظة المدير',manual_log:'ملاحظة يدوية',
   }
 };
 let LANG='en';
@@ -859,8 +875,8 @@ const fmtAgo=ms=>{const m=Math.round((Date.now()-ms)/60000);return m<60?m+'m ago
 const normPhone=p=>String(p||'').replace(/\D/g,'').replace(/^0+/,'');
 const findLoyalty=phone=>LOYALTY.find(c=>normPhone(c.phone)===normPhone(phone));
 function progBar(pct,color){return `<div class="prog-wrap"><div class="prog-bar" style="width:${pct}%;background:${color||'linear-gradient(90deg,var(--yolk),var(--crisp))'}"></div></div>`;}
-function statusBadge(st){const m={working:'bg',completed:'bb',absent:'br'};const l={working:'WORKING',completed:'DONE',absent:'ABSENT'};return `<span class="badge ${m[st]||'by'}">${l[st]||st.toUpperCase()}</span>`;}
-function orderStatusBadge(st){const m={new:'bb',preparing:'by',ready:'bg',pickedup:'bo',delivered:'bg',served:'bg',cancelled:'br'};const l={new:'NEW',preparing:'PREPARING',ready:'READY',pickedup:'PICKED UP',delivered:'DELIVERED',served:'SERVED',cancelled:'CANCELLED'};return `<span class="badge ${m[st]||'bb'}">${l[st]||st.toUpperCase()}</span>`;}
+function statusBadge(st){const m={working:'bg',completed:'bb',absent:'br'};const l={working:t('shift_in_progress').replace('● ','').toUpperCase(),completed:t('completed_today').replace('✅ ','').toUpperCase(),absent:t('no_one_clocked').replace('No one clocked in.','ABSENT').replace('لم يسجل أحد دخوله.','غائب').replace('Nessuno ha timbrato.','ASSENTE')};return `<span class="badge ${m[st]||'by'}">${l[st]||st.toUpperCase()}</span>`;}
+function orderStatusBadge(st){const m={new:'bb',preparing:'by',ready:'bg',pickedup:'bo',delivered:'bg',served:'bg',cancelled:'br'};const l={new:t('new_lbl').replace('🆕 ','').toUpperCase(),preparing:t('preparing_lbl').replace('👨‍🍳 ','').toUpperCase(),ready:t('ready_lbl').replace('✅ ','').toUpperCase(),pickedup:t('picked_up').replace('🏃 ','').toUpperCase(),delivered:t('delivered').replace('✅ ','').toUpperCase(),served:t('mark_served').replace('→ ','').replace('Segna ','').replace('← ','').replace('← تحديد ','').toUpperCase(),cancelled:t('cancel').replace('✕ ','').toUpperCase()};return `<span class="badge ${m[st]||'bb'}">${l[st]||st.toUpperCase()}</span>`;}
 
 let _toastT;
 function toast(msg,type='info'){const el=$('toast');if(!el)return;el.textContent=msg;el.className='toast show '+type;clearTimeout(_toastT);_toastT=setTimeout(()=>el.classList.remove('show'),3500);}
@@ -1035,31 +1051,31 @@ function buildWPanel(u,active,myShifts){
 function buildWorkerFeedback(u){
   return `
   <div class="panel" style="margin-bottom:14px">
-    <div class="panel-title">📝 SUBMIT CUSTOMER FEEDBACK</div>
-    <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);margin-bottom:12px;letter-spacing:1px">RECORD FEEDBACK FROM WALK-IN CUSTOMERS</div>
+    <div class="panel-title">${t('submit_feedback')}</div>
+    <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);margin-bottom:12px;letter-spacing:1px">${t('record_feedback')}</div>
     <div class="fg">
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-        <div><label class="lbl-mono">Order #</label><input id="fb-ref" placeholder="e.g. ord001" style="font-size:13px"/></div>
-        <div><label class="lbl-mono">Branch</label><input id="fb-branch" placeholder="Main" style="font-size:13px" value="Main"/></div>
+        <div><label class="lbl-mono">${t('order_hash')}</label><input id="fb-ref" placeholder="${t('order_hash2')}" style="font-size:13px"/></div>
+        <div><label class="lbl-mono">${t('branch_lbl')}</label><input id="fb-branch" placeholder="Main" style="font-size:13px" value="Main"/></div>
       </div>
-      <div><label class="lbl-mono">Customer Phone (optional)</label><input id="fb-phone" type="tel" placeholder="e.g. 0501234567" style="font-size:13px"/></div>
+      <div><label class="lbl-mono">${t('customer_phone_opt')}</label><input id="fb-phone" type="tel" placeholder="e.g. 0501234567" style="font-size:13px"/></div>
       <div>
-        <label class="lbl-mono">Rating</label>
+        <label class="lbl-mono">${t('rating_lbl')}</label>
         <div id="fb-stars" style="display:flex;gap:8px;margin-top:4px">${[1,2,3,4,5].map(s=>`<span class="fb-star" data-s="${s}" onclick="fbRateW(${s})" style="font-size:28px;cursor:pointer;transition:transform .1s">☆</span>`).join('')}</div>
       </div>
-      <div><label class="lbl-mono">Comments</label><textarea id="fb-comment" rows="3" placeholder="Customer comments..." style="font-size:13px;resize:none"></textarea></div>
-      <button class="btn btn-yolk" style="padding:12px" onclick="fbSubmitWorker()">📝 Submit Feedback</button>
+      <div><label class="lbl-mono">${t('comments_lbl')}</label><textarea id="fb-comment" rows="3" placeholder="${t('comments_placeholder')}" style="font-size:13px;resize:none"></textarea></div>
+      <button class="btn btn-yolk" style="padding:12px" onclick="fbSubmitWorker()">${t('submit_feedback_btn')}</button>
     </div>
   </div>
   <div class="panel">
-    <div class="panel-title">📋 RECENT FEEDBACK</div>
-    ${FEEDBACK.slice(0,6).length===0?`<div class="empty"><div class="empty-icon">⭐</div>'+t('no_feedback_yet')+'</div>`:
+    <div class="panel-title">${t('recent_feedback')}</div>
+    ${FEEDBACK.slice(0,6).length===0?`<div class="empty"><div class="empty-icon">⭐</div>${t('no_feedback_yet')}</div>`:
     FEEDBACK.slice(0,6).map(f=>`<div style="padding:8px 0;border-bottom:1px solid rgba(245,210,0,.06)">
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px">
         <span>${'⭐'.repeat(f.rating)}${'☆'.repeat(5-f.rating)}</span>
         <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted)">${fmtAgo(f.time)} · #${f.orderRef||'?'}</span>
       </div>
-      <div style="font-size:13px;color:var(--cream)">${f.comment?esc(f.comment.slice(0,60)):'No comment'}</div>
+      <div style="font-size:13px;color:var(--cream)">${f.comment?esc(f.comment.slice(0,60)):t('no_comment')}</div>
     </div>`).join('')}
   </div>`;
 }
@@ -1089,7 +1105,7 @@ function buildWorkerShift(u,active,myShifts){
   <div class="shift-card ${active?'working':''}">
     <div class="shift-status">${active?t('shift_in_progress'):t('ready_clock')}</div>
     <div class="timer-display" id="tbig">00:00:00</div>
-    <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:3px;color:${active?'#2ecc71':'var(--muted)'};margin-bottom:8px">ELAPSED TIME</div>
+    <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:3px;color:${active?'#2ecc71':'var(--muted)'};margin-bottom:8px">${t('elapsed_time')}</div>
     ${active?`<div class="gps-bar gps-ok" style="margin-bottom:12px"><span class="dot"></span>${esc(active.location)} · Started ${fmtTime(active.start)}</div>`:''}
     <div style="background:rgba(245,210,0,.06);border:1px solid rgba(245,210,0,.1);border-radius:6px;padding:12px;margin-bottom:16px">
       <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--muted)">${t('today_earnings')}</div>
@@ -1102,9 +1118,9 @@ function buildWorkerShift(u,active,myShifts){
     </div>
   </div>
   <div class="table-wrap">
-    <div style="padding:10px 14px;border-bottom:1px solid rgba(245,210,0,.08);font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:2px;color:var(--yolk)">📋 ${t('my_shifts')}</div>
+    <div style="padding:10px 14px;border-bottom:1px solid rgba(245,210,0,.08);font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:2px;color:var(--yolk)">${t('my_shifts')}</div>
     <table><thead><tr><th>${t('location')}</th><th>In</th><th>Out</th><th>${t('hours')}</th><th>${t('earnings')}</th><th>${t('status')}</th></tr></thead>
-    <tbody>${myShifts.length===0?`<tr><td colspan="6"><div class="empty"><div class="empty-icon">🍗</div>'+t('no_shifts_yet')+'</div></td></tr>`:
+    <tbody>${myShifts.length===0?`<tr><td colspan="6"><div class="empty"><div class="empty-icon">🍗</div>${t('no_shifts_yet')}</div></td></tr>`:
       myShifts.map(s=>`<tr>
         <td style="color:var(--blue)">${esc(s.location)}</td>
         <td style="font-family:monospace;font-size:12px">${fmtTime(s.start)}</td>
@@ -1121,7 +1137,7 @@ window.wStart=()=>{
   const branchName=S.gpsNearBranch||'Main Branch';
   const newShift={id:'s'+Date.now(),worker:u.id,start:Date.now(),end:null,status:'working',location:branchName,hours:0,earnings:0};
   SHIFTS.push(newShift);S.shift=newShift;
-  toast('Shift started! Have a great day 🍗','success');renderWorker();
+  toast(t('shift_started'),'success');renderWorker();
 };
 window.wEnd=()=>{
   const s=SHIFTS.find(x=>x.worker===S.user.id&&x.status==='working');if(!s)return;
@@ -1142,25 +1158,25 @@ function buildWorkerOrders(u){
       <span class="badge bb" style="font-size:11px;padding:5px 10px">${t('new_lbl')} ${newCount}</span>
       <span class="badge by" style="font-size:11px;padding:5px 10px">${t('preparing_lbl')} ${prepCount}</span>
     </div>
-    ${u.role==='cashier'?`<button class="btn btn-yolk btn-sm" style="padding:7px 14px" onclick="openNewOrderModal()">+ Table Order</button>`:''}
+    ${u.role==='cashier'?`<button class="btn btn-yolk btn-sm" style="padding:7px 14px" onclick="openNewOrderModal()">${t('table_order_btn')}</button>`:''}
   </div>
   <div class="panel" style="margin-bottom:12px">
-    <div class="panel-title">🪑 TABLE MAP</div>
+    <div class="panel-title">${t('table_map')}</div>
     <div class="table-map">
       ${TABLES.map(t=>{
         const tOrds=ORDERS.filter(o=>o.table===t&&o.status!=='served'&&o.status!=='cancelled');
         const cls=tOrds.length?(tOrds.some(o=>o.status==='new')?'has-order':'occupied'):'';
-        return `<div class="t-card ${cls}" onclick="toast('Table ${t}: ${tOrds.length?tOrds.length+' order(s)':'Free'}','info')">
+        return `<div class="t-card ${cls}" onclick="toast(t('table_map')+' ${t}: ${tOrds.length?tOrds.length+' order(s)':t('table_free')}','info')">
           <div>🪑</div><div class="t-num">${t}</div>
-          <div class="t-status">${tOrds.length?tOrds.length+' '+t('table_order'):'Free'}</div>
+          <div class="t-status">${tOrds.length?tOrds.length+' '+t('table_order'):t('table_free')}</div>
         </div>`;
       }).join('')}
     </div>
   </div>
   <div class="panel">
-    <div class="panel-title">🍽️ ALL ACTIVE ORDERS</div>
+    <div class="panel-title">${t('all_active_orders')}</div>
     <div class="order-queue">
-      ${active.length===0?`<div class="empty"><div class="empty-icon">✅</div>'+t('no_active_orders')+'</div>`:
+      ${active.length===0?`<div class="empty"><div class="empty-icon">✅</div>${t('no_active_orders')}</div>`:
       active.sort((a,b)=>a.created-b.created).map(o=>buildOrderCard(o,'cashier',delivWorkers)).join('')}
     </div>
   </div>
@@ -1181,7 +1197,7 @@ function buildOrderCard(o,viewRole,delivWorkers){
   const delSteps={new:'preparing',preparing:'ready',ready:'pickedup'};
   const tabSteps={new:'preparing',preparing:'ready',ready:'served'};
   const nextStatus=o.type==='delivery'?delSteps:tabSteps;
-  const nextLabel={new:t('start_prep'),preparing:t('mark_ready'),ready:o.type==='delivery'?'→ Picked Up':'→ Mark Served',pickedup:'→ DELIVERED'};
+  const nextLabel={new:t('start_prep'),preparing:t('mark_ready'),ready:o.type==='delivery'?t('picked_up_action'):t('mark_served'),pickedup:t('delivered_action')};
 
   // Permission rules:
   // - Delivery assignment: CASHIER only (not manager, not cook)
@@ -1215,17 +1231,17 @@ function buildOrderCard(o,viewRole,delivWorkers){
         ${o.items.map(i=>`<span style="background:rgba(255,255,255,.04);border:1px solid rgba(245,210,0,.1);border-radius:4px;padding:2px 8px;font-size:12px">${i.qty}× ${esc(i.name)} <span style="color:var(--yolk)">€${i.qty*i.price}</span></span>`).join('')}
       </div>
       <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--yolk)">€${o.total}</div>
-      ${o.assignedName?`<div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--green);margin-top:4px">🛵 Assigned: ${esc(o.assignedName)}</div>`:''}
+      ${o.assignedName?`<div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--green);margin-top:4px">${t('assigned_lbl')} ${esc(o.assignedName)}</div>`:''}
     </div>
     <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">
       ${canAssign&&delivWorkersList.length?`<select id="assign_${o.id}" style="font-size:11px;padding:4px 8px;width:130px">
         <option value="">— ${t('assign_delivery')} —</option>
         ${delivWorkersList.map(w=>`<option value="${w.id}_${w.name}">${esc(w.name)}</option>`).join('')}
       </select>
-      <button class="btn btn-blue btn-sm" style="font-size:10px;padding:4px 10px;background:rgba(52,152,219,.15);color:var(--blue);border:1px solid rgba(52,152,219,.3)" onclick="assignDelivery('${o.id}')">Assign →</button>`:''}
+      <button class="btn btn-blue btn-sm" style="font-size:10px;padding:4px 10px;background:rgba(52,152,219,.15);color:var(--blue);border:1px solid rgba(52,152,219,.3)" onclick="assignDelivery('${o.id}')">${t('assign_arrow')}</button>`:''}
       ${canAdvance(o.status)&&nextStatus[o.status]?`<button class="btn btn-yolk" style="padding:7px 14px;font-size:13px;white-space:nowrap" onclick="advanceOrder('${o.id}')">${nextLabel[o.status]}</button>`:''}
       ${o.status==='pickedup'&&(isDelivery&&o.assignedTo===S.user?.id)?`<button class="btn btn-green" style="padding:7px 14px;font-size:13px" onclick="markDelivered('${o.id}')">✅ ${t('mark_delivered')}</button>`:''}
-      ${canCancel?`<button class="btn btn-red" style="padding:4px 10px;font-size:10px;font-family:'DM Mono',monospace" onclick="cancelOrder('${o.id}')">✕ Cancel</button>`:''}
+      ${canCancel?`<button class="btn btn-red" style="padding:4px 10px;font-size:10px;font-family:'DM Mono',monospace" onclick="cancelOrder('${o.id}')">${t('cancel')}</button>`:''}
       ${isManager?`<span style="font-family:'DM Mono',monospace;font-size:8px;color:var(--muted);letter-spacing:.5px">👁 VIEW ONLY</span>`:''}
     </div>
   </div>`;
@@ -1236,7 +1252,7 @@ window.assignDelivery=id=>{
   const sel=$('assign_'+id);if(!sel||!sel.value)return;
   const [wid,wname]=sel.value.split('_');
   o.assignedTo=wid;o.assignedName=wname;
-  toast(`Order assigned to ${wname}!`,'success');dbSave();renderWorker();
+  toast(t('order_assigned')+' '+wname+'!','success');dbSave();renderWorker();
 };
 window.advanceOrder=id=>{
   const o=ORDERS.find(x=>x.id===id);if(!o)return;
@@ -1246,46 +1262,46 @@ window.advanceOrder=id=>{
   if(o.status==='served'&&prev==='ready'){
     RECEIPTS.unshift({id:'r'+Date.now(),items:[...o.items],payment:'cash',total:o.total,time:Date.now(),type:'table',table:o.table});
     if(o.phone) stampLoyalty(o);
-    else toast(`✅ Table ${o.table} order served! €${o.total}`,'success');
+    else toast('✅ '+t('order_served')+' T'+o.table+' €'+o.total,'success');
   } else {
-    toast(`Order → ${o.status}`,'success');
+    toast(t('order_next')+' '+o.status,'success');
   }
   dbSave();
   if(S.screen==='worker')renderWorker();else renderManager();
 };
 window.markDelivered=id=>{
   const o=ORDERS.find(x=>x.id===id);if(!o)return;
-  if(o.status!=='pickedup'){toast('Order must be picked up first!','warning');return;}
+  if(o.status!=='pickedup'){toast(t('pickup_first'),'warning');return;}
   o.status='delivered';
   RECEIPTS.unshift({id:'r'+Date.now(),items:[...o.items],payment:'cash',total:o.total,time:Date.now(),type:'delivery',phone:o.phone});
   if(o.phone)stampLoyalty(o);
-  else toast('Order delivered! ✅','success');
+  else toast(t('order_delivered'),'success');
   dbSave();
   if(S.screen==='worker')renderWorker();else renderManager();
 };
 function stampLoyalty(o){
   let loy=findLoyalty(o.phone);
-  if(!loy){loy={phone:o.phone,name:o.name||'Customer',stamps:0,orders:0,joined:new Date().toISOString().split('T')[0]};LOYALTY.push(loy);}
+  if(!loy){loy={phone:o.phone,name:o.name||t('customer_lbl'),stamps:0,orders:0,joined:new Date().toISOString().split('T')[0]};LOYALTY.push(loy);}
   loy.orders++;
   // Auto-calculate stamps: stamps = orders mod 10 (0 means just earned free item)
   const prevStamps = loy.stamps;
   loy.stamps = loy.orders % 10;
   const earnedFree = (loy.orders % 10 === 0); // every 10th order earns a free item
   if(earnedFree){
-    toast(`🎁 ${loy.name} earned FREE ITEM! (${loy.orders} orders total)`,'success');
+    toast('🎁 '+loy.name+' '+t('free_item_earned')+' ('+loy.orders+' '+t('orders_total')+')','success');
   } else {
-    toast(`✅ Loyalty stamp for ${loy.name} — ${loy.stamps}/10 (${loy.orders} total orders)`,'success');
+    toast('✅ '+t('loyalty_stamp')+' '+loy.name+' — '+loy.stamps+'/10 ('+loy.orders+' '+t('orders_total')+')','success');
   }
 }
 window.cancelOrder=id=>{
   const o=ORDERS.find(x=>x.id===id);if(!o)return;
-  o.status='cancelled';toast('Order cancelled','warning');dbSave();
+  o.status='cancelled';toast(t('order_cancelled'),'warning');dbSave();
   if(S.screen==='worker')renderWorker();else renderManager();
 };
 
 // ── NEW TABLE ORDER MODAL ────────────────────────────────────
 function buildNewOrderModalHTML(){
-  const tableOpts=TABLES.map(t=>`<option value="${t}">Table ${t}</option>`).join('');
+  const tableOpts=TABLES.map(t=>`<option value="${t}">${t('table_lbl')} ${t}</option>`).join('');
   const menuOpts=MENU.map(m=>`<option value="${m.price}" data-id="${m.id}" data-name="${m.name}">${m.icon} ${m.name} — €${m.price}</option>`).join('');
   const sel=$('nom-table');if(sel&&!sel.innerHTML){sel.innerHTML=tableOpts;}
   const msel=$('nom-item');if(msel&&!msel.innerHTML){msel.innerHTML=menuOpts;}
@@ -1293,8 +1309,28 @@ function buildNewOrderModalHTML(){
 }
 window.openNewOrderModal=()=>{
   _nomItems.length=0;
-  const sel=$('nom-table');if(sel)sel.innerHTML=TABLES.map(t=>`<option value="${t}">Table ${t}</option>`).join('');
-  const msel=$('nom-item');if(msel)msel.innerHTML=MENU.map(m=>`<option value="${m.price}" data-id="${m.id}" data-name="${m.name}">${m.icon} ${m.name} — €${m.price}</option>`).join('');
+  const inner=$('newOrderModalInner');
+  if(inner){inner.innerHTML=`
+    <div class="modal-title">🍽️ ${t('table_lbl')} ${t('orders').replace('📋 ','')}</div>
+    <div class="fg">
+      <div><label class="lbl-mono">${t('table_lbl')}</label><select id="nom-table">${TABLES.map(tb=>`<option value="${tb}">${t('table_lbl')} ${tb}</option>`).join('')}</select></div>
+      <div><label class="lbl-mono">${t('phone')}</label><input id="nom-phone" type="tel" placeholder="e.g. 0501234567" oninput="nomPhoneLookup()"/><div id="nom-loyalty-info" style="margin-top:5px;font-family:'DM Mono',monospace;font-size:10px;color:var(--green)"></div></div>
+      <div><label class="lbl-mono">${t('name_lbl')}</label><input id="nom-custname" placeholder=""/></div>
+      <div><label class="lbl-mono">${t('add_item')}</label>
+        <div style="display:flex;gap:8px;margin-bottom:8px">
+          <select id="nom-item" style="flex:1;font-size:12px">${MENU.map(m=>`<option value="${m.price}" data-id="${m.id}" data-name="${m.name}">${m.icon} ${m.name} — €${m.price}</option>`).join('')}</select>
+          <button class="btn btn-yolk btn-sm" style="padding:7px 12px" onclick="nomAddItem()">${t('add_btn')}</button>
+        </div>
+        <div id="nom-items-list" style="min-height:40px;background:rgba(255,255,255,.02);border:1px solid rgba(245,210,0,.08);border-radius:4px;padding:8px">
+          <span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted)">${t('no_items_added')}</span>
+        </div>
+        <div id="nom-total" style="text-align:right;font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--yolk);margin-top:4px"></div>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:16px">
+      <button class="btn btn-dark" style="flex:1;padding:10px;font-size:14px" onclick="closeNewOrder()">${t('cancel')}</button>
+      <button class="btn btn-yolk" style="flex:1;padding:10px;font-size:14px" onclick="nomSubmit()">${t('orders').replace('📋 ','')}</button>
+    </div>`;}
   nomRender();$('newOrderModal').classList.add('show');
 };
 window.closeNewOrder=()=>$('newOrderModal').classList.remove('show');
@@ -1306,12 +1342,12 @@ window.nomAddItem=()=>{
 };
 function nomRender(){
   const list=$('nom-items-list'),tot=$('nom-total');
-  if(list)list.innerHTML=_nomItems.length?_nomItems.map(i=>`<div style="display:flex;justify-content:space-between;margin-bottom:4px;font-size:13px"><span>${i.qty}× ${esc(i.name)}</span><span style="color:var(--yolk)">€${i.qty*i.price}</span></div>`).join(''):`<span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted)">No items added</span>`;
+  if(list)list.innerHTML=_nomItems.length?_nomItems.map(i=>`<div style="display:flex;justify-content:space-between;margin-bottom:4px;font-size:13px"><span>${i.qty}× ${esc(i.name)}</span><span style="color:var(--yolk)">€${i.qty*i.price}</span></div>`).join(''):`<span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted)">${t('no_items_added')}</span>`;
   const total=_nomItems.reduce((a,i)=>a+i.qty*i.price,0);
-  if(tot)tot.textContent=total?`Total: €${total}`:'';
+  if(tot)tot.textContent=total?t('orders').replace('📋 ','')+': €'+total:'';
 }
 window.nomSubmit=()=>{
-  if(!_nomItems.length){toast('Add at least one item','error');return;}
+  if(!_nomItems.length){toast(t('add_at_least_one'),'error');return;}
   const table=parseInt($('nom-table')?.value)||1;
   const phone=($('nom-phone')?.value||'').trim();
   const custName=($('nom-custname')?.value||'').trim();
@@ -1321,7 +1357,7 @@ window.nomSubmit=()=>{
   // Add to loyalty if phone given
   if(phone){let loy=findLoyalty(phone);if(!loy){loy={phone,name:custName||'Customer',stamps:0,orders:0,joined:new Date().toISOString().split('T')[0]};LOYALTY.push(loy);}}
   dbSave();closeNewOrder();
-  toast(`🪑 Table ${table} order placed! €${total.toFixed(2)}`,'success');
+  toast('🪑 '+t('table_lbl')+' '+table+' '+t('order_next').replace('→','').trim()+' €'+total.toFixed(2),'success');
   renderWorker();
 };
 
@@ -1333,8 +1369,8 @@ function buildWorkerDeliveries(u){
   return `
   ${unassigned.length?`<div style="background:rgba(255,107,53,.07);border:1px solid rgba(255,107,53,.3);border-radius:6px;padding:12px 14px;margin-bottom:14px;display:flex;align-items:center;gap:10px">
     <span style="font-size:22px">🔔</span>
-    <div><div style="font-family:'Fredoka',sans-serif;font-size:14px;color:var(--crisp);font-weight:600">${unassigned.length} new delivery request(s) waiting!</div>
-    <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted)">Tap Accept to take the order</div></div>
+    <div><div style="font-family:'Fredoka',sans-serif;font-size:14px;color:var(--crisp);font-weight:600">${unassigned.length} ${t('new_del_waiting')}</div>
+    <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted)">${t('tap_accept')}</div></div>
   </div>`:''}
   ${unassigned.length?`<div class="panel" style="margin-bottom:12px">
     <div class="panel-title">${t('new_requests')}</div>
@@ -1351,7 +1387,7 @@ function buildWorkerDeliveries(u){
   </div>`:''}
   <div class="panel" style="margin-bottom:12px">
     <div class="panel-title">${t('active_deliveries')} (${mine.length})</div>
-    ${mine.length===0?`<div class="empty"><div class="empty-icon">🛵</div>'+t('no_active_deliveries')+'</div>`:
+    ${mine.length===0?`<div class="empty"><div class="empty-icon">🛵</div>${t('no_active_deliveries')}</div>`:
     mine.map(o=>`<div class="order-item status-${o.status}" style="margin-bottom:8px">
       <div style="flex:1">
         <div style="font-family:'Fredoka',sans-serif;font-size:14px;color:var(--cream);margin-bottom:4px">${esc(o.name)} — ${esc(o.addr)}</div>
@@ -1360,7 +1396,7 @@ function buildWorkerDeliveries(u){
         <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--yolk);margin-top:4px">€${o.total}</div>
       </div>
       <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">
-        ${o.status!=='pickedup'&&o.status!=='delivered'?`<button class="btn btn-yolk btn-sm" onclick="advanceOrder('${o.id}')">${{new:t('start_prep'),preparing:t('mark_ready'),ready:t('picked_up')}[o.status]||'→ Next'}</button>`:''}
+        ${o.status!=='pickedup'&&o.status!=='delivered'?`<button class="btn btn-yolk btn-sm" onclick="advanceOrder('${o.id}')">${({new:t('start_prep'),preparing:t('mark_ready'),ready:t('picked_up')})[o.status]||'→'}</button>`:''}
         ${o.status==='pickedup'?`<button class="btn btn-green btn-sm" onclick="markDelivered('${o.id}')">✅ ${t('mark_delivered')}</button>`:''}
       </div>
     </div>`).join('')}
@@ -1376,7 +1412,7 @@ function buildWorkerDeliveries(u){
 window.wAcceptDelivery=id=>{
   const o=ORDERS.find(x=>x.id===id);if(!o)return;
   o.assignedTo=S.user.id;o.assignedName=S.user.name;
-  toast(`Delivery accepted! 🛵`,'success');dbSave();renderWorker();
+  toast(t('delivery_accepted'),'success');dbSave();renderWorker();
 };
 
 // ── WORKER INVENTORY TAB ──────────────────────────────────────
@@ -1384,9 +1420,9 @@ function buildWorkerInventory(u){
   const canEdit=u&&(u.inv_perm||u.role==='manager');
   const low=INVENTORY.filter(i=>i.qty<=i.min);
   return `
-  ${!canEdit?`<div class="info-bar">👁 View only. Your manager can grant you edit access.</div>`:''}
+  ${!canEdit?`<div class="info-bar">${t('view_only_inv')}</div>`:''}
   ${low.length?`<div style="background:rgba(231,76,60,.07);border:1px solid rgba(231,76,60,.25);border-radius:6px;padding:10px 14px;margin-bottom:12px;display:flex;align-items:center;gap:8px">
-    <span>⚠️</span><div><div style="font-family:'Fredoka',sans-serif;font-size:13px;color:#e74c3c;font-weight:600">${low.length} item(s) low stock</div>
+    <span>⚠️</span><div><div style="font-family:'Fredoka',sans-serif;font-size:13px;color:#e74c3c;font-weight:600">${low.length} ${t('item_low_stock')}</div>
     <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted)">${low.map(i=>i.name).join(', ')}</div></div>
   </div>`:''}
   <div class="inv-grid">
@@ -1394,22 +1430,22 @@ function buildWorkerInventory(u){
       <div class="inv-card ${i.qty<=i.min?'low':''}">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
           <span style="font-size:24px">${i.icon}</span>
-          ${i.qty<=i.min?`<span class="badge br" style="font-size:8px">LOW</span>`:`<span class="badge bg" style="font-size:8px">OK</span>`}
+          ${i.qty<=i.min?`<span class="badge br" style="font-size:8px">${t('low_badge')}</span>`:`<span class="badge bg" style="font-size:8px">${t('ok_badge')}</span>`}
         </div>
         <div class="inv-name">${esc(i.name)}</div>
         <div class="inv-qty" style="color:${i.qty<=i.min?'#e74c3c':'var(--green)'}">${i.qty}<span style="font-size:12px;color:var(--muted);margin-left:4px">${i.unit}</span></div>
         <div style="margin:6px 0">${progBar(Math.min(100,Math.round(i.qty/Math.max(i.min*2,1)*100)),i.qty<=i.min?'linear-gradient(90deg,#e74c3c,#c0392b)':undefined)}</div>
-        <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);margin-bottom:7px">Min: ${i.min} ${i.unit}</div>
+        <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);margin-bottom:7px">${t('min_lbl')} ${i.min} ${i.unit}</div>
         ${canEdit?`<div class="inv-adj">
           <input type="number" id="winv_${i.id}" value="0" min="0" style="width:58px;padding:5px 7px;font-size:12px"/>
-          <button class="btn btn-green btn-sm" style="padding:5px 9px" onclick="wInvAdd('${i.id}')">+ Add</button>
+          <button class="btn btn-green btn-sm" style="padding:5px 9px" onclick="wInvAdd('${i.id}')">${t('add_btn')}</button>
           <button class="btn btn-red btn-sm" style="padding:5px 9px" onclick="wInvWaste('${i.id}')">🗑</button>
-        </div>`:`<div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);font-style:italic">Read-only access</div>`}
+        </div>`:`<div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);font-style:italic">${t('read_only')}</div>`}
       </div>`).join('')}
   </div>
   <div class="panel" style="margin-top:14px">
-    <div class="panel-title">🗑 WASTE LOG</div>
-    ${WASTE_LOG.length===0?`<div class="empty"><div class="empty-icon">✅</div>'+t('no_waste_today')+'</div>`:
+    <div class="panel-title">${t('waste_log_panel')}</div>
+    ${WASTE_LOG.length===0?`<div class="empty"><div class="empty-icon">✅</div>${t('no_waste_today')}</div>`:
     WASTE_LOG.slice(0,8).map(w=>`<div class="waste-row">
       <span style="color:var(--cream)">${w.item}</span>
       <span style="color:#e74c3c">-${w.qty} ${w.unit}</span>
@@ -1422,15 +1458,15 @@ function buildWorkerInventory(u){
 window.wInvAdd=id=>{
   const i=INVENTORY.find(x=>x.id===id);if(!i)return;
   const v=parseInt($('winv_'+id)?.value)||0;
-  if(v<=0){toast('Enter quantity > 0','error');return;}
+  if(v<=0){toast(t('enter_qty'),'error');return;}
   i.qty+=v;toast(`+${v} ${i.unit} added to ${i.name}`,'success');dbSave();renderWorker();
 };
 window.wInvWaste=id=>{
   const i=INVENTORY.find(x=>x.id===id);if(!i)return;
   const v=parseInt($('winv_'+id)?.value)||0;
-  if(v<=0){toast('Enter quantity > 0','error');return;}
-  if(v>i.qty){toast('Cannot exceed current stock','error');return;}
-  i.qty-=v;WASTE_LOG.unshift({item:i.name,qty:v,unit:i.unit,reason:'Manual log',time:Date.now(),by:S.user.name});
+  if(v<=0){toast(t('enter_qty'),'error');return;}
+  if(v>i.qty){toast(t('cannot_exceed'),'error');return;}
+  i.qty-=v;WASTE_LOG.unshift({item:i.name,qty:v,unit:i.unit,reason:t('manual_log'),time:Date.now(),by:S.user.name});
   toast(`Logged ${v} ${i.unit} waste for ${i.name}`,'warning');dbSave();renderWorker();
 };
 
@@ -1446,7 +1482,7 @@ function renderManager(){
   <div class="topbar">
     <div class="brand">
       <img src="${LOGO_SRC}" class="brand-logo" alt="logo"/>
-      <div><div class="brand-name">CKN&amp;CKN</div><div class="brand-sub">Manager Dashboard</div></div>
+      <div><div class="brand-name">CKN&amp;CKN</div><div class="brand-sub">${t('manager_dashboard_sub')}</div></div>
     </div>
     <div class="top-right">
       ${langBar()}
@@ -1505,21 +1541,21 @@ function buildMgrLive(){
   const unrespondedFeedback=FEEDBACK.filter(f=>f.rating<=2&&!f.responded);
   return `
   <div class="stat-grid">
-    ${[['👥 Staff On Shift',onShift.length,'var(--green)'],['📋 Active Orders',activeOrds.length,'var(--yolk)'],['🛵 Deliveries Today',delOrds.length,'var(--blue)'],['💶 Revenue Today','€'+todayRev,'var(--yolk)'],['⚠️ Low Stock',lowStock.length,lowStock.length?'#e74c3c':'var(--green)'],['⭐ Urgent Feedback',unrespondedFeedback.length,unrespondedFeedback.length?'#e74c3c':'var(--green)']].map(([l,v,c])=>`<div class="stat-card"><div class="sc-label">${l}</div><div class="sc-value" style="color:${c}">${v}</div></div>`).join('')}
+    ${[[t('staff_on_shift'),onShift.length,'var(--green)'],[t('active_orders'),activeOrds.length,'var(--yolk)'],[t('deliveries_today'),delOrds.length,'var(--blue)'],[t('revenue_today'),'€'+todayRev,'var(--yolk)'],[t('low_stock'),lowStock.length,lowStock.length?'#e74c3c':'var(--green)'],[t('urgent_feedback'),unrespondedFeedback.length,unrespondedFeedback.length?'#e74c3c':'var(--green)']].map(([l,v,c])=>`<div class="stat-card"><div class="sc-label">${l}</div><div class="sc-value" style="color:${c}">${v}</div></div>`).join('')}
   </div>
   <div class="sg">
     <div class="panel">
       <div class="panel-title">👷 STAFF ON SHIFT</div>
-      ${onShift.length===0?`<div class="empty"><div class="empty-icon">👤</div>'+t('no_one_clocked')+'</div>`:
+      ${onShift.length===0?`<div class="empty"><div class="empty-icon">👤</div>${t('no_one_clocked')}</div>`:
       onShift.map(s=>{const w=WORKERS.find(x=>x.id===s.worker)||{name:'?',role:'?',hourly_rate:0};const hrs=(Date.now()-s.start)/3600000;return `<div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid rgba(245,210,0,.06)"><div><div style="font-family:'Fredoka',sans-serif;font-size:14px;font-weight:600">${esc(w.name)}</div><div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted)">${esc(w.role)} · ${esc(s.location)} · '+t('shift')[:1]+' ${fmtTime(s.start)}</div></div><div style="text-align:right"><div style="font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--green)">${hrs.toFixed(1)}h</div><div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--yolk)">€${(hrs*w.hourly_rate).toFixed(2)}</div></div></div>`;}).join('')}
     </div>
     <div class="panel">
       <div class="panel-title">🍽️ LIVE KITCHEN QUEUE</div>
-      ${activeOrds.length===0?`<div class="empty"><div class="empty-icon">✅</div>'+t('kitchen_clear')+'</div>`:
+      ${activeOrds.length===0?`<div class="empty"><div class="empty-icon">✅</div>${t('kitchen_clear')}</div>`:
       activeOrds.slice(0,6).map(o=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(245,210,0,.06)"><div>${o.type==='delivery'?`<span class="order-type-del">🛵</span>`:`<span class="order-type-tbl">T${o.table}</span>`}<span style="font-size:12px;color:var(--cream);margin-left:6px">${o.items.map(i=>i.qty+'×'+i.name).join(', ').slice(0,40)}</span></div><div style="display:flex;align-items:center;gap:8px"><span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted)">${fmtAgo(o.created)}</span>${orderStatusBadge(o.status)}</div></div>`).join('')}
     </div>
   </div>
-  ${lowStock.length?`<div class="panel"><div class="panel-title">⚠️ LOW STOCK ALERTS</div><div style="display:flex;flex-wrap:wrap;gap:8px">${lowStock.map(i=>`<div style="background:rgba(231,76,60,.08);border:1px solid rgba(231,76,60,.2);border-radius:6px;padding:8px 14px;display:flex;align-items:center;gap:8px"><span style="font-size:20px">${i.icon}</span><div><div style="font-family:'Fredoka',sans-serif;font-size:13px;color:#e74c3c">${i.name}</div><div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted)">${i.qty} ${i.unit} left (min: ${i.min})</div></div></div>`).join('')}</div></div>`:''}`;
+  ${lowStock.length?`<div class="panel"><div class="panel-title">⚠️ LOW STOCK ALERTS</div><div style="display:flex;flex-wrap:wrap;gap:8px">${lowStock.map(i=>`<div style="background:rgba(231,76,60,.08);border:1px solid rgba(231,76,60,.2);border-radius:6px;padding:8px 14px;display:flex;align-items:center;gap:8px"><span style="font-size:20px">${i.icon}</span><div><div style="font-family:'Fredoka',sans-serif;font-size:13px;color:#e74c3c">${i.name}</div><div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted)">${i.qty} ${i.unit} ${t('left_min')} ${i.min})</div></div></div>`).join('')}</div></div>`:''}`;
 }
 
 // ── MGR: ORDERS ──────────────────────────────────────────────
@@ -1528,21 +1564,21 @@ function buildMgrOrders(){
   const delivWorkers=WORKERS.filter(w=>w.role==='delivery');
   return `
   <div style="background:rgba(52,152,219,.06);border:1px solid rgba(52,152,219,.2);border-radius:6px;padding:10px 14px;margin-bottom:14px;font-family:'DM Mono',monospace;font-size:10px;color:var(--blue)">
-    👁 Manager view only — Orders are created and managed by cashiers and workers.
+    ${t('mgr_view_only_orders')}
   </div>
   <div class="stat-grid" style="margin-bottom:14px">
-    ${[['🆕 New',ORDERS.filter(o=>o.status==='new').length,'var(--blue)'],[t('preparing_lbl'),ORDERS.filter(o=>o.status==='preparing').length,'var(--yolk)'],['✅ Ready',ORDERS.filter(o=>o.status==='ready').length,'var(--green)'],['📦 Total Today',ORDERS.length,'var(--cream)']].map(([l,v,c])=>`<div class="stat-card"><div class="sc-label">${l}</div><div class="sc-value" style="color:${c}">${v}</div></div>`).join('')}
+    ${[[t('new_lbl'),ORDERS.filter(o=>o.status==='new').length,'var(--blue)'],[t('preparing_lbl'),ORDERS.filter(o=>o.status==='preparing').length,'var(--yolk)'],[t('ready_lbl'),ORDERS.filter(o=>o.status==='ready').length,'var(--green)'],[t('total_sold'),ORDERS.length,'var(--cream)']].map(([l,v,c])=>`<div class="stat-card"><div class="sc-label">${l}</div><div class="sc-value" style="color:${c}">${v}</div></div>`).join('')}
   </div>
   <div class="panel" style="margin-bottom:12px">
-    <div class="panel-title">🪑 TABLE MAP</div>
+    <div class="panel-title">${t('table_map')}</div>
     <div class="table-map">
-      ${TABLES.map(t=>{const tO=ORDERS.filter(o=>o.table===t&&o.status!=='served'&&o.status!=='cancelled');return `<div class="t-card ${tO.length?(tO.some(o=>o.status==='new')?'has-order':'occupied'):''}"><div>🪑</div><div class="t-num">${t}</div><div class="t-status">${tO.length?tO.length+' '+t('table_order'):'Free'}</div></div>`;}).join('')}
+      ${TABLES.map(tn=>{const t=tn,tO=ORDERS.filter(o=>o.table===t&&o.status!=='served'&&o.status!=='cancelled');return `<div class="t-card ${tO.length?(tO.some(o=>o.status==='new')?'has-order':'occupied'):''}"><div>🪑</div><div class="t-num">${t}</div><div class="t-status">${tO.length?tO.length+' '+t('table_order'):t('table_free')}</div></div>`;}).join('')}
     </div>
   </div>
   <div class="panel">
-    <div class="panel-title">🍽️ ALL ACTIVE ORDERS</div>
+    <div class="panel-title">${t('all_active_orders')}</div>
     <div class="order-queue">
-      ${all.length===0?`<div class="empty"><div class="empty-icon">✅</div>'+t('no_active_orders_mgr')+'</div>`:
+      ${all.length===0?`<div class="empty"><div class="empty-icon">✅</div>${t('no_active_orders_mgr')}</div>`:
       all.sort((a,b)=>a.created-b.created).map(o=>buildOrderCard(o,'manager',delivWorkers)).join('')}
     </div>
   </div>`;
@@ -1557,14 +1593,14 @@ function buildMgrDelivery(){
   const delivWorkers=WORKERS.filter(w=>w.role==='delivery');
   return `
   <div style="background:rgba(52,152,219,.06);border:1px solid rgba(52,152,219,.2);border-radius:6px;padding:10px 14px;margin-bottom:14px;font-family:'DM Mono',monospace;font-size:10px;color:var(--blue)">
-    👁 Manager view only — Delivery assignments are done by cashiers. Riders mark deliveries as completed.
+    ${t('mgr_view_only_del')}
   </div>
   <div class="stat-grid" style="margin-bottom:14px">
-    ${[['⏳ Waiting Rider',waiting.length,'var(--crisp)'],['🛵 In Transit',active.length,'var(--yolk)'],['✅ Delivered',done.length,'var(--green)'],['💶 Revenue','€'+dels.reduce((a,o)=>a+o.total,0),'var(--blue)']].map(([l,v,c])=>`<div class="stat-card"><div class="sc-label">${l}</div><div class="sc-value" style="color:${c}">${v}</div></div>`).join('')}
+    ${[[t('waiting_rider'),waiting.length,'var(--crisp)'],[t('in_transit'),active.length,'var(--yolk)'],[t('delivered'),done.length,'var(--green)'],[t('revenue'),'€'+dels.reduce((a,o)=>a+o.total,0),'var(--blue)']].map(([l,v,c])=>`<div class="stat-card"><div class="sc-label">${l}</div><div class="sc-value" style="color:${c}">${v}</div></div>`).join('')}
   </div>
   <div class="panel">
     <div class="panel-title">🛵 ALL DELIVERY ORDERS</div>
-    ${dels.length===0?`<div class="empty"><div class="empty-icon">🛵</div>'+t('no_delivery_orders')+'</div>`:
+    ${dels.length===0?`<div class="empty"><div class="empty-icon">🛵</div>${t('no_delivery_orders')}</div>`:
     dels.map(o=>buildOrderCard(o,'manager',delivWorkers)).join('')}
   </div>`;
 }
@@ -1574,10 +1610,10 @@ function buildMgrInventory(){
   const low=INVENTORY.filter(i=>i.qty<=i.min);
   const wasteCost=WASTE_LOG.reduce((a,w)=>{const i=INVENTORY.find(x=>x.name===w.item);return a+(i?w.qty*(i.unit==='kg'?8:i.unit==='L'?5:.5):0);},0);
   return `
-  ${low.length?`<div style="background:rgba(231,76,60,.07);border:1px solid rgba(231,76,60,.25);border-radius:6px;padding:10px 14px;margin-bottom:12px;display:flex;align-items:center;gap:8px"><span>⚠️</span><div><div style="font-size:13px;color:#e74c3c;font-weight:600">${low.length} items low — Reorder needed</div><div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted)">${low.map(i=>i.name).join(', ')}</div></div></div>`:''}
+  ${low.length?`<div style="background:rgba(231,76,60,.07);border:1px solid rgba(231,76,60,.25);border-radius:6px;padding:10px 14px;margin-bottom:12px;display:flex;align-items:center;gap:8px"><span>⚠️</span><div><div style="font-size:13px;color:#e74c3c;font-weight:600">${low.length} ${t('items_low_reorder')}</div><div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted)">${low.map(i=>i.name).join(', ')}</div></div></div>`:''}
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
-    <div style="font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:2px;color:var(--yolk)">'+t('inventory_title')+'</div>
-    <button class="btn btn-yolk btn-sm" style="padding:8px 14px" onclick="openAddInv()">+ Add Item</button>
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:2px;color:var(--yolk)">${t('inventory_title')}</div>
+    <button class="btn btn-yolk btn-sm" style="padding:8px 14px" onclick="openAddInv()">${t('add_item')}</button>
   </div>
   <div class="inv-grid" style="margin-bottom:14px">
     ${INVENTORY.map(i=>`
@@ -1585,40 +1621,40 @@ function buildMgrInventory(){
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
           <span style="font-size:22px">${i.icon}</span>
           <div style="display:flex;gap:4px">
-            ${i.qty<=i.min?`<span class="badge br" style="font-size:8px">LOW</span>`:`<span class="badge bg" style="font-size:8px">OK</span>`}
+            ${i.qty<=i.min?`<span class="badge br" style="font-size:8px">${t('low_badge')}</span>`:`<span class="badge bg" style="font-size:8px">${t('ok_badge')}</span>`}
             <button class="btn btn-dark btn-sm" style="font-size:9px;padding:2px 6px" onclick="editInvItem('${i.id}')">✏️</button>
           </div>
         </div>
         <div class="inv-name">${esc(i.name)}</div>
         <div class="inv-qty" style="color:${i.qty<=i.min?'#e74c3c':'var(--green)'}">${i.qty}<span style="font-size:12px;color:var(--muted);margin-left:3px">${i.unit}</span></div>
         <div style="margin:6px 0">${progBar(Math.min(100,Math.round(i.qty/Math.max(i.min*2,1)*100)),i.qty<=i.min?'linear-gradient(90deg,#e74c3c,#c0392b)':undefined)}</div>
-        <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);margin-bottom:7px">Min: ${i.min} ${i.unit}</div>
+        <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);margin-bottom:7px">${t('min_lbl')} ${i.min} ${i.unit}</div>
         <div class="inv-adj">
           <input type="number" id="inv_${i.id}" value="0" min="0" style="width:55px;padding:5px 7px;font-size:12px"/>
-          <button class="btn btn-green btn-sm" style="padding:5px 9px" onclick="invAdd('${i.id}')">+ Add</button>
+          <button class="btn btn-green btn-sm" style="padding:5px 9px" onclick="invAdd('${i.id}')">${t('add_btn')}</button>
           <button class="btn btn-red btn-sm" style="padding:5px 9px" onclick="invLog('${i.id}')">🗑</button>
         </div>
       </div>`).join('')}
   </div>
   <div class="panel">
-    <div class="panel-title">🗑 WASTE LOG — Est. Cost Today: <span style="color:#e74c3c">€${wasteCost.toFixed(2)}</span></div>
-    ${WASTE_LOG.length===0?`<div class="empty"><div class="empty-icon">✅</div>'+t('no_waste')+'</div>`:
-    WASTE_LOG.slice(0,10).map(w=>`<div class="waste-row"><span style="color:var(--cream)">${w.item}</span><span style="color:#e74c3c">-${w.qty} ${w.unit}</span><span>${w.reason}</span><span style="color:var(--muted)">${w.by||'Worker'}</span><span style="color:var(--muted)">${fmtAgo(w.time)}</span></div>`).join('')}
+    <div class="panel-title">${t('waste_log_title')} — ${t('waste_est_cost')} <span style="color:#e74c3c">€${wasteCost.toFixed(2)}</span></div>
+    ${WASTE_LOG.length===0?`<div class="empty"><div class="empty-icon">✅</div>${t('no_waste')}</div>`:
+    WASTE_LOG.slice(0,10).map(w=>`<div class="waste-row"><span style="color:var(--cream)">${w.item}</span><span style="color:#e74c3c">-${w.qty} ${w.unit}</span><span>${w.reason}</span><span style="color:var(--muted)">${w.by||t('worker_header')}</span><span style="color:var(--muted)">${fmtAgo(w.time)}</span></div>`).join('')}
   </div>`;
 }
-window.invAdd=id=>{const i=INVENTORY.find(x=>x.id===id);if(!i)return;const v=parseInt($('inv_'+id)?.value)||0;if(v<=0){toast('Enter qty > 0','error');return;}i.qty+=v;toast(`+${v} ${i.unit} ${i.name}`,'success');dbSave();mTab('inventory');};
-window.invLog=id=>{const i=INVENTORY.find(x=>x.id===id);if(!i)return;const v=parseInt($('inv_'+id)?.value)||0;if(v<=0){toast('Enter qty > 0','error');return;}if(v>i.qty){toast('Exceeds current stock','error');return;}i.qty-=v;WASTE_LOG.unshift({item:i.name,qty:v,unit:i.unit,reason:'Manager log',time:Date.now(),by:'Manager'});toast(`Logged ${v} ${i.unit} waste`,'warning');dbSave();mTab('inventory');};
+window.invAdd=id=>{const i=INVENTORY.find(x=>x.id===id);if(!i)return;const v=parseInt($('inv_'+id)?.value)||0;if(v<=0){toast(t('enter_qty_inv'),'error');return;}i.qty+=v;toast(`+${v} ${i.unit} ${i.name}`,'success');dbSave();mTab('inventory');};
+window.invLog=id=>{const i=INVENTORY.find(x=>x.id===id);if(!i)return;const v=parseInt($('inv_'+id)?.value)||0;if(v<=0){toast(t('enter_qty_inv'),'error');return;}if(v>i.qty){toast(t('exceeds_stock'),'error');return;}i.qty-=v;WASTE_LOG.unshift({item:i.name,qty:v,unit:i.unit,reason:t('manager_log'),time:Date.now(),by:'Manager'});toast(`Logged ${v} ${i.unit} waste`,'warning');dbSave();mTab('inventory');};
 
 window.openAddInv=()=>{
   S.editInvId=null;
-  $('ai-title').textContent='📦 Add Inventory Item';
+  $('ai-title').textContent=t('add_inv_item');
   $('ai-name').value='';$('ai-qty').value=0;$('ai-min').value=10;$('ai-icon').value='📦';
   $('addInvModal').classList.add('show');
 };
 window.editInvItem=id=>{
   const i=INVENTORY.find(x=>x.id===id);if(!i)return;
   S.editInvId=id;
-  $('ai-title').textContent='✏️ Edit Inventory Item';
+  $('ai-title').textContent=t('edit_inv_item');
   $('ai-name').value=i.name;$('ai-qty').value=i.qty;$('ai-min').value=i.min;$('ai-icon').value=i.icon;$('ai-unit').value=i.unit;
   $('addInvModal').classList.add('show');
 };
@@ -1628,12 +1664,12 @@ window.saveInvItem=()=>{
   const min=parseInt($('ai-min')?.value)||0;
   const unit=$('ai-unit')?.value||'pcs';
   const icon=$('ai-icon')?.value||'📦';
-  if(!name){toast('Enter item name','error');return;}
+  if(!name){toast(t('enter_item_name'),'error');return;}
   if(S.editInvId){
     const i=INVENTORY.find(x=>x.id===S.editInvId);if(!i)return;
-    Object.assign(i,{name,qty,min,unit,icon});toast('Item updated!','success');
+    Object.assign(i,{name,qty,min,unit,icon});toast(t('item_updated'),'success');
   }else{
-    INVENTORY.push({id:'iv'+Date.now(),name,qty,min,unit,icon});toast('Item added!','success');
+    INVENTORY.push({id:'iv'+Date.now(),name,qty,min,unit,icon});toast(t('item_added'),'success');
   }
   dbSave();$('addInvModal').classList.remove('show');mTab('inventory');
 };
@@ -1642,12 +1678,12 @@ window.saveInvItem=()=>{
 function buildMgrStaff(){
   return `
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
-    <div style="font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:2px;color:var(--yolk)">👷 WORKER MANAGEMENT</div>
-    <button class="btn btn-yolk btn-sm" style="padding:8px 14px" onclick="$('addWorkerModal').classList.add('show')">+ Add Worker</button>
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:2px;color:var(--yolk)">${t('worker_mgmt')}</div>
+    <button class="btn btn-yolk btn-sm" style="padding:8px 14px" onclick="$('addWorkerModal').classList.add('show')">${t('add_worker')}</button>
   </div>
   <div class="table-wrap">
     <table>
-      <thead><tr><th>#</th><th>'+t('name_lbl')+'</th><th>'+t('phone_lbl')+'</th><th>'+t('role_lbl')+'</th><th>'+t('rate_lbl')+'</th><th>${t('inventory_perm')}</th><th>'+t('actions_lbl')+'</th></tr></thead>
+      <thead><tr><th>#</th><th>${t('name_lbl')}</th><th>${t('phone_lbl')}</th><th>${t('role_lbl')}</th><th>${t('rate_lbl')}</th><th>${t('inventory_perm')}</th><th>${t('actions_lbl')}</th></tr></thead>
       <tbody>
         ${WORKERS.map(w=>`<tr>
           <td style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted)">${esc(w.worker_num||'—')}</td>
@@ -1661,8 +1697,8 @@ function buildMgrStaff(){
             </button>
           </td>
           <td style="display:flex;gap:6px;flex-wrap:wrap">
-            <button class="btn btn-dark btn-sm" style="font-size:10px" onclick="openEditWorker('${w.id}')">✏️ Edit</button>
-            <button class="btn btn-red btn-sm" style="font-size:10px" onclick="removeWorker('${w.id}')">✕ Remove</button>
+            <button class="btn btn-dark btn-sm" style="font-size:10px" onclick="openEditWorker('${w.id}')">${t('edit_lbl')}</button>
+            <button class="btn btn-red btn-sm" style="font-size:10px" onclick="removeWorker('${w.id}')">${t('remove_lbl')}</button>
           </td>
         </tr>`).join('')}
       </tbody>
@@ -1687,13 +1723,13 @@ window.saveEdit=()=>{
   w.role=$('em-role')?.value||w.role;
   w.hourly_rate=parseFloat($('em-rate')?.value)||w.hourly_rate;
   w.inv_perm=$('em-inv-perm')?.value==='1';
-  toast('Worker updated!','success');dbSave();closeModal();mTab('staff');
+  toast(t('worker_updated'),'success');dbSave();closeModal();mTab('staff');
 };
 window.closeModal=()=>$('editModal').classList.remove('show');
 window.removeWorker=id=>{
-  if(!confirm('Remove this worker?'))return;
+  if(!confirm(t('worker_removed')+'?'))return;
   const idx=WORKERS.findIndex(x=>x.id===id);if(idx>=0)WORKERS.splice(idx,1);
-  toast('Worker removed','warning');dbSave();mTab('staff');
+  toast(t('worker_removed'),'warning');dbSave();mTab('staff');
 };
 window.submitAddWorker=()=>{
   const name=($('aw-name')?.value||'').trim();
@@ -1701,10 +1737,10 @@ window.submitAddWorker=()=>{
   const role=$('aw-role')?.value||'cashier';
   const rate=parseFloat($('aw-rate')?.value)||12;
   const workerNum=($('aw-num')?.value||'').trim();
-  if(!name||!phone){toast('Name and phone required','error');return;}
-  if(WORKERS.find(w=>normPhone(w.phone)===normPhone(phone))){toast('Phone already registered','warning');return;}
+  if(!name||!phone){toast(t('name_phone_required'),'error');return;}
+  if(WORKERS.find(w=>normPhone(w.phone)===normPhone(phone))){toast(t('phone_registered'),'warning');return;}
   WORKERS.push({id:'w'+Date.now(),name,phone,role,hourly_rate:rate,worker_num:workerNum||null,inv_perm:false});
-  toast('Worker added!','success');dbSave();$('addWorkerModal').classList.remove('show');mTab('staff');
+  toast(t('worker_added'),'success');dbSave();$('addWorkerModal').classList.remove('show');mTab('staff');
 };
 
 // ── MGR: BRANCHES ────────────────────────────────────────────
@@ -1714,7 +1750,7 @@ function buildMgrBranches(){
     <div style="font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:2px;color:var(--yolk)">${t('branches_mgr')}</div>
     <button class="btn btn-yolk btn-sm" style="padding:8px 14px" onclick="openAddBranch()">${t('add_branch')}</button>
   </div>
-  <div class="info-bar">📍 Workers must be within 300m of a branch to sign in. Make sure coordinates are accurate.</div>
+  <div class="info-bar">📍 ${t('gps_too_far')}</div>
   ${BRANCHES.map(b=>`
     <div class="branch-card">
       <div style="display:flex;justify-content:space-between;align-items:flex-start">
@@ -1725,49 +1761,49 @@ function buildMgrBranches(){
         </div>
         <div style="display:flex;gap:6px">
           <a href="https://maps.google.com/?q=${b.lat},${b.lng}" target="_blank" class="btn btn-dark btn-sm" style="font-size:10px;text-decoration:none">🗺 ${t('maps_link')}</a>
-          <button class="btn btn-dark btn-sm" style="font-size:10px" onclick="openEditBranch('${b.id}')">✏️ Edit</button>
+          <button class="btn btn-dark btn-sm" style="font-size:10px" onclick="openEditBranch('${b.id}')">${t('edit_lbl')}</button>
           <button class="btn btn-red btn-sm" style="font-size:10px" onclick="removeBranch('${b.id}')">${t('remove')}</button>
         </div>
       </div>
     </div>`).join('')}
-  ${BRANCHES.length===0?`<div class="empty"><div class="empty-icon">🏪</div>No branches yet. Add one to enable GPS sign-in.</div>`:''}`;
+  ${BRANCHES.length===0?`<div class="empty"><div class="empty-icon">🏪</div>${t('add_branch')} ↑</div>`:''}`;
 }
 window.openAddBranch=()=>{
   S.editBranchId=null;
-  $('branch-modal-title').textContent='🏪 Add Branch';
+  $('branch-modal-title').textContent=t('add_branch_title');
   $('br-name').value='';$('br-maps').value='';$('br-lat').value='';$('br-lng').value='';$('br-addr').value='';
   $('branchModal').classList.add('show');
 };
 window.openEditBranch=id=>{
   const b=BRANCHES.find(x=>x.id===id);if(!b)return;
   S.editBranchId=id;
-  $('branch-modal-title').textContent='✏️ Edit Branch';
+  $('branch-modal-title').textContent=t('edit_branch_title');
   $('br-name').value=b.name;$('br-lat').value=b.lat;$('br-lng').value=b.lng;$('br-addr').value=b.addr;
   $('branchModal').classList.add('show');
 };
 // Auto-extract coords when maps link is pasted
 document.getElementById('br-maps').addEventListener('input',function(){
   const coords=extractCoordsFromGoogleLink(this.value);
-  if(coords){$('br-lat').value=coords.lat;$('br-lng').value=coords.lng;toast('Coordinates extracted!','success');}
+  if(coords){$('br-lat').value=coords.lat;$('br-lng').value=coords.lng;toast(t('coords_extracted'),'success');}
 });
 window.saveBranch=()=>{
   const name=($('br-name')?.value||'').trim();
   const lat=parseFloat($('br-lat')?.value)||0;
   const lng=parseFloat($('br-lng')?.value)||0;
   const addr=($('br-addr')?.value||'').trim();
-  if(!name||!lat||!lng){toast('Name and coordinates required','error');return;}
+  if(!name||!lat||!lng){toast(t('name_coords_required'),'error');return;}
   if(S.editBranchId){
     const b=BRANCHES.find(x=>x.id===S.editBranchId);if(!b)return;
-    Object.assign(b,{name,lat,lng,addr});toast('Branch updated!','success');
+    Object.assign(b,{name,lat,lng,addr});toast(t('branch_updated'),'success');
   }else{
-    BRANCHES.push({id:'b'+Date.now(),name,lat,lng,addr});toast('Branch added!','success');
+    BRANCHES.push({id:'b'+Date.now(),name,lat,lng,addr});toast(t('branch_added'),'success');
   }
   dbSave();$('branchModal').classList.remove('show');mTab('branches');
 };
 window.removeBranch=id=>{
-  if(!confirm('Remove this branch?'))return;
+  if(!confirm(t('branch_removed')+'?'))return;
   const idx=BRANCHES.findIndex(x=>x.id===id);if(idx>=0)BRANCHES.splice(idx,1);
-  toast('Branch removed','warning');dbSave();mTab('branches');
+  toast(t('branch_removed'),'warning');dbSave();mTab('branches');
 };
 
 // ── MGR: MENU ─────────────────────────────────────────────────
@@ -1777,9 +1813,9 @@ function buildMgrMenu(){
   return `
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
     <div class="stat-grid" style="flex:1;margin-bottom:0">
-      ${[['🍗 Menu Items',MENU.length,'var(--cream)'],['📦 Total Sold',total,'var(--yolk)'],['🏆 Top Item',MENU.reduce((a,m)=>m.sold>a.sold?m:a).name.split(' ')[0],'var(--green)'],['💶 Avg Price','€'+Math.round(MENU.reduce((a,m)=>a+m.price,0)/MENU.length),'var(--blue)']].map(([l,v,c])=>`<div class="stat-card"><div class="sc-label">${l}</div><div class="sc-value" style="color:${c};font-size:${String(v).length>8?'16px':'28px'}">${v}</div></div>`).join('')}
+      ${[[t('menu'),MENU.length,'var(--cream)'],[t('total_sold'),total,'var(--yolk)'],[t('menu')+' 🏆',MENU.reduce((a,m)=>m.sold>a.sold?m:a).name.split(' ')[0],'var(--green)'],[t('revenue')+' Ø','€'+Math.round(MENU.reduce((a,m)=>a+m.price,0)/MENU.length),'var(--blue)']].map(([l,v,c])=>`<div class="stat-card"><div class="sc-label">${l}</div><div class="sc-value" style="color:${c};font-size:${String(v).length>8?'16px':'28px'}">${v}</div></div>`).join('')}
     </div>
-    <button class="btn btn-yolk btn-sm" style="padding:8px 14px;margin-left:14px;flex-shrink:0" onclick="openAddMenuItem()">+ Add Item</button>
+    <button class="btn btn-yolk btn-sm" style="padding:8px 14px;margin-left:14px;flex-shrink:0" onclick="openAddMenuItem()">${t('add_item')}</button>
   </div>
   ${cats.map(cat=>`
     <div class="panel" style="margin-bottom:10px">
@@ -1789,7 +1825,7 @@ function buildMgrMenu(){
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
             <span style="font-size:24px">${m.icon}</span>
             <div style="flex:1"><div style="font-family:'Fredoka',sans-serif;font-size:13px;font-weight:600">${esc(m.name)}</div>
-            <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted)">${m.sold} sold</div></div>
+            <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted)">${m.sold}</div></div>
             <button class="btn btn-dark btn-sm" style="font-size:9px;padding:2px 7px" onclick="openEditMenuItem('${m.id}')">✏️</button>
           </div>
           <div style="display:flex;justify-content:space-between;align-items:center">
@@ -1803,17 +1839,17 @@ function buildMgrMenu(){
 }
 window.openAddMenuItem=()=>{
   S.editMenuId=null;
-  $('mi-title').textContent='🍗 Add Menu Item';
+  $('mi-title').textContent=t('add_menu_item');
   $('mi-name').value='';$('mi-price').value='';$('mi-desc').value='';$('mi-icon').value='🍗';
   // Show branch prices
   const bp=$('mi-price-branches');
-  if(bp){bp.style.display='block';bp.querySelector('#mi-branch-prices').innerHTML=BRANCHES.map(b=>`<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><label style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);width:120px">${esc(b.name)}</label><input type="number" id="mibp_${b.id}" placeholder="Default price" style="flex:1;font-size:12px;padding:5px 8px"/></div>`).join('');}
+  if(bp){bp.style.display='block';bp.querySelector('#mi-branch-prices').innerHTML=BRANCHES.map(b=>`<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><label style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);width:120px">${esc(b.name)}</label><input type="number" id="mibp_${b.id}" placeholder="${t('default_price')}" style="flex:1;font-size:12px;padding:5px 8px"/></div>`).join('');}
   $('menuItemModal').classList.add('show');
 };
 window.openEditMenuItem=id=>{
   const m=MENU.find(x=>x.id===id);if(!m)return;
   S.editMenuId=id;
-  $('mi-title').textContent='✏️ Edit Menu Item';
+  $('mi-title').textContent=t('edit_menu_item');
   $('mi-name').value=m.name;$('mi-price').value=m.price;$('mi-desc').value=m.desc;$('mi-icon').value=m.icon;$('mi-cat').value=m.cat;
   const bp=$('mi-price-branches');
   if(bp){bp.style.display='block';$('mi-branch-prices').innerHTML=BRANCHES.map(b=>`<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><label style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);width:120px">${esc(b.name)}</label><input type="number" id="mibp_${b.id}" value="${m.branchPrices&&m.branchPrices[b.id]||''}" placeholder="${m.price}" style="flex:1;font-size:12px;padding:5px 8px"/></div>`).join('');}
@@ -1825,15 +1861,15 @@ window.saveMenuItem=()=>{
   const desc=($('mi-desc')?.value||'').trim();
   const icon=$('mi-icon')?.value||'🍗';
   const cat=$('mi-cat')?.value||'Other';
-  if(!name||!price){toast('Name and price required','error');return;}
+  if(!name||!price){toast(t('name_phone_required').replace('phone','price'),'error');return;}
   // Collect branch prices
   const branchPrices={};
   BRANCHES.forEach(b=>{const v=parseFloat($('mibp_'+b.id)?.value);if(v&&v>0)branchPrices[b.id]=v;});
   if(S.editMenuId){
     const m=MENU.find(x=>x.id===S.editMenuId);if(!m)return;
-    Object.assign(m,{name,price,desc,icon,cat,branchPrices});toast('Menu item updated!','success');
+    Object.assign(m,{name,price,desc,icon,cat,branchPrices});toast(t('menu_item_updated'),'success');
   }else{
-    MENU.push({id:'m'+Date.now(),name,cat,price,icon,desc,sold:0,branchPrices});toast('Menu item added!','success');
+    MENU.push({id:'m'+Date.now(),name,cat,price,icon,desc,sold:0,branchPrices});toast(t('menu_item_added'),'success');
   }
   dbSave();$('menuItemModal').classList.remove('show');mTab('menu');
 };
@@ -1843,13 +1879,13 @@ function buildMgrLoyalty(){
   const freeReady=LOYALTY.filter(c=>c.orders>0&&c.orders%10===0);
   return `
   <div class="stat-grid" style="margin-bottom:14px">
-    ${[['👥 Members',LOYALTY.length,'var(--cream)'],['🎁 Free Items Ready',freeReady.length,'var(--crisp)'],['⭐ Avg Orders',Math.round(LOYALTY.reduce((a,c)=>a+c.orders,0)/Math.max(1,LOYALTY.length)),'var(--green)'],['📱 Total Orders',LOYALTY.reduce((a,c)=>a+c.orders,0),'var(--blue)']].map(([l,v,c])=>`<div class="stat-card"><div class="sc-label">${l}</div><div class="sc-value" style="color:${c}">${v}</div></div>`).join('')}
+    ${[[t('staff'),LOYALTY.length,'var(--cream)'],[t('loyalty')+'🎁',freeReady.length,'var(--crisp)'],['⭐ Avg',Math.round(LOYALTY.reduce((a,c)=>a+c.orders,0)/Math.max(1,LOYALTY.length)),'var(--green)'],[t('orders'),LOYALTY.reduce((a,c)=>a+c.orders,0),'var(--blue)']].map(([l,v,c])=>`<div class="stat-card"><div class="sc-label">${l}</div><div class="sc-value" style="color:${c}">${v}</div></div>`).join('')}
   </div>
   <div style="background:rgba(46,204,113,.06);border:1px solid rgba(46,204,113,.2);border-radius:6px;padding:10px 14px;margin-bottom:14px;font-family:'DM Mono',monospace;font-size:10px;color:var(--green)">
-    🤖 Loyalty is fully automatic — stamps are awarded when orders complete. Every 10th order earns a free item.
+    🤖 ${t('loyalty_title')}
   </div>
   <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
-    <input id="loy-search" placeholder="Search by name or phone..." style="flex:1;min-width:200px;font-size:13px" oninput="mTab('loyalty')"/>
+    <input id="loy-search" placeholder="${t('phone')}" style="flex:1;min-width:200px;font-size:13px" oninput="mTab('loyalty')"/>
   </div>
   <div class="loy-grid">
     ${LOYALTY.filter(c=>{const q=($('loy-search')?.value||'').toLowerCase();return !q||c.name.toLowerCase().includes(q)||c.phone.includes(q);}).map(c=>{
@@ -1861,12 +1897,12 @@ function buildMgrLoyalty(){
         <div style="display:flex;justify-content:space-between;align-items:flex-start">
           <div>
             <div style="font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:1px">${esc(c.name)} ${free?'🎉':''}</div>
-            <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted)">${esc(c.phone)} · ${c.orders} total orders · ${totalRewards} rewards earned</div>
+            <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted)">${esc(c.phone)} · ${c.orders} ${t('orders')} · ${totalRewards} ${t('free_earned')}</div>
           </div>
           <span class="${free?'badge bo':'badge bb'}" style="font-size:9px">${displayStamps}/10</span>
         </div>
         <div class="stamp-row">${Array.from({length:10},(_,i)=>`<div class="stamp ${i<displayStamps?(i===9&&free?'free':'filled'):''}">${i<displayStamps?'🍗':''}</div>`).join('')}</div>
-        ${free?`<div style="background:rgba(255,107,53,.1);border:1px solid rgba(255,107,53,.25);border-radius:4px;padding:7px 10px;margin-top:6px;font-family:'DM Mono',monospace;font-size:10px;color:var(--crisp);display:flex;justify-content:space-between;align-items:center"><span>🎁 FREE ITEM READY!</span><button class="btn btn-red btn-sm" style="font-size:10px;padding:3px 8px" onclick="loyRedeem('${c.phone}')">Redeem</button></div>`:`<div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);margin-top:4px">${10-displayStamps} more orders until free item</div>`}
+        ${free?`<div style="background:rgba(255,107,53,.1);border:1px solid rgba(255,107,53,.25);border-radius:4px;padding:7px 10px;margin-top:6px;font-family:'DM Mono',monospace;font-size:10px;color:var(--crisp);display:flex;justify-content:space-between;align-items:center"><span>${t('free_earned')} 🎁</span><button class="btn btn-red btn-sm" style="font-size:10px;padding:3px 8px" onclick="loyRedeem('${c.phone}')">${t('accept')}</button></div>`:`<div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);margin-top:4px">${10-displayStamps} ${t('orders')} ${t('free_earned')}</div>`}
       </div>`;}).join('')}
   </div>`;
 }
@@ -1876,7 +1912,7 @@ window.loyRedeem=phone=>{
   // Actually just set a redeemed flag tracked separately - simplest: increment orders by 1 to move past milestone
   c.orders++; // move past the reward milestone so it won't show free again until next 10
   c.stamps = c.orders % 10;
-  toast(`🎁 Free item redeemed for ${c.name}! Next reward in ${10 - c.stamps} orders.`,'success');
+  toast('🎁 '+t('free_item_redeemed')+' '+c.name+'! '+t('next_reward')+' '+(10-c.stamps)+' '+t('orders_total').replace('total ','').replace('totali','').replace('إجمالي ',''),'success');
   dbSave();mTab('loyalty');
 };
 
@@ -1891,7 +1927,7 @@ function buildMgrAnalytics(){
   const maxSold=topItems[0]?topItems[0].sold*topItems[0].price:1;
   return `
   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:16px">
-    ${[['📦 Orders',completedOrders.length,'var(--blue)'],['💶 Revenue',rev?'€'+rev:'€0','var(--yolk)'],['💰 Avg Order','€'+avgOrder,'var(--green)'],['👥 Members',LOYALTY.length,'var(--purple)'],['🗑 Waste','€'+WASTE_LOG.reduce((a,w)=>{const i=INVENTORY.find(x=>x.name===w.item);return a+(i?w.qty*(i.unit==='kg'?8:i.unit==='L'?5:.5):0);},0).toFixed(0),'#e74c3c'],['⭐ Avg Rating',FEEDBACK.length?(FEEDBACK.reduce((a,f)=>a+f.rating,0)/FEEDBACK.length).toFixed(1):'—','var(--yolk)']].map(([l,v,c])=>`<div class="kpi-box"><div class="kv" style="color:${c}">${v}</div><div class="kl">${l}</div></div>`).join('')}
+    ${[[t('orders'),completedOrders.length,'var(--blue)'],[t('revenue'),rev?'€'+rev:'€0','var(--yolk)'],['💰 Avg','€'+avgOrder,'var(--green)'],[t('loyalty'),LOYALTY.length,'var(--purple)'],[t('waste_log_title'),'€'+WASTE_LOG.reduce((a,w)=>{const i=INVENTORY.find(x=>x.name===w.item);return a+(i?w.qty*(i.unit==='kg'?8:i.unit==='L'?5:.5):0);},0).toFixed(0),'#e74c3c'],['⭐ Avg',FEEDBACK.length?(FEEDBACK.reduce((a,f)=>a+f.rating,0)/FEEDBACK.length).toFixed(1):'—','var(--yolk)']].map(([l,v,c])=>`<div class="kpi-box"><div class="kv" style="color:${c}">${v}</div><div class="kl">${l}</div></div>`).join('')}
   </div>
   <div class="sg">
     <div class="panel">
@@ -1912,11 +1948,11 @@ function buildMgrSalary(){
   const totalPay=WORKERS.reduce((acc,w)=>{const hrs=weekShifts.filter(s=>s.worker===w.id&&s.status==='completed').reduce((a,s)=>a+s.hours,0);return acc+hrs*w.hourly_rate;},0);
   return `
   <div class="stat-grid" style="margin-bottom:14px">
-    ${[['👷 Workers',WORKERS.length,'var(--cream)'],['💶 Total Payroll (7d)','€'+totalPay.toFixed(0),'var(--yolk)'],['⏰ Avg Hours/Worker',(weekShifts.reduce((a,s)=>a+s.hours,0)/Math.max(1,WORKERS.length)).toFixed(1)+'h','var(--green)']].map(([l,v,c])=>`<div class="stat-card"><div class="sc-label">${l}</div><div class="sc-value" style="color:${c}">${v}</div></div>`).join('')}
+    ${[[t('staff'),''+WORKERS.length,'var(--cream)'],['💶 '+t('total_earned')+' (7d)','€'+totalPay.toFixed(0),'var(--yolk)'],['⏰ '+t('total_hours')+'/'+t('staff'),(weekShifts.reduce((a,s)=>a+s.hours,0)/Math.max(1,WORKERS.length)).toFixed(1)+'h','var(--green)']].map(([l,v,c])=>`<div class="stat-card"><div class="sc-label">${l}</div><div class="sc-value" style="color:${c}">${v}</div></div>`).join('')}
   </div>
   <div class="table-wrap">
     <table>
-      <thead><tr><th>Worker</th><th>Role</th><th>Rate/h</th><th>Hours (7d)</th><th>Total Pay</th></tr></thead>
+      <thead><tr><th>${t('name_lbl')}</th><th>${t('role_lbl')}</th><th>${t('rate_lbl')}</th><th>${t('hours')} (7d)</th><th>${t('total_earned')}</th></tr></thead>
       <tbody>${WORKERS.map(w=>{const hrs=weekShifts.filter(s=>s.worker===w.id&&s.status==='completed').reduce((a,s)=>a+s.hours,0);return `<tr><td style="font-weight:600">${esc(w.name)}</td><td>${esc(w.role)}</td><td style="color:var(--yolk)">€${w.hourly_rate}/h</td><td>${hrs.toFixed(1)}h</td><td style="color:var(--green);font-weight:600">€${(hrs*w.hourly_rate).toFixed(2)}</td></tr>`;}).join('')}</tbody>
     </table>
   </div>`;
@@ -1925,9 +1961,10 @@ function buildMgrSalary(){
 // ── MGR: SCHEDULER ────────────────────────────────────────────
 function buildMgrScheduler(){
   return `
+  <div style="font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:2px;color:var(--yolk);margin-bottom:12px">${t('weekly_schedule')}</div>
   <div class="sched-wrap">
     <div class="sched-grid">
-      <div class="sched-cell hdr">Worker</div>
+      <div class="sched-cell hdr">${t("worker_header")}</div>
       ${DAYS.map(d=>`<div class="sched-cell hdr">${d}</div>`).join('')}
       ${WORKERS.map(w=>`
         <div class="sched-cell wname">${esc(w.name.split(' ')[0])}</div>
@@ -1943,25 +1980,25 @@ function buildMgrBilling(){
   return `
   <div class="sg">
     <div class="panel">
-      <div class="panel-title">🧾 NEW BILL</div>
+      <div class="panel-title">${t('billing_title')}</div>
       <div style="display:flex;gap:8px;margin-bottom:12px">
         <select id="bill-item" style="flex:1;font-size:12px">${MENU.map(m=>`<option value="${m.price}" data-name="${m.name}">${m.icon} ${m.name} — €${m.price}</option>`).join('')}</select>
-        <button class="btn btn-yolk btn-sm" onclick="billAdd()">+ Add</button>
+        <button class="btn btn-yolk btn-sm" onclick="billAdd()">${t('add_btn')}</button>
       </div>
       <div style="min-height:60px;background:rgba(255,255,255,.02);border:1px solid rgba(245,210,0,.08);border-radius:4px;padding:10px;margin-bottom:10px">
-        ${BILLING_STATE.items.length?BILLING_STATE.items.map(i=>`<div style="display:flex;justify-content:space-between;margin-bottom:5px;font-size:13px"><span>${i.qty}× ${esc(i.name)}</span><span style="color:var(--yolk)">€${i.qty*i.price}</span></div>`).join(''):`<span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted)">No items</span>`}
+        ${BILLING_STATE.items.length?BILLING_STATE.items.map(i=>`<div style="display:flex;justify-content:space-between;margin-bottom:5px;font-size:13px"><span>${i.qty}× ${esc(i.name)}</span><span style="color:var(--yolk)">€${i.qty*i.price}</span></div>`).join(''):`<span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted)">${t('no_active_orders')}</span>`}
       </div>
-      <div style="display:flex;justify-content:space-between;font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--yolk);margin-bottom:12px"><span>TOTAL</span><span>€${sub.toFixed(2)}</span></div>
+      <div style="display:flex;justify-content:space-between;font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--yolk);margin-bottom:12px"><span>${t('orders').replace('📋 ','')}</span><span>€${sub.toFixed(2)}</span></div>
       <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px">
-        ${['cash','card','app'].map(p=>`<button class="pay-pill ${BILLING_STATE.payment===p?'active':''}" onclick="billPay('${p}')">${{cash:'💵 Cash',card:'💳 Card',app:'📱 App'}[p]}</button>`).join('')}
+        ${['cash','card','app'].map(p=>`<button class="pay-pill ${BILLING_STATE.payment===p?'active':''}" onclick="billPay('${p}')">${{cash:'💵 Cash',card:'💳 '+t('billing_title').replace('🧾 ',''),app:'📱 App'}[p]}</button>`).join('')}
       </div>
       <div style="display:flex;gap:8px">
-        <button class="btn btn-red" style="flex:1;padding:10px" onclick="billClear()">Clear</button>
-        <button class="btn btn-yolk" style="flex:1;padding:10px" onclick="billCharge()">Charge €${sub.toFixed(2)}</button>
+        <button class="btn btn-red" style="flex:1;padding:10px" onclick="billClear()">${t('clear_lbl')}</button>
+        <button class="btn btn-yolk" style="flex:1;padding:10px" onclick="billCharge()">${t('charge_lbl')} €${sub.toFixed(2)}</button>
       </div>
     </div>
     <div class="panel">
-      <div class="panel-title">📋 RECENT RECEIPTS</div>
+      <div class="panel-title">${t('recent_receipts')}</div>
       ${RECEIPTS.slice(0,8).map(r=>`<div style="padding:8px 0;border-bottom:1px solid rgba(245,210,0,.06)"><div style="display:flex;justify-content:space-between;margin-bottom:3px"><span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted)">#${r.id} · ${fmtAgo(r.time)}</span><span class="badge ${r.payment==='cash'?'by':r.payment==='card'?'bb':'bg'}" style="font-size:8px">${r.payment}</span></div><div style="display:flex;justify-content:space-between;font-size:13px"><span style="color:var(--cream)">${r.items.map(i=>i.qty+'× '+i.name).join(', ')}</span><span style="color:var(--yolk);font-family:'Bebas Neue',sans-serif">€${r.total}</span></div></div>`).join('')}
     </div>
   </div>`;
@@ -1970,7 +2007,7 @@ window.billAdd=()=>{const sel=$('bill-item');if(!sel)return;const opt=sel.option
 window.billPay=p=>{BILLING_STATE.payment=p;mTab('billing');};
 window.billClear=()=>{BILLING_STATE.items=[];mTab('billing');};
 window.billCharge=()=>{
-  if(!BILLING_STATE.items.length){toast('Add items first','error');return;}
+  if(!BILLING_STATE.items.length){toast(t('add_items_first'),'error');return;}
   const total=BILLING_STATE.items.reduce((a,i)=>a+i.qty*i.price,0);
   RECEIPTS.unshift({id:'r'+Date.now(),items:[...BILLING_STATE.items],payment:BILLING_STATE.payment,total,time:Date.now()});
   BILLING_STATE.items=[];toast(`💶 €${total.toFixed(2)} charged (${BILLING_STATE.payment})!`,'success');dbSave();mTab('billing');
@@ -1980,20 +2017,20 @@ window.billCharge=()=>{
 function buildMgrFeedback(){
   return `
   <div class="stat-grid" style="margin-bottom:14px">
-    ${[['⭐ Total Reviews',FEEDBACK.length,'var(--cream)'],['😊 Positive',FEEDBACK.filter(f=>f.rating>=4).length,'var(--green)'],['😐 Neutral',FEEDBACK.filter(f=>f.rating===3).length,'var(--yolk)'],['😞 Negative',FEEDBACK.filter(f=>f.rating<=2&&!f.responded).length,'#e74c3c']].map(([l,v,c])=>`<div class="stat-card"><div class="sc-label">${l}</div><div class="sc-value" style="color:${c}">${v}</div></div>`).join('')}
+    ${[[t('total_reviews'),FEEDBACK.length,'var(--cream)'],[t('positive_lbl'),FEEDBACK.filter(f=>f.rating>=4).length,'var(--green)'],[t('neutral_lbl'),FEEDBACK.filter(f=>f.rating===3).length,'var(--yolk)'],[t('negative_lbl'),FEEDBACK.filter(f=>f.rating<=2&&!f.responded).length,'#e74c3c']].map(([l,v,c])=>`<div class="stat-card"><div class="sc-label">${l}</div><div class="sc-value" style="color:${c}">${v}</div></div>`).join('')}
   </div>
   <div style="background:rgba(52,152,219,.06);border:1px solid rgba(52,152,219,.2);border-radius:6px;padding:10px 14px;margin-bottom:14px;font-family:'DM Mono',monospace;font-size:10px;color:var(--blue)">
-    👁 Manager view only — Feedback is submitted by customers via the order page or by cashiers at the counter.
+    ${t('mgr_feedback_info')}
   </div>
   <div class="panel">
     <div class="panel-title">📋 ALL CUSTOMER FEEDBACK</div>
-    ${FEEDBACK.length===0?`<div class="empty"><div class="empty-icon">⭐</div>'+t('no_feedback_yet')+'</div>`:
+    ${FEEDBACK.length===0?`<div class="empty"><div class="empty-icon">⭐</div>${t('no_feedback_yet')}</div>`:
     FEEDBACK.map(f=>`<div class="alert-item ${f.rating<=2?'critical':f.rating===3?'warning':'success'}" style="margin-bottom:6px">
       <div style="flex-shrink:0">
         ${'⭐'.repeat(f.rating)}${'☆'.repeat(5-f.rating)}
       </div>
       <div style="flex:1">
-        <div class="al-title">${f.comment?esc(f.comment.slice(0,80)):f.rating>=4?'Positive review':'Negative review'}</div>
+        <div class="al-title">${f.comment?esc(f.comment.slice(0,80)):f.rating>=4?t('positive_review'):t('negative_review')}</div>
         <div class="al-body">#${f.orderRef||'?'} · ${f.branch||'Main'} · ${f.phone||'Walk-in'}</div>
       </div>
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
@@ -2009,16 +2046,16 @@ function buildMgrAlerts(){
   const autoAlerts=[];
   INVENTORY.filter(i=>i.qty<=i.min).forEach(i=>autoAlerts.push({type:'critical',icon:'⚠️',title:`Low Stock: ${i.name}`,body:`Only ${i.qty} ${i.unit} left — minimum is ${i.min}`,time:Date.now()-5*60000}));
   ORDERS.filter(o=>o.type==='delivery'&&!o.assignedTo&&o.status==='new'&&Date.now()-o.created>10*60000).forEach(o=>autoAlerts.push({type:'warning',icon:'🛵',title:`Unassigned Delivery #${o.id}`,body:`${esc(o.name)} at ${esc(o.addr)} — waiting ${fmtAgo(o.created)}`,time:o.created}));
-  FEEDBACK.filter(f=>f.rating<=2&&!f.responded).forEach(f=>autoAlerts.push({type:'critical',icon:'⭐',title:`Negative Review (${f.rating}★)`,body:`${f.comment?esc(f.comment.slice(0,60))+'...':'No comment'}`,time:f.time}));
+  FEEDBACK.filter(f=>f.rating<=2&&!f.responded).forEach(f=>autoAlerts.push({type:'critical',icon:'⭐',title:`Negative Review (${f.rating}★)`,body:`${f.comment?esc(f.comment.slice(0,60))+'...':t('no_comment')}`,time:f.time}));
   const todayRev=ORDERS.filter(o=>o.status==='delivered'||o.status==='served').reduce((a,o)=>a+o.total,0);
-  if(todayRev<500)autoAlerts.push({type:'warning',icon:'📉',title:'Revenue Below Target',body:`Today: €${todayRev} vs target €3,200`,time:Date.now()-20*60000});
-  if(!autoAlerts.length)autoAlerts.push({type:'success',icon:'✅',title:'All Systems Normal',body:'No critical alerts at this time.',time:Date.now()});
+  if(todayRev<500)autoAlerts.push({type:'warning',icon:'📉',title:t('revenue_today')+' ⚠️',body:`Today: €${todayRev} vs target €3,200`,time:Date.now()-20*60000});
+  if(!autoAlerts.length)autoAlerts.push({type:'success',icon:'✅',title:t('all_normal'),body:t('no_alerts'),time:Date.now()});
   return `
   <div class="stat-grid" style="margin-bottom:14px">
-    ${[['🚨 Critical',autoAlerts.filter(a=>a.type==='critical').length,'#e74c3c'],['⚠️ Warnings',autoAlerts.filter(a=>a.type==='warning').length,'var(--crisp)'],['✅ Success',autoAlerts.filter(a=>a.type==='success').length,'var(--green)'],['📊 Total',autoAlerts.length,'var(--cream)']].map(([l,v,c])=>`<div class="stat-card"><div class="sc-label">${l}</div><div class="sc-value" style="color:${c}">${v}</div></div>`).join('')}
+    ${[[t('critical_lbl'),autoAlerts.filter(a=>a.type==='critical').length,'#e74c3c'],[t('warnings_lbl'),autoAlerts.filter(a=>a.type==='warning').length,'var(--crisp)'],[t('success_lbl'),autoAlerts.filter(a=>a.type==='success').length,'var(--green)'],[t('total_lbl'),autoAlerts.length,'var(--cream)']].map(([l,v,c])=>`<div class="stat-card"><div class="sc-label">${l}</div><div class="sc-value" style="color:${c}">${v}</div></div>`).join('')}
   </div>
   <div class="panel">
-    <div class="panel-title" style="justify-content:space-between"><span>🔔 ALERT FEED</span><button class="btn btn-dark btn-sm" style="font-size:10px" onclick="mTab('alerts')">↻ Refresh</button></div>
+    <div class="panel-title" style="justify-content:space-between"><span>${t('alert_feed')}</span><button class="btn btn-dark btn-sm" style="font-size:10px" onclick="mTab('alerts')">${t('refresh_lbl')}</button></div>
     ${autoAlerts.map(a=>`<div class="alert-item ${a.type}"><span style="font-size:18px;flex-shrink:0">${a.icon}</span><div style="flex:1"><div class="al-title">${a.title}</div><div class="al-body">${a.body}</div></div><div class="al-time">${fmtAgo(a.time)}</div></div>`).join('')}
   </div>`;
 }
@@ -2037,7 +2074,7 @@ function startTimer(active){clearInterval(S.timerInt);if(!active)return;S.timerI
 // ── MAPS LINK AUTO-EXTRACT (live event) ──────────────────────
 document.addEventListener('DOMContentLoaded',()=>{
   const mapsInput=$('br-maps');
-  if(mapsInput){mapsInput.addEventListener('input',function(){const c=extractCoordsFromGoogleLink(this.value);if(c){const la=$('br-lat');const lo=$('br-lng');if(la)la.value=c.lat;if(lo)lo.value=c.lng;toast('Coordinates extracted!','success');}});}
+  if(mapsInput){mapsInput.addEventListener('input',function(){const c=extractCoordsFromGoogleLink(this.value);if(c){const la=$('br-lat');const lo=$('br-lng');if(la)la.value=c.lat;if(lo)lo.value=c.lng;toast(t('coords_extracted'),'success');}});}
 });
 
 // ══════════════════════════════════════════════════════════════
