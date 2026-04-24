@@ -341,11 +341,13 @@ html[dir="rtl"] body{font-family:'Fredoka',sans-serif}
     <div class="fg">
       <div><label class="lbl-mono" id="lbl-mi-name">—</label><input id="mi-name" placeholder=""/></div>
       <div><label class="lbl-mono" id="lbl-mi-cat">—</label>
-        <select id="mi-cat">
+        <select id="mi-cat" onchange="toggleNewCatInput()">
           <option id="mi-cat-buckets">—</option><option id="mi-cat-wings">—</option><option id="mi-cat-burgers">—</option>
           <option id="mi-cat-wraps">—</option><option id="mi-cat-combos">—</option><option id="mi-cat-sides">—</option>
           <option id="mi-cat-sauces">—</option><option id="mi-cat-drinks">—</option><option id="mi-cat-other">—</option>
+          <option value="__new__" id="mi-cat-new">—</option>
         </select>
+        <input id="mi-cat-custom" placeholder="" style="display:none;margin-top:6px;font-size:13px"/>
       </div>
       <div><label class="lbl-mono" id="lbl-mi-price">—</label><input type="number" id="mi-price" min="0.5" step="0.5" placeholder="0"/></div>
       <div><label class="lbl-mono" id="lbl-mi-desc">—</label><input id="mi-desc" placeholder=""/></div>
@@ -892,8 +894,8 @@ let FEEDBACK=dbGet('feedback',[
   {id:'fb3',orderRef:'ord003',rating:4,comment:'Ottimo rapporto qualità-prezzo.',branch:'Main Branch',time:now-2*3600000,responded:true,phone:'0534567890'},
 ]);
 let RECEIPTS=dbGet('receipts',[
-  {id:'r001',items:[{name:'Spicy Wings',qty:2,price:45},{name:'Pepsi Can',qty:2,price:8}],payment:'card',total:106,time:now-40*60000},
-  {id:'r002',items:[{name:'Zinger Burger',qty:1,price:32},{name:'Fries',qty:1,price:18}],payment:'cash',total:50,time:now-80*60000},
+  {id:'r001',items:[{name:'Ali Piccanti (10 pz)',qty:2,price:45},{name:'Pepsi Lattina',qty:2,price:8}],payment:'card',total:106,time:now-40*60000},
+  {id:'r002',items:[{name:'Zinger Burger',qty:1,price:32},{name:'Patatine al Formaggio',qty:1,price:18}],payment:'cash',total:50,time:now-80*60000},
 ]);
 
 // ── APP STATE ────────────────────────────────────────────────
@@ -995,6 +997,12 @@ function updateModalLabels(){
     'mi-cat-sauces':LANG==='ar'?'صلصات':'Salse','mi-cat-drinks':LANG==='ar'?'مشروبات':'Bevande',
     'mi-cat-other':LANG==='ar'?'أخرى':'Altro'};
   Object.entries(cats).forEach(([id,txt])=>{const el=document.getElementById(id);if(el){el.textContent=txt;el.value=txt;}});
+  const newCatOpt=document.getElementById('mi-cat-new');
+  if(newCatOpt){newCatOpt.textContent=LANG==='ar'?'+ فئة جديدة...':LANG==='it'?'+ Nuova categoria...':'+ New category...';newCatOpt.value='__new__';}
+  const customInput=document.getElementById('mi-cat-custom');
+  if(customInput){customInput.placeholder=LANG==='ar'?'اسم الفئة':LANG==='it'?'Nome categoria':'Category name';}
+  // Rebuild custom cats from existing menu
+  rebuildMenuCatOptions();
   set('lbl-ai-name',t('name_lbl'));set('lbl-ai-unit',t('unit_lbl'));
   set('lbl-ai-qty',t('current_qty_lbl'));set('lbl-ai-min',t('min_level_lbl'));
   set('lbl-ai-icon',t('emoji_icon_lbl'));set('btn-cancel-inv',t('cancel_lbl'));set('btn-save-inv',t('save_inv_btn'));
@@ -1631,17 +1639,17 @@ function buildMgrLive(){
   </div>
   <div class="sg">
     <div class="panel">
-      <div class="panel-title">👷 STAFF ON SHIFT</div>
+      <div class="panel-title">${t('staff_on_shift_title')}</div>
       ${onShift.length===0?`<div class="empty"><div class="empty-icon">👤</div>${t('no_one_clocked')}</div>`:
       onShift.map(s=>{const w=WORKERS.find(x=>x.id===s.worker)||{name:'?',role:'?',hourly_rate:0};const hrs=(Date.now()-s.start)/3600000;return `<div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid rgba(245,210,0,.06)"><div><div style="font-family:'Fredoka',sans-serif;font-size:14px;font-weight:600">${esc(w.name)}</div><div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted)">${roleLabel(w.role)} · ${esc(s.location)} · ⏱ ${fmtTime(s.start)}</div></div><div style="text-align:right"><div style="font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--green)">${hrs.toFixed(1)}h</div><div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--yolk)">€${(hrs*w.hourly_rate).toFixed(2)}</div></div></div>`;}).join('')}
     </div>
     <div class="panel">
-      <div class="panel-title">🍽️ LIVE KITCHEN QUEUE</div>
+      <div class="panel-title">${t('kitchen_queue')}</div>
       ${activeOrds.length===0?`<div class="empty"><div class="empty-icon">✅</div>${t('kitchen_clear')}</div>`:
       activeOrds.slice(0,6).map(o=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(245,210,0,.06)"><div>${o.type==='delivery'?`<span class="order-type-del">🛵</span>`:`<span class="order-type-tbl">T${o.table}</span>`}<span style="font-size:12px;color:var(--cream);margin-left:6px">${o.items.map(i=>i.qty+'×'+i.name).join(', ').slice(0,40)}</span></div><div style="display:flex;align-items:center;gap:8px"><span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted)">${fmtAgo(o.created)}</span>${orderStatusBadge(o.status)}</div></div>`).join('')}
     </div>
   </div>
-  ${lowStock.length?`<div class="panel"><div class="panel-title">⚠️ LOW STOCK ALERTS</div><div style="display:flex;flex-wrap:wrap;gap:8px">${lowStock.map(i=>`<div style="background:rgba(231,76,60,.08);border:1px solid rgba(231,76,60,.2);border-radius:6px;padding:8px 14px;display:flex;align-items:center;gap:8px"><span style="font-size:20px">${i.icon}</span><div><div style="font-family:'Fredoka',sans-serif;font-size:13px;color:#e74c3c">${i.name}</div><div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted)">${i.qty} ${i.unit} ${t('left_min')} ${i.min})</div></div></div>`).join('')}</div></div>`:''}`;
+  ${lowStock.length?`<div class="panel"><div class="panel-title">${t('low_stock_alerts')}</div><div style="display:flex;flex-wrap:wrap;gap:8px">${lowStock.map(i=>`<div style="background:rgba(231,76,60,.08);border:1px solid rgba(231,76,60,.2);border-radius:6px;padding:8px 14px;display:flex;align-items:center;gap:8px"><span style="font-size:20px">${i.icon}</span><div><div style="font-family:'Fredoka',sans-serif;font-size:13px;color:#e74c3c">${i.name}</div><div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted)">${i.qty} ${i.unit} ${t('left_min')} ${i.min})</div></div></div>`).join('')}</div></div>`:''}`;
 }
 
 // ── MGR: ORDERS ──────────────────────────────────────────────
@@ -1685,7 +1693,7 @@ function buildMgrDelivery(){
     ${[[t('waiting_rider'),waiting.length,'var(--crisp)'],[t('in_transit'),active.length,'var(--yolk)'],[t('delivered'),done.length,'var(--green)'],[t('revenue'),'€'+dels.reduce((a,o)=>a+o.total,0),'var(--blue)']].map(([l,v,c])=>`<div class="stat-card"><div class="sc-label">${l}</div><div class="sc-value" style="color:${c}">${v}</div></div>`).join('')}
   </div>
   <div class="panel">
-    <div class="panel-title">🛵 ALL DELIVERY ORDERS</div>
+    <div class="panel-title">${t('all_delivery_orders')}</div>
     ${dels.length===0?`<div class="empty"><div class="empty-icon">🛵</div>${t('no_delivery_orders')}</div>`:
     dels.map(o=>buildOrderCard(o,'manager',delivWorkers)).join('')}
   </div>`;
@@ -1923,10 +1931,48 @@ function buildMgrMenu(){
       </div>
     </div>`).join('')}`;
 }
+// ── MENU CATEGORY HELPERS ─────────────────────────────────────
+const DEFAULT_CATS={
+  it:['Secchi','Ali','Burger','Wrap','Combo','Contorni','Salse','Bevande','Altro'],
+  ar:['سطل','أجنحة','برغر','راب','كومبو','مقبلات','صلصات','مشروبات','أخرى'],
+  en:['Buckets','Wings','Burgers','Wraps','Combos','Sides','Sauces','Drinks','Other']
+};
+function getDefaultCats(){return DEFAULT_CATS[LANG]||DEFAULT_CATS.it;}
+function getAllMenuCats(){
+  const defaults=new Set(Object.values(DEFAULT_CATS).flat());
+  const custom=MENU.map(m=>m.cat).filter(c=>!defaults.has(c));
+  return [...getDefaultCats(),...new Set(custom)];
+}
+function rebuildMenuCatOptions(){
+  const sel=document.getElementById('mi-cat');if(!sel)return;
+  const currentVal=sel.value;
+  // Remove any custom options (those added dynamically)
+  Array.from(sel.options).forEach(o=>{if(o.dataset.custom==='1')sel.remove(o.index);});
+  // Add custom categories from menu before the __new__ option
+  const defaults=new Set(Object.values(DEFAULT_CATS).flat());
+  const customCats=[...new Set(MENU.map(m=>m.cat).filter(c=>!defaults.has(c)))];
+  const newOpt=document.getElementById('mi-cat-new');
+  customCats.forEach(c=>{
+    if(!Array.from(sel.options).some(o=>o.value===c)){
+      const o=document.createElement('option');o.value=c;o.textContent=c;o.dataset.custom='1';
+      sel.insertBefore(o,newOpt);
+    }
+  });
+  // Restore selection
+  if(currentVal&&Array.from(sel.options).some(o=>o.value===currentVal))sel.value=currentVal;
+}
+window.toggleNewCatInput=()=>{
+  const sel=document.getElementById('mi-cat');
+  const inp=document.getElementById('mi-cat-custom');
+  if(inp){inp.style.display=sel&&sel.value==='__new__'?'block':'none';}
+};
 window.openAddMenuItem=()=>{
   S.editMenuId=null;
   $('mi-title').textContent=t('add_menu_item');
   $('mi-name').value='';$('mi-price').value='';$('mi-desc').value='';$('mi-icon').value='🍗';
+  rebuildMenuCatOptions();
+  const miCat=$('mi-cat');if(miCat)miCat.selectedIndex=0;
+  const miCatCustom=$('mi-cat-custom');if(miCatCustom){miCatCustom.value='';miCatCustom.style.display='none';}
   // Show branch prices
   const bp=$('mi-price-branches');
   if(bp){bp.style.display='block';bp.querySelector('#mi-branch-prices').innerHTML=BRANCHES.map(b=>`<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><label style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);width:120px">${esc(b.name)}</label><input type="number" id="mibp_${b.id}" placeholder="${t('default_price')}" style="flex:1;font-size:12px;padding:5px 8px"/></div>`).join('');}
@@ -1936,7 +1982,15 @@ window.openEditMenuItem=id=>{
   const m=MENU.find(x=>x.id===id);if(!m)return;
   S.editMenuId=id;
   $('mi-title').textContent=t('edit_menu_item');
-  $('mi-name').value=m.name;$('mi-price').value=m.price;$('mi-desc').value=m.desc;$('mi-icon').value=m.icon;$('mi-cat').value=m.cat;
+  $('mi-name').value=m.name;$('mi-price').value=m.price;$('mi-desc').value=m.desc;$('mi-icon').value=m.icon;
+  // Set category - may need to add as custom option first
+  rebuildMenuCatOptions();
+  const sel=$('mi-cat');
+  if(sel){
+    if(Array.from(sel.options).some(o=>o.value===m.cat)){sel.value=m.cat;}
+    else{const o=document.createElement('option');o.value=m.cat;o.textContent=m.cat;o.dataset.custom='1';sel.insertBefore(o,document.getElementById('mi-cat-new'));sel.value=m.cat;}
+  }
+  toggleNewCatInput();
   const bp=$('mi-price-branches');
   if(bp){bp.style.display='block';$('mi-branch-prices').innerHTML=BRANCHES.map(b=>`<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><label style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);width:120px">${esc(b.name)}</label><input type="number" id="mibp_${b.id}" value="${m.branchPrices&&m.branchPrices[b.id]||''}" placeholder="${m.price}" style="flex:1;font-size:12px;padding:5px 8px"/></div>`).join('');}
   $('menuItemModal').classList.add('show');updateModalLabels();
@@ -1946,7 +2000,8 @@ window.saveMenuItem=()=>{
   const price=parseFloat($('mi-price')?.value)||0;
   const desc=($('mi-desc')?.value||'').trim();
   const icon=$('mi-icon')?.value||'🍗';
-  const cat=$('mi-cat')?.value||'Other';
+  const catRaw=$('mi-cat')?.value||'Other';
+  const cat=catRaw==='__new__'?(($('mi-cat-custom')?.value||'').trim()||'Other'):catRaw;
   if(!name||!price){toast(t('name_phone_required').replace('phone','price'),'error');return;}
   // Collect branch prices
   const branchPrices={};
@@ -2017,11 +2072,11 @@ function buildMgrAnalytics(){
   </div>
   <div class="sg">
     <div class="panel">
-      <div class="panel-title">📅 REVENUE THIS WEEK</div>
+      <div class="panel-title">${t('revenue_this_week')}</div>
       <div class="bar-chart">${weeklyData.map(d=>`<div class="bar-row"><div class="bar-label" style="width:30px">${d.d}</div><div class="bar-fill-wrap"><div class="bar-fill" style="width:${Math.round(d.r/maxW*100)}%"></div></div><div class="bar-val">€${(d.r/1000).toFixed(1)}k</div></div>`).join('')}</div>
     </div>
     <div class="panel">
-      <div class="panel-title">🍗 TOP ITEMS BY REVENUE</div>
+      <div class="panel-title">${t('top_items_revenue')}</div>
       <div class="bar-chart">${topItems.map(m=>`<div class="bar-row"><div class="bar-label" style="width:70px;font-size:9px">${m.icon} ${m.name.split(' ')[0]}</div><div class="bar-fill-wrap"><div class="bar-fill" style="width:${Math.round(m.sold*m.price/maxSold*100)}%"></div></div><div class="bar-val">€${(m.sold*m.price/1000).toFixed(1)}k</div></div>`).join('')}</div>
     </div>
   </div>`;
@@ -2109,7 +2164,7 @@ function buildMgrFeedback(){
     ${t('mgr_feedback_info')}
   </div>
   <div class="panel">
-    <div class="panel-title">📋 ALL CUSTOMER FEEDBACK</div>
+    <div class="panel-title">${t('all_feedback')}</div>
     ${FEEDBACK.length===0?`<div class="empty"><div class="empty-icon">⭐</div>${t('no_feedback_yet')}</div>`:
     FEEDBACK.map(f=>`<div class="alert-item ${f.rating<=2?'critical':f.rating===3?'warning':'success'}" style="margin-bottom:6px">
       <div style="flex-shrink:0">
